@@ -42,7 +42,7 @@
 				<a href="{:U('think/lists?model='.$vo['name'])}">数据</a>
 				<a href="{:U('model/setstatus?ids='.$vo['id'].'&status='.abs(1-$vo['status']))}" class="ajax-get">{$vo.status|show_status_op}</a>
 				<a href="{:U('model/edit?id='.$vo['id'])}">编辑</a>
-				<a href="{:U('model/del?ids='.$vo['id'])}" class="confirm ajax-get">删除</a>
+				<!--<a href="{:U('model/del?ids='.$vo['id'])}" class="confirm ajax-get">删除</a>-->
             </td>
 		</tr>
 		</volist>

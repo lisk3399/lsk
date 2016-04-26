@@ -102,6 +102,8 @@ class ModelController extends AdminController {
      * @author huajie <banhuajie@163.com>
      */
     public function del(){
+        echo 'access denied';
+        die;//禁用删除模型方法
         $ids = I('get.ids');
         empty($ids) && $this->error('参数不能为空！');
         $ids = explode(',', $ids);
