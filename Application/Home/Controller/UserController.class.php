@@ -22,33 +22,33 @@ class UserController extends HomeController {
 	}
 
 	/* 注册接口 */
-	public function register($phone = '', $password = '', $repassword = '', $verify = ''){
+	public function register(){
         if(!C('USER_ALLOW_REGISTER')){
-            $this->error('注册已关闭');
+            $this->renderFailed('注册已关闭');
         }
+        //get 需要换为post
 		if(IS_GET){ //注册用户
+		    $phone = I('get.phone', '');
+		    $password = I('get.password', '');
+		    $repassword = I('get.repassword', '');
+		    $verify = I('get.verify', '');
 		    
 		    if(empty($phone)) {
-		        
+		        $this->renderFailed('手机号码不能为空！');
+		    }
+		    if(empty($password)||empty($repassword)) {
+		        $this->renderFailed('密码及重复密码都不能为空！');
 		    }
 			/* 检测密码 */
 			if($password != $repassword){
-				$this->error('密码和重复密码不一致！');
+				$this->renderFailed('密码和重复密码不一致！');
 			}			
-            
-			/* 短信验证 */
-			$MOB_VERIFY_URL = C('MOB_VERIFY_URL');
-			$MOB_APP_KEY = C('MOB_APP_KEY');
-			$fields = array(
-			    'appkey' => $MOB_APP_KEY,
-			    'phone' => $phone,
-			    'zone' => '86',
-			    'code' => $verify
-			);
-			$resultCode = curl($MOB_VERIFY_URL, $fields, false);
+			if(empty($verify)) {
+			    $this->renderFailed('验证码不能为空！');
+			}
+			//短信验证
+            $ret = $this->sms_verify($phone, $verify);
 			
-			//print_r($resultCode);
-			$this->renderFailed('错误错误');
 			
 			
 			/* 调用注册接口注册用户 */
@@ -56,13 +56,40 @@ class UserController extends HomeController {
 			$uid = $User->register($phone, $password);
 			if(0 < $uid){ //注册成功
 				//TODO: 发送验证邮件
-				$this->success('注册成功！',U('login'));
+				$this->renderSuccess('注册成功！');
 			} else { //注册失败，显示错误信息
 				$this->error($this->showRegError($uid));
 			}
 		}
 	}
 
+	//短信验证
+	private function sms_verify($phone, $verify){
+	    $MOB_VERIFY_URL = C('MOB_VERIFY_URL');
+	    $MOB_APP_KEY = C('MOB_APP_KEY');
+	    $fields = array(
+	        'appkey' => $MOB_APP_KEY,
+	        'phone' => $phone,
+	        'zone' => '86', //TODO 港澳台地区处理
+	        'code' => $verify
+	    );
+	    $resultCode = curl($MOB_VERIFY_URL, $fields, false);
+	    
+	    switch ($resultCode) {
+	        case '200':
+	            return TRUE;
+	            break;
+	        case '467':
+	            $this->renderFailed('短信验证失败');
+	            break;
+	        case '':
+	            $this->renderFailed('短信验证失败');
+	            break;
+	        default:
+	            $this->renderFailed('短信验证失败');
+	    }
+	}
+	
 	/* 登录页面 */
 	public function login($username = '', $password = '', $verify = ''){
 		if(IS_POST){ //登录验证
