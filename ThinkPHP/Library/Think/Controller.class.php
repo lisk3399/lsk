@@ -302,6 +302,31 @@ abstract class Controller {
         // 执行后续操作
         Hook::listen('action_end');
     }
+    
+    /* 返回成功json格式  */
+    public function renderSuccess($msg = '', $data = NULL) {
+        $result['flag'] = TRUE;
+        if(!empty($msg)) {
+            $result['msg'] = $msg;
+        }
+        if(!empty($data)) {
+            $result['result'] = $data;
+        }
+        // 返回JSON数据格式到客户端 包含状态信息
+        header('Content-Type:application/json; charset=utf-8');
+        exit(json_encode($result));
+    }
+    
+    /* 返回失败json格式  */
+    public function renderFailed($msg = '') {
+        $result['flag'] = FALSE;
+        if(!empty($msg)) {
+            $result['msg'] = $msg;
+        }
+        // 返回JSON数据格式到客户端 包含状态信息
+        header('Content-Type:application/json; charset=utf-8');
+        exit(json_encode($result));
+    }
 }
 // 设置控制器别名 便于升级
 class_alias('Think\Controller','Think\Action');

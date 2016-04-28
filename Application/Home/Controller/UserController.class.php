@@ -21,34 +21,45 @@ class UserController extends HomeController {
 		
 	}
 
-	/* 注册页面 */
-	public function register($username = '', $password = '', $repassword = '', $email = '', $verify = ''){
+	/* 注册接口 */
+	public function register($phone = '', $password = '', $repassword = '', $verify = ''){
         if(!C('USER_ALLOW_REGISTER')){
             $this->error('注册已关闭');
         }
-		if(IS_POST){ //注册用户
-			/* 检测验证码 */
-			if(!check_verify($verify)){
-				$this->error('验证码输入错误！');
-			}
-
+		if(IS_GET){ //注册用户
+		    
+		    if(empty($phone)) {
+		        
+		    }
 			/* 检测密码 */
 			if($password != $repassword){
 				$this->error('密码和重复密码不一致！');
 			}			
-
+            
+			/* 短信验证 */
+			$MOB_VERIFY_URL = C('MOB_VERIFY_URL');
+			$MOB_APP_KEY = C('MOB_APP_KEY');
+			$fields = array(
+			    'appkey' => $MOB_APP_KEY,
+			    'phone' => $phone,
+			    'zone' => '86',
+			    'code' => $verify
+			);
+			$resultCode = curl($MOB_VERIFY_URL, $fields, false);
+			
+			//print_r($resultCode);
+			$this->renderFailed('错误错误');
+			
+			
 			/* 调用注册接口注册用户 */
             $User = new UserApi;
-			$uid = $User->register($username, $password, $email);
+			$uid = $User->register($phone, $password);
 			if(0 < $uid){ //注册成功
 				//TODO: 发送验证邮件
 				$this->success('注册成功！',U('login'));
 			} else { //注册失败，显示错误信息
 				$this->error($this->showRegError($uid));
 			}
-
-		} else { //显示注册表单
-			$this->display();
 		}
 	}
 

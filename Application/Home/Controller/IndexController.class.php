@@ -19,6 +19,7 @@ class IndexController extends HomeController {
 	//系统首页
     public function index(){
 
+        $this->ajaxReturn('');
         $category = D('Category')->getTree();
         $lists    = D('Document')->lists(null);
 

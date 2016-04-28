@@ -39,10 +39,19 @@ return array(
     'DB_HOST'   => '127.0.0.1', // 服务器地址
     'DB_NAME'   => 'doubihai', // 数据库名
     'DB_USER'   => 'root', // 用户名
-    'DB_PWD'    => 'fo9B8OMD76Z2',  // 密码
+    'DB_PWD'    => 'root',  // 密码
     'DB_PORT'   => '3306', // 端口
     'DB_PREFIX' => 'dbh_', // 数据库表前缀
 
     /* 文档模型配置 (文档模型核心配置，请勿更改) */
     'DOCUMENT_MODEL_TYPE' => array(2 => '主题', 1 => '目录', 3 => '段落'),
+    
+    /* 短信网关相关配置mob.com 文档：http://wiki.mob.com/webapi2-0/ */
+    'MOB_VERIFY_URL' => 'https://webapi.sms.mob.com/sms/verify',
+    'MOB_APP_KEY' => '11f3481134820',
+    
+    /* 短信验证返回配置 */
+    'MOB_RETURN_200' => '验证成功',
+    'MOB_RETURN_467' => '请求校验验证码频繁（5分钟内同一号码最多只能校验三次）',
+    'MOB_RETURN_468' => '验证码错误'
 );
