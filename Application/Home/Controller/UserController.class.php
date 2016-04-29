@@ -28,12 +28,12 @@ class UserController extends HomeController {
         }
         //get 需要换为post
 		if(IS_GET){ //注册用户
-		    $phone = I('get.phone', '');
-		    $password = I('get.password', '');
-		    $repassword = I('get.repassword', '');
-		    $verify = I('get.verify', '');
+		    $mobile = I('get.mobile', '', 'intval');
+		    $password = I('get.password', '', 'trim');
+		    $repassword = I('get.repassword', '', 'trim');
+		    $verify = I('get.verify', '', 'trim');
 		    
-		    if(empty($phone)) {
+		    if(empty($mobile)) {
 		        $this->renderFailed('手机号码不能为空！');
 		    }
 		    if(empty($password)||empty($repassword)) {
@@ -47,13 +47,14 @@ class UserController extends HomeController {
 			    $this->renderFailed('验证码不能为空！');
 			}
 			//短信验证
-            $ret = $this->sms_verify($phone, $verify);
-			
-			
-			
+//             $ret = $this->sms_verify($mobile, $verify);
+//             if(!ret) {
+//                 $this->renderFailed('短信验证失败~');
+//             }
+            
 			/* 调用注册接口注册用户 */
             $User = new UserApi;
-			$uid = $User->register($phone, $password);
+			$uid = $User->register($mobile, $password);
 			if(0 < $uid){ //注册成功
 				//TODO: 发送验证邮件
 				$this->renderSuccess('注册成功！');
@@ -64,26 +65,28 @@ class UserController extends HomeController {
 	}
 
 	//短信验证
-	private function sms_verify($phone, $verify){
+	private function sms_verify($mobile, $verify){
 	    $MOB_VERIFY_URL = C('MOB_VERIFY_URL');
 	    $MOB_APP_KEY = C('MOB_APP_KEY');
 	    $fields = array(
 	        'appkey' => $MOB_APP_KEY,
-	        'phone' => $phone,
+	        'phone' => $mobile,
 	        'zone' => '86', //TODO 港澳台地区处理
 	        'code' => $verify
 	    );
-	    $resultCode = curl($MOB_VERIFY_URL, $fields, false);
+	    $response = postRequest( $MOB_VERIFY_URL, $fields );
+	    $response = json_decode($response, TRUE);
+	    $resultCode = $response['status'];
 	    
 	    switch ($resultCode) {
 	        case '200':
 	            return TRUE;
 	            break;
 	        case '467':
-	            $this->renderFailed('短信验证失败');
+	            $this->renderFailed('请求校验验证码频繁（5分钟内同一号码最多只能校验三次）');
 	            break;
-	        case '':
-	            $this->renderFailed('短信验证失败');
+	        case '468':
+	            $this->renderFailed('验证码错误');
 	            break;
 	        default:
 	            $this->renderFailed('短信验证失败');

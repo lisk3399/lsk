@@ -26,19 +26,8 @@ class UcenterMemberModel extends Model{
 
 	/* 用户模型自动验证 */
 	protected $_validate = array(
-		/* 验证用户名 */
-		array('username', '1,30', -1, self::EXISTS_VALIDATE, 'length'), //用户名长度不合法
-		array('username', 'checkDenyMember', -2, self::EXISTS_VALIDATE, 'callback'), //用户名禁止注册
-		array('username', '', -3, self::EXISTS_VALIDATE, 'unique'), //用户名被占用
-
 		/* 验证密码 */
 		array('password', '6,30', -4, self::EXISTS_VALIDATE, 'length'), //密码长度不合法
-
-		/* 验证邮箱 */
-		array('email', 'email', -5, self::EXISTS_VALIDATE), //邮箱格式不正确
-		array('email', '1,32', -6, self::EXISTS_VALIDATE, 'length'), //邮箱长度不合法
-		array('email', 'checkDenyEmail', -7, self::EXISTS_VALIDATE, 'callback'), //邮箱禁止注册
-		array('email', '', -8, self::EXISTS_VALIDATE, 'unique'), //邮箱被占用
 
 		/* 验证手机号码 */
 		array('mobile', '//', -9, self::EXISTS_VALIDATE), //手机格式不正确 TODO:
@@ -92,26 +81,20 @@ class UcenterMemberModel extends Model{
 
 	/**
 	 * 注册一个新用户
-	 * @param  string $username 用户名
-	 * @param  string $password 用户密码
-	 * @param  string $email    用户邮箱
 	 * @param  string $mobile   用户手机号码
+	 * @param  string $password 用户密码
 	 * @return integer          注册成功-用户信息，注册失败-错误编号
 	 */
-	public function register($username, $password, $email, $mobile){
+	public function register($mobile, $password){
 		$data = array(
-			'username' => $username,
 			'password' => $password,
-			'email'    => $email,
 			'mobile'   => $mobile,
 		);
-
-		//验证手机
-		if(empty($data['mobile'])) unset($data['mobile']);
 
 		/* 添加用户 */
 		if($this->create($data)){
 			$uid = $this->add();
+			$this->save(array('nickname' => '用户_'.$uid));
 			return $uid ? $uid : 0; //0-未知错误，大于0-注册成功
 		} else {
 			return $this->getError(); //错误详情见自动验证注释

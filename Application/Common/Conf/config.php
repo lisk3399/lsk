@@ -50,8 +50,4 @@ return array(
     'MOB_VERIFY_URL' => 'https://webapi.sms.mob.com/sms/verify',
     'MOB_APP_KEY' => '11f3481134820',
     
-    /* 短信验证返回配置 */
-    'MOB_RETURN_200' => '验证成功',
-    'MOB_RETURN_467' => '请求校验验证码频繁（5分钟内同一号码最多只能校验三次）',
-    'MOB_RETURN_468' => '验证码错误'
 );
