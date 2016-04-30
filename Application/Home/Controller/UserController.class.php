@@ -21,45 +21,34 @@ class UserController extends HomeController {
 		
 	}
 
-	/* 注册接口 */
+	/* 用户注册接口 */
 	public function register(){
         if(!C('USER_ALLOW_REGISTER')){
             $this->renderFailed('注册已关闭');
         }
         //get 需要换为post
-		if(IS_GET){ //注册用户
-		    $mobile = I('get.mobile', '', 'intval');
-		    $password = I('get.password', '', 'trim');
-		    $repassword = I('get.repassword', '', 'trim');
-		    $verify = I('get.verify', '', 'trim');
+		if(IS_POST){ //注册用户
+		    $mobile = I('post.mobile', '', 'trim');
+		    $password = I('post.password', '', 'trim');
+		    $repassword = I('post.repassword', '', 'trim');
+		    $verify = I('post.verify', '', 'trim');
 		    
-		    if(empty($mobile)) {
-		        $this->renderFailed('手机号码不能为空！');
-		    }
-		    if(empty($password)||empty($repassword)) {
-		        $this->renderFailed('密码及重复密码都不能为空！');
-		    }
-			/* 检测密码 */
-			if($password != $repassword){
-				$this->renderFailed('密码和重复密码不一致！');
-			}			
-			if(empty($verify)) {
-			    $this->renderFailed('验证码不能为空！');
-			}
 			//短信验证
-//             $ret = $this->sms_verify($mobile, $verify);
-//             if(!ret) {
-//                 $this->renderFailed('短信验证失败~');
-//             }
+            $ret = $this->sms_verify($mobile, $verify);
+            if(!ret) {
+                $this->renderFailed('短信验证失败~');
+            }
             
 			/* 调用注册接口注册用户 */
             $User = new UserApi;
-			$uid = $User->register($mobile, $password);
+			$uid = $User->register($mobile, $password, $repassword, $verify);
 			if(0 < $uid){ //注册成功
 				//TODO: 发送验证邮件
+				$username = '用户_'.$uid;
+				$User->updateUsername($uid, $username);
 				$this->renderSuccess('注册成功！');
 			} else { //注册失败，显示错误信息
-				$this->error($this->showRegError($uid));
+			    $this->renderFailed($this->showRegError($uid));
 			}
 		}
 	}
@@ -74,13 +63,16 @@ class UserController extends HomeController {
 	        'zone' => '86', //TODO 港澳台地区处理
 	        'code' => $verify
 	    );
-	    $response = postRequest( $MOB_VERIFY_URL, $fields );
+	    $response = postRequest($MOB_VERIFY_URL, $fields);
 	    $response = json_decode($response, TRUE);
 	    $resultCode = $response['status'];
 	    
 	    switch ($resultCode) {
 	        case '200':
 	            return TRUE;
+	            break;
+	        case '457':
+	            $this->renderFailed('手机号码格式错误');
 	            break;
 	        case '467':
 	            $this->renderFailed('请求校验验证码频繁（5分钟内同一号码最多只能校验三次）');
@@ -93,24 +85,30 @@ class UserController extends HomeController {
 	    }
 	}
 	
-	/* 登录页面 */
-	public function login($username = '', $password = '', $verify = ''){
+	/* 登录接口 */
+	public function login(){
+	    if(is_login()){
+	        $this->renderFailed('您已经登录');
+	    }
 		if(IS_POST){ //登录验证
-			/* 检测验证码 */
-			if(!check_verify($verify)){
-				$this->error('验证码输入错误！');
-			}
-
+		    $mobile = I('post.mobile', '', 'trim');
+		    $password = I('post.password', '', 'trim');
+		    if(empty($mobile)||empty($password)) {
+		        $this->renderFailed('请输入完整登录信息');
+		    }
+		    
 			/* 调用UC登录接口登录 */
 			$user = new UserApi;
-			$uid = $user->login($username, $password);
+			$uid = $user->login($mobile, $password);
 			if(0 < $uid){ //UC登录成功
 				/* 登录用户 */
 				$Member = D('Member');
 				if($Member->login($uid)){ //登录用户
-					//TODO:跳转到登录前页面
-					$this->success('登录成功！',U('Home/Index/index'));
+				    $data = session('user_auth');
+				    $data['session_id'] = session_id();
+					$this->renderSuccess('登录成功', $data);
 				} else {
+				    $this->renderFailed($this->showRegError($uid));
 					$this->error($Member->getError());
 				}
 
@@ -120,11 +118,8 @@ class UserController extends HomeController {
 					case -2: $error = '密码错误！'; break;
 					default: $error = '未知错误！'; break; // 0-接口参数错误（调试阶段使用）
 				}
-				$this->error($error);
+				$this->renderFailed($error);
 			}
-
-		} else { //显示登录表单
-			$this->display();
 		}
 	}
 
@@ -132,9 +127,9 @@ class UserController extends HomeController {
 	public function logout(){
 		if(is_login()){
 			D('Member')->logout();
-			$this->success('退出成功！', U('User/login'));
+			$this->renderSuccess('退出成功');
 		} else {
-			$this->redirect('User/login');
+			$this->renderFailed('您还未登录');
 		}
 	}
 
@@ -151,17 +146,13 @@ class UserController extends HomeController {
 	 */
 	private function showRegError($code = 0){
 		switch ($code) {
-			case -1:  $error = '用户名长度必须在16个字符以内！'; break;
-			case -2:  $error = '用户名被禁止注册！'; break;
-			case -3:  $error = '用户名被占用！'; break;
-			case -4:  $error = '密码长度必须在6-30个字符之间！'; break;
-			case -5:  $error = '邮箱格式不正确！'; break;
-			case -6:  $error = '邮箱长度必须在1-32个字符之间！'; break;
-			case -7:  $error = '邮箱被禁止注册！'; break;
-			case -8:  $error = '邮箱被占用！'; break;
-			case -9:  $error = '手机格式不正确！'; break;
-			case -10: $error = '手机被禁止注册！'; break;
-			case -11: $error = '手机号被占用！'; break;
+			case -1:  $error = '手机号码不能为空'; break;
+			case -2:  $error = '手机格式不正确'; break;
+			case -3:  $error = '该手机号已经注册过'; break;
+			case -4:  $error = '密码长度在6-20个字符，包含字母和数字'; break;
+			case -5:  $error = '两次密码不一致'; break;
+			case -6: $error = '手机验证码不能为空'; break;
+			case -7: $error = '该手机号码被禁止注册'; break;
 			default:  $error = '未知错误';
 		}
 		return $error;

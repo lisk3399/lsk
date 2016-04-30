@@ -26,13 +26,16 @@ class UcenterMemberModel extends Model{
 
 	/* 用户模型自动验证 */
 	protected $_validate = array(
+	    /* 验证手机号码 */
+	    array('mobile', 'require', -1, self::MUST_VALIDATE), //手机号码不能为空
+	    array('mobile', '/^1(3[0-9]|5[0-35-9]|8[025-9])\d{8}$/', -2, self::MUST_VALIDATE, 'regex'), //手机格式不正确
+	    array('mobile', '', -3, self::MUST_VALIDATE, 'unique'), //手机号已经存在
+	    array('mobile', 'checkDenyMobile', -7, self::MUST_VALIDATE, 'callback'), //手机禁止注册
+	    
 		/* 验证密码 */
-		array('password', '6,30', -4, self::EXISTS_VALIDATE, 'length'), //密码长度不合法
-
-		/* 验证手机号码 */
-		array('mobile', '//', -9, self::EXISTS_VALIDATE), //手机格式不正确 TODO:
-		array('mobile', 'checkDenyMobile', -10, self::EXISTS_VALIDATE, 'callback'), //手机禁止注册
-		array('mobile', '', -11, self::EXISTS_VALIDATE, 'unique'), //手机号被占用
+		array('password', '/^(?![^a-zA-Z]+$)(?!\D+$).{6,20}$/', -4, self::MUST_VALIDATE, 'regex'), //密码6-20位，包含字母和数字
+	    array('repassword', 'password', -5, self::MUST_VALIDATE, 'confirm'),  //两次密码输入不一致
+	    array('verify', 'require', -6, self::MUST_VALIDATE),
 	);
 
 	/* 用户模型自动完成 */
@@ -85,10 +88,12 @@ class UcenterMemberModel extends Model{
 	 * @param  string $password 用户密码
 	 * @return integer          注册成功-用户信息，注册失败-错误编号
 	 */
-	public function register($mobile, $password){
+	public function register($mobile, $password, $repassword, $verify){
 		$data = array(
 			'password' => $password,
 			'mobile'   => $mobile,
+		    'repassword' => $repassword,
+		    'verify' => $verify
 		);
 
 		/* 添加用户 */
@@ -108,24 +113,8 @@ class UcenterMemberModel extends Model{
 	 * @param  integer $type     用户名类型 （1-用户名，2-邮箱，3-手机，4-UID）
 	 * @return integer           登录成功-用户ID，登录失败-错误编号
 	 */
-	public function login($username, $password, $type = 1){
-		$map = array();
-		switch ($type) {
-			case 1:
-				$map['username'] = $username;
-				break;
-			case 2:
-				$map['email'] = $username;
-				break;
-			case 3:
-				$map['mobile'] = $username;
-				break;
-			case 4:
-				$map['id'] = $username;
-				break;
-			default:
-				return 0; //参数错误
-		}
+	public function login($mobile, $password){
+		$map['mobile'] = $mobile;
 
 		/* 获取用户数据 */
 		$user = $this->where($map)->find();
@@ -245,4 +234,12 @@ class UcenterMemberModel extends Model{
 		return false;
 	}
 
+	//更新用户名
+	public function updateUsername($uid, $username){
+	    $data = array(
+	        'id' => $uid,
+	        'username' => $username
+	    );
+	    return $this->save($data);
+	}
 }

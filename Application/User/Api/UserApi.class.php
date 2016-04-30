@@ -27,8 +27,8 @@ class UserApi extends Api{
      * @param  string $mobile   用户手机号码
      * @return integer          注册成功-用户信息，注册失败-错误编号
      */
-    public function register($mobile, $password){
-        return $this->model->register($mobile, $password);
+    public function register($mobile, $password, $repassword, $verify){
+        return $this->model->register($mobile, $password, $repassword, $verify);
     }
 
     /**
@@ -38,8 +38,8 @@ class UserApi extends Api{
      * @param  integer $type     用户名类型 （1-用户名，2-邮箱，3-手机，4-UID）
      * @return integer           登录成功-用户ID，登录失败-错误编号
      */
-    public function login($username, $password, $type = 1){
-        return $this->model->login($username, $password, $type);
+    public function login($username, $password){
+        return $this->model->login($username, $password);
     }
 
     /**
@@ -97,4 +97,8 @@ class UserApi extends Api{
         return $return;
     }
 
+    //更新用户名
+    public function updateUsername($uid, $username) {
+        return $this->model->updateUsername($uid, $username);
+    }
 }
