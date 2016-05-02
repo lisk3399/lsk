@@ -46,7 +46,8 @@ class UserController extends HomeController {
 				//TODO: 发送验证邮件
 				$username = '用户_'.$uid;
 				$User->updateUsername($uid, $username);
-				$this->renderSuccess('注册成功！');
+				$data['uid'] = $uid;
+				$this->renderSuccess('注册成功！', $data);
 			} else { //注册失败，显示错误信息
 			    $this->renderFailed($this->showRegError($uid));
 			}

@@ -305,12 +305,12 @@ abstract class Controller {
     
     /* 返回成功json格式  */
     public function renderSuccess($msg = '', $data = NULL) {
-        $result['flag'] = TRUE;
+        $result['status'] = 1;
         if(!empty($msg)) {
-            $result['msg'] = $msg;
+            $result['info'] = $msg;
         }
         if(!empty($data)) {
-            $result['result'] = $data;
+            $result['data'] = $data;
         }
         // 返回JSON数据格式到客户端 包含状态信息
         header('Content-Type:application/json; charset=utf-8');
@@ -319,9 +319,9 @@ abstract class Controller {
     
     /* 返回失败json格式  */
     public function renderFailed($msg = '') {
-        $result['flag'] = FALSE;
+        $result['status'] = 0;
         if(!empty($msg)) {
-            $result['msg'] = $msg;
+            $result['info'] = $msg;
         }
         // 返回JSON数据格式到客户端 包含状态信息
         header('Content-Type:application/json; charset=utf-8');
