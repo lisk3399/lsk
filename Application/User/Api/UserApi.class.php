@@ -97,8 +97,50 @@ class UserApi extends Api{
         return $return;
     }
 
-    //更新用户名
+    /**
+     * 更新昵称
+     * @param int $uid
+     * @param string $username
+     */
     public function updateUsername($uid, $username) {
         return $this->model->updateUsername($uid, $username);
+    }
+    
+    /**
+     * 更新密码
+     * @param int $uid
+     * @param string $oldPwd
+     * @param string $newPwd
+     */
+    public function updatePwd($uid, $oldPwd, $newPwd) {
+        if($this->model->updatePwd($uid, $oldPwd, $newPwd) !== false){
+            $return['status'] = true;
+        }else{
+            $return['status'] = false;
+            $return['info'] = $this->model->getError();
+        }
+        return $return;
+    }
+    
+    /**
+     * 重置密码
+     * @param string $password
+     */
+    public function resetPwd($mobile, $password) {
+        if($this->model->resetPwd($mobile, $password) !== false){
+            $return['status'] = true;
+        }else{
+            $return['status'] = false;
+            $return['info'] = $this->model->getError();
+        }
+        return $return;
+    }
+    
+    /**
+     * 检测手机是否注册
+     * @param string $mobile
+     */
+    public function checkMobileExist($mobile) {
+        return $this->model->checkMobileExist($mobile);
     }
 }

@@ -140,14 +140,13 @@ class UcenterMemberModel extends Model{
 	public function info($uid, $is_username = false){
 		$map = array();
 		if($is_username){ //通过用户名获取
-			$map['username'] = $uid;
+			$map['nickname'] = $uid;
 		} else {
-			$map['id'] = $uid;
+			$map['uid'] = $uid;
 		}
-
-		$user = $this->where($map)->field('id,username,email,mobile,status')->find();
+		$user = D('Member')->where($map)->field('uid,nickname,avatar,signature,sex,birthday,status')->find();
 		if(is_array($user) && $user['status'] == 1){
-			return array($user['id'], $user['username'], $user['email'], $user['mobile']);
+			return $user;
 		} else {
 			return -1; //用户不存在或被禁用
 		}
@@ -210,7 +209,6 @@ class UcenterMemberModel extends Model{
 			$this->error = '验证出错：密码不正确！';
 			return false;
 		}
-
 		//更新用户信息
 		$data = $this->create($data);
 		if($data){
@@ -234,12 +232,74 @@ class UcenterMemberModel extends Model{
 		return false;
 	}
 
-	//更新用户名
+	/**
+	 * 更新昵称
+	 * @param int $uid
+	 * @param string $username
+	 */
 	public function updateUsername($uid, $username){
 	    $data = array(
 	        'id' => $uid,
 	        'username' => $username
 	    );
 	    return $this->save($data);
+	}
+	
+	/**
+	 * 更新密码
+	 * @param int $uid
+	 * @param string $oldPwd
+	 * @param string $newPwd
+	 */
+	public function updatePwd($uid, $oldPwd, $newPwd) {
+	    if(empty($uid) || empty($oldPwd) || empty($newPwd)){
+	        $this->error = '参数错误！';
+	        return false;
+	    }
+	    //更新前检查用户密码
+	    if(!$this->verifyUser($uid, $oldPwd)){
+	        $this->error = '验证出错：密码不正确！';
+	        return false;
+	    }
+	    $data['password'] = think_ucenter_md5($newPwd, UC_AUTH_KEY);
+	    return $this->where(array('id'=>$uid))->save($data);
+	}
+
+	/**
+	 * 重置密码
+	 * @param string $password
+	 */
+	public function resetPwd($mobile, $password) {
+	    if(empty($password) || empty($mobile)){
+	        $this->error = '参数错误！';
+	        return false;
+	    }
+	    //密码格式验证
+	    if(!$this->checkPwdFormat($password)) {
+	        return false;
+	    }
+	    $data['password'] = think_ucenter_md5($password, UC_AUTH_KEY);
+	    return $this->where(array('mobile'=>$mobile))->save($data);
+	}
+	
+	/**
+	 * 检测手机是否注册
+	 * @param string $mobile
+	 */
+	public function checkMobileExist($mobile) {
+	    return $this->where(array('mobile'=>$mobile))->find();
+	}
+	
+	/**
+	 * 检测密码格式
+	 * @param $password
+	 * @return boolean
+	 */
+	private function checkPwdFormat($password) {
+	    if(!preg_match('/^(?![^a-zA-Z]+$)(?!\D+$).{6,20}$/', $password)) {
+	        $this->error = '密码长度在6-20个字符，包含字母和数字';
+	        return false;
+	    }
+	    return true;
 	}
 }

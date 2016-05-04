@@ -26,7 +26,6 @@ class UserController extends HomeController {
         if(!C('USER_ALLOW_REGISTER')){
             $this->renderFailed('注册已关闭');
         }
-        //get 需要换为post
 		if(IS_POST){ //注册用户
 		    $mobile = I('post.mobile', '', 'trim');
 		    $password = I('post.password', '', 'trim');
@@ -133,7 +132,49 @@ class UserController extends HomeController {
 			$this->renderFailed('您还未登录');
 		}
 	}
+	
+	/* 获取用户信息 */
+	public function userInfo(){
+	    if(is_login()) {
+	        $uid = session('user_auth.uid');
+	        $User = new UserApi;
+	        $userinfo = $User->info($uid);
+            
+	        $this->renderSuccess('获取用户信息', $userinfo);
+	    }
+	}
 
+	/* 修改用户信息 */
+	public function updateUser(){
+	    if(IS_POST) {
+    	    if(is_login()) {
+    	        $uid = session('user_auth.uid');
+    	        $data['nickname'] = I('post.nickname', '', 'trim');
+    	        $data['avatar'] = I('post.avatar', '', 'trim');
+    	        $data['signature'] = I('post.signature', '', 'trim');
+    	        $data['sex'] = I('post.sex', '0', 'intval');
+    	        $data['birthday'] = I('post.birthday', '', 'trim');
+    	        
+    	        if(empty($data['nickname'])) {
+    	            $this->renderFailed('昵称不为空');
+    	        }
+    	        if(empty($data['avatar'])) {
+    	            $this->renderFailed('头像不为空');
+    	        }
+    	        
+    	        //更新用户信息
+    	        $Member = D('Member');
+    	        $data = $Member->create($data);
+    	        if($data){
+    	            $ret = $Member->where(array('uid'=>$uid))->save($data);
+    	            if($ret) {
+    	                $this->renderSuccess('保存成功');
+    	            }
+    	        }
+    	    }
+	    }
+	}
+	
 	/* 验证码，用于登录和注册 */
 	public function verify(){
 		$verify = new \Think\Verify();
@@ -164,34 +205,84 @@ class UserController extends HomeController {
      * 修改密码提交
      * @author huajie <banhuajie@163.com>
      */
-    public function profile(){
+    public function updatePwd(){
 		if ( !is_login() ) {
-			$this->error( '您还没有登陆',U('User/login') );
+			$this->renderFailed( '您还没有登陆');
 		}
         if ( IS_POST ) {
             //获取参数
             $uid        =   is_login();
-            $password   =   I('post.old');
-            $repassword = I('post.repassword');
-            $data['password'] = I('post.password');
-            empty($password) && $this->error('请输入原密码');
-            empty($data['password']) && $this->error('请输入新密码');
-            empty($repassword) && $this->error('请输入确认密码');
+            $oldPwd   =   I('post.old', '', 'trim');
+            $repassword = I('post.repassword', '', 'trim');
+            $data['password'] = I('post.password', '', 'trim');
+            empty($oldPwd) && $this->renderFailed('请输入原密码');
+            empty($data['password']) && $this->renderFailed('请输入新密码');
+            empty($repassword) && $this->renderFailed('请输入确认密码');
 
             if($data['password'] !== $repassword){
-                $this->error('您输入的新密码与确认密码不一致');
+                $this->renderFailed('您输入的新密码与确认密码不一致');
             }
 
             $Api = new UserApi();
-            $res = $Api->updateInfo($uid, $password, $data);
+            $res = $Api->updatePwd($uid, $oldPwd, $data['password']);
             if($res['status']){
-                $this->success('修改密码成功！');
+                $this->renderSuccess('修改密码成功！');
             }else{
-                $this->error($res['info']);
+                $this->renderFailed($res['info']);
             }
-        }else{
-            $this->display();
         }
     }
-
+    
+    /**
+     * 用户重置密码
+     */
+    public function resetPwd() {
+        if(IS_POST){
+            $mobile = I('post.mobile', '', 'trim');
+            $password = I('post.password', '', 'trim');
+            $verify = I('post.verify', '', 'trim');
+            
+            if(empty($mobile)) {
+                $this->renderFailed('请输入手机号');
+            }
+            $Api = new UserApi;
+            if(!$Api->checkMobileExist($mobile)) {
+                $this->renderFailed('该手机号码未注册');
+            }
+            if(empty($password)) {
+                $this->renderFailed('请输入密码');
+            }
+            if(empty($verify)) {
+                $this->renderFailed('请输入验证码');
+            }
+            //后端短信验证
+            $ret = $this->sms_verify($mobile, $verify);
+            if(!ret) {
+                $this->renderFailed('短信验证失败~');
+            }
+            $res = $Api->resetPwd($mobile, $password);
+            if($res['status']){
+                $this->renderSuccess('重置成功');
+            }
+            else {
+                $this->renderFailed($res['info']);
+            }
+        }
+    }
+    
+    /**
+     * 检查用户是否存在
+     */
+    public function checkUser() {
+        $mobile = I('get.mobile', '', 'trim');
+        if(empty($mobile)) {
+            $this->renderFailed('请输入手机号');
+        }
+        $Api = new UserApi;
+        if(!$Api->checkMobileExist($mobile)) {
+            $this->renderFailed('该手机号码未注册');
+        } else {
+            $this->renderSuccess('该用户已注册');
+        }
+    }
 }
