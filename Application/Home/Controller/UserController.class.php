@@ -364,7 +364,7 @@ class UserController extends HomeController {
             $data['nickname'] = $nickname;
             $data['avatar'] = $avatar;
             $data['login'] = 1;
-            $data['reg_ip'] = get_client_ip();
+            $data['reg_ip'] = get_client_ip(1);
             $data['reg_time'] = NOW_TIME;
             $data['status'] = 1;
             $res = $Api->createOauthUser($data, $reg_source);

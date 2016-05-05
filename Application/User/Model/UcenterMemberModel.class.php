@@ -314,7 +314,7 @@ class UcenterMemberModel extends Model{
 	    $info = array(
 	        'mobile' => $mobile,
 	        'reg_time' => NOW_TIME,
-	        'reg_ip' => get_client_ip(),
+	        'reg_ip' => get_client_ip(1),
 	        'status' => 1
 	    );
 	    $uid = $this->add($info);
