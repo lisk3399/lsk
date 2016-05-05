@@ -164,7 +164,7 @@
 									var data = $.parseJSON(data);
 							        if(data.status){
 							        	var name = "{$field.name}";
-							        	$("input[name="+name+"]").val(data.data);
+							        	$("input[name="+name+"]").val(data.id);
 							        	$("input[name="+name+"]").parent().find('.upload-img-box').html(
 							        		"<div class=\"upload-pre-file\"><span class=\"upload_icon_all\"></span>" + data.info + "</div>"
 							        	);

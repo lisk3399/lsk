@@ -935,7 +935,7 @@ function get_cover($cover_id, $field = null){
         if(!empty($picture['url'])){
             $picture['path'] = $picture['url'];
         }else{
-            $picture['path'] = __ROOT__.$picture['path'];
+            $picture['path'] = $picture['path'];
         }
     }
     return empty($field) ? $picture : $picture[$field];
