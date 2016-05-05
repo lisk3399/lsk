@@ -373,6 +373,10 @@ class UserController extends HomeController {
             }
             $user = $Api->getOauthUser($openid, $reg_source);
         }
+        
+        if(!$user['status']) {
+            $this->renderFailed('用户被禁用');
+        }
         //更新登录信息
         $Api->autoLogin($user);
         //行为记录

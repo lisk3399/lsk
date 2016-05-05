@@ -302,4 +302,30 @@ class UcenterMemberModel extends Model{
 	    }
 	    return true;
 	}
+	
+	/**
+	 * 创建三方登录用户
+	 * @param array $data
+	 * @param string $reg_source
+	 */
+	public function createOauthUser($data, $reg_source) {
+	    //创建ucenter用户
+	    $mobile = NOW_TIME.mt_rand(0, 1000);//唯一占位字符串
+	    $info = array(
+	        'mobile' => $mobile,
+	        'reg_time' => NOW_TIME,
+	        'reg_ip' => get_client_ip(),
+	        'status' => 1
+	    );
+	    $uid = $this->add($info);
+	    if($uid) {
+	        //创建Member表用户
+	        $data['uid'] = $uid;
+	        D('Member')->createOauthUser($data, $reg_source);
+	        return true;
+	    } else {
+	        $this->error = '三方登录失败，请稍后重试';
+	        return false;
+	    }
+	}
 }

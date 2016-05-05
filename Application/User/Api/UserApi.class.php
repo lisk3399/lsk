@@ -162,7 +162,7 @@ class UserApi extends Api{
      * @param string $reg_source 注册来源
      */
     public function createOauthUser($data, $reg_source) {
-        if(D('Member')->createOauthUser($data, $reg_source) !== false){
+        if($this->model->createOauthuser($data, $reg_source) !== false){
             $return['status'] = true;
         }else{
             $return['status'] = false;
