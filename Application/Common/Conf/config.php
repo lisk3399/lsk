@@ -12,6 +12,9 @@
  * 所有系统级别的配置
  */
 return array(
+    /* 站点配置 */
+    'WEBSITE_URL' => 'http://42.120.11.155',
+    
     /* 模块相关配置 */
     'AUTOLOAD_NAMESPACE' => array('Addons' => ONETHINK_ADDON_PATH), //扩展模块列表
     'DEFAULT_MODULE'     => 'Home',
