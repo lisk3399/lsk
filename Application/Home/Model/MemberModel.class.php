@@ -71,7 +71,7 @@ class MemberModel extends Model{
      * 自动登录用户
      * @param  integer $user 用户信息数组
      */
-    private function autoLogin($user){
+    public function autoLogin($user){
         /* 更新登录信息 */
         $data = array(
             'uid'             => $user['uid'],
@@ -93,4 +93,18 @@ class MemberModel extends Model{
 
     }
 
+    /**
+     * 创建三方登录用户
+     * @param string $openid
+     */
+    public function createOauthUser($data, $reg_source) {
+        $data['reg_source'] = $reg_source;
+        $ret = $this->add($data);
+        if($ret) {
+            return $ret;
+        } else {
+            $this->error = '登录遇到了点麻烦，请重试';
+            return false;
+        }
+    }
 }

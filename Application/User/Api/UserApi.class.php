@@ -143,4 +143,38 @@ class UserApi extends Api{
     public function checkMobileExist($mobile) {
         return $this->model->checkMobileExist($mobile);
     }
+    
+    /**
+     * 获取openid用户信息
+     * @param string $openid
+     */
+    public function getOauthUser($openid, $reg_source) {
+        $map = array(
+            'openid' => $openid,
+            'reg_source' => $reg_source
+        );
+        return M('Member')->where($map)->find();
+    }
+    
+    /**
+     * 创建三方登录用户
+     * @param array $data (openid,nickname,avatar)
+     * @param string $reg_source 注册来源
+     */
+    public function createOauthUser($data, $reg_source) {
+        if(D('Member')->createOauthUser($data, $reg_source) !== false){
+            $return['status'] = true;
+        }else{
+            $return['status'] = false;
+            $return['info'] = $this->model->getError();
+        }
+        return $return;
+    }
+    
+    /**
+     * 更新登录信息 
+     */
+    public function autoLogin($user) {
+        return D('Member')->autoLogin($user); 
+    }
 }

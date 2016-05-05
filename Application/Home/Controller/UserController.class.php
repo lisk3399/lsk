@@ -285,4 +285,110 @@ class UserController extends HomeController {
             $this->renderSuccess('该用户已注册');
         }
     }
+    
+    /**
+     * 微信登录
+     */
+    public function weixinLogin() {
+        if(IS_POST) {
+            if(is_login()) {
+                $this->renderFailed('您已经登录');
+            }
+            $res = $this->oauthLogin('WEIXIN');
+            if($res['uid']) {
+                $data = $this->getOauthLoginInfo();
+                $this->renderSuccess('登录成功', $data);
+            } else {
+                $this->renderFailed('微信登录遇到了点麻烦，请重试');
+            }
+        }
+    }
+    
+    /**
+     * 微博登录
+     */
+    public function weiboLogin() {
+        if(IS_POST) {
+            if(is_login()) {
+                $this->renderFailed('您已经登录');
+            }
+            $res = $this->oauthLogin('WEIBO');
+            if($res['uid']) {
+                $data = $this->getOauthLoginInfo();
+                $this->renderSuccess('登录成功', $data);
+            } else {
+                $this->renderFailed('微博登录遇到了点麻烦，请重试');
+            }
+        }
+    }
+    
+    /**
+     * QQ登录
+     */
+    public function qqLogin() {
+        if(IS_POST){
+            if(is_login()) {
+                $this->renderFailed('您已经登录');
+            }
+            $res = $this->oauthLogin('QQ');
+            if($res['uid']) {
+                $data = $this->getOauthLoginInfo();
+                $this->renderSuccess('登录成功', $data);
+            } else {
+                $this->renderFailed('QQ登录遇到了点麻烦，请重试');
+            }
+        }
+    }
+    
+    /**
+     * 三方登录
+     * @param string $reg_source 注册来源
+     */
+    private function oauthLogin($reg_source) {
+        $openid = I('post.openid', '', 'trim');
+        $nickname = I('post.nickname', '', 'trim');
+        $avatar = I('post.avatar', '', 'trim');
+        
+        if(empty($openid)) {
+            $this->renderFailed('用户id不存在');
+        }
+        if(empty($nickname)) {
+            $this->renderFailed('昵称不存在');
+        }
+        $Api = new UserApi;
+        $user = $Api->getOauthUser($openid, $reg_source);
+        
+        if(!$user) {
+            //不存在则创建新用户
+            $data['openid'] = $openid;
+            $data['nickname'] = $nickname;
+            $data['avatar'] = $avatar;
+            $data['login'] = 1;
+            $data['reg_ip'] = get_client_ip();
+            $data['reg_time'] = NOW_TIME;
+            $data['status'] = 1;
+            $res = $Api->createOauthUser($data, $reg_source);
+            if(!$res['status']){
+                $this->renderFailed($res['info']);
+            }
+            $user = $Api->getOauthUser($openid, $reg_source);
+        }
+        //更新登录信息
+        $Api->autoLogin($user);
+        //行为记录
+        action_log('user_login', 'member', $user['uid'], $user['uid']);
+        
+        return $user;
+    }
+    
+    /**
+     * 获取三方登录信息
+     */
+    private function getOauthLoginInfo() {
+        $data = array();
+        $data = session('user_auth');
+        $data['session_id'] = session_id();
+        unset($data['username']);
+        return $data;
+    }
 }
