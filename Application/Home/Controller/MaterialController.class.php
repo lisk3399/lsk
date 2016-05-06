@@ -24,18 +24,26 @@ class MaterialController extends HomeController {
 	    $page = I('page', '1', 'intval');
 	    $rows = I('rows', '20', 'intval');
 	    $cateid = I('cateid', '', 'intval');
-	    $pid = I('pid', '', 'intval');
+	    $pid = I('pid', '1', 'intval');
 	    //单次最大读取100
 	    if($rows > 100) {
 	        $rows = 100;
 	    }
 	    //读取分类id
 	    if(!empty($cateid)) {
-	        $list = M('Category')->page($page, $rows)->field('id,name,title')->where(array('id'=>$cateid))->select();
-	    } elseif (!empty($pid)) { //读取父分类id
-	        $list = M('Category')->page($page, $rows)->field('id,name,title')->where(array('pid'=>$pid))->select();
-	    } else { //读取素材父分类
-	        $list = M('Category')->page($page, $rows)->field('id,name,title')->where(array('pid'=>1))->select();	        
+	        $list = M('Category')
+	        ->page($page, $rows)
+	        ->field('id,name,title')
+	        ->where(array('id'=>$cateid))
+	        ->select();
+	    }
+	    //读取父分类id下所有分类，默认读取顶级分类
+	    else {
+	        $list = M('Category')
+	        ->page($page, $rows)
+	        ->field('id,name,title')
+	        ->where(array('pid'=>$pid))
+	        ->select();
 	    }
 	    
 	    if(count($list) == 0) {
@@ -84,10 +92,8 @@ class MaterialController extends HomeController {
 	            $this->renderFailed('请选择要收藏的对象');
 	        }
 	        //素材是否存在
-	        $Material = M('document_material');
-	        $res = $Material->where(array('id'=>$material_id))->field('id')->find();
-	        if(!$res['id']) {
-                $this->renderFailed('该素材不存在');
+	        if(!$this->checkMaterialExists($material_id)) {
+	            $this->renderFailed('素材不存在');
 	        }
 	        
 	        //是否收藏过
@@ -134,6 +140,7 @@ class MaterialController extends HomeController {
 	        $this->renderFailed('没有更多了');
 	    }
 	    
+	    //获取封面图片
 	    foreach ($list as &$row) {
 	        $cover_img = get_cover($row['cover_id'], 'path');
 	        $row['cover_img'] = C('WEBSITE_URL').$cover_img;
@@ -146,6 +153,44 @@ class MaterialController extends HomeController {
 	 * 素材详情
 	 */
 	public function materialDetail() {
-	    
+	    if(IS_POST) {
+    	    $material_id = I('mid', '', 'intval');
+    	    if(empty($material_id)) {
+    	        $this->renderFailed('素材id为空');
+    	    }
+    	    //素材是否存在
+    	    if(!$this->checkMaterialExists($material_id)) {
+    	        $this->renderFailed('素材不存在');
+    	    }
+    	    
+    	    //查找素材
+    	    $detail = M('Document')->alias('d')
+    	    ->field('d.id,d.title,d.description,d.cover_id,m.*')
+    	    ->join('__DOCUMENT_MATERIAL__ m on d.id = m.id', 'left')
+    	    ->join('__MATERIAL_FAV__ f on f.mid = m.id', 'left')
+    	    ->where(array('m.id'=>$material_id))
+    	    ->find();
+    	    
+    	    //获取素材封面
+    	    $cover_img = get_cover($detail['cover_id'], 'path');
+    	    $detail['cover_img'] = C('WEBSITE_URL').$cover_img;
+    	    //获取素材附件
+    	    $detail['attach_url'] = get_attach($detail['attach']);
+    	    
+    	    $this->renderSuccess('', $detail);
+	    }
+	}
+	
+	/**
+	 * 检查素材是否存在
+	 * @param int $material_id 素材id
+	 */
+	private function checkMaterialExists($material_id) {
+	    $Material = M('document_material');
+	    $res = $Material->where(array('id'=>$material_id))->field('id')->find();
+	    if(!$res['id']) {
+	        return false;
+	    }
+	    return true;
 	}
 }

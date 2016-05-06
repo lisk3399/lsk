@@ -942,6 +942,26 @@ function get_cover($cover_id, $field = null){
 }
 
 /**
+ * 获取文档地址
+ * @param int $attach_id 附件id
+ * @return 完整的数据  或者  指定的$field字段值
+ */
+function get_attach($attach_id){
+    $attachUrl= '';
+    if(empty($attach_id)){
+        return false;
+    }
+    $File = M('File')->getById($attach_id);
+    if($File['id']) {
+        $websiteUrl = C("WEBSITE_URL");
+        $rootPath = C('DOWNLOAD_UPLOAD.rootPath');
+        $rootPath = str_replace('.', '', $rootPath);
+        $attachUrl = $websiteUrl.$rootPath.$File['savepath'].$File['savename'];
+    }
+    return $attachUrl;
+}
+
+/**
  * 检查$pos(推荐位的值)是否包含指定推荐位$contain
  * @param number $pos 推荐位的值
  * @param number $contain 指定推荐位
