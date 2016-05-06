@@ -1,11 +1,8 @@
 <?php
-// +----------------------------------------------------------------------
-// | OneThink [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
-// +----------------------------------------------------------------------
+/**
+ * Class MaterialController
+ * @name 素材内容管理
+ */
 
 namespace Home\Controller;
 
@@ -179,6 +176,35 @@ class MaterialController extends HomeController {
     	    
     	    $this->renderSuccess('', $detail);
 	    }
+	}
+	
+	/**
+	 * 某个素材下的作品
+	 */
+	public function materialWork() {
+	    $material_id = I('mid', '', 'intval');
+	    if(empty($material_id)) {
+	        $this->renderFailed('素材id为空');
+	    }
+	    //素材是否存在
+	    if(!$this->checkMaterialExists($material_id)) {
+	        $this->renderFailed('素材不存在');
+	    }
+	    
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	    
+	    $list = M('work')
+	    ->page($page, $rows)
+	    ->field('cover_url,likes,create_time')
+	    ->where(array('material_id'=>$material_id))
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	    
+	    $this->renderSuccess('', $list);
 	}
 	
 	/**
