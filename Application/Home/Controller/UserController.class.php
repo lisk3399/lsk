@@ -92,7 +92,8 @@ class UserController extends HomeController {
 	            $this->renderFailed('验证码错误');
 	            break;
 	        default:
-	            $this->renderFailed('短信验证失败');
+	            $info['code'] = $resultCode;
+	            $this->renderFailed('短信验证失败', $info);
 	    }
 	}
 	
