@@ -302,9 +302,9 @@ class UserController extends HomeController {
         }
         $Api = new UserApi;
         if(!$Api->checkMobileExist($mobile)) {
-            $this->renderFailed('该手机号码未注册');
+            $this->renderSuccess('该手机号码未注册');
         } else {
-            $this->renderSuccess('该用户已注册');
+            $this->renderFailed('该用户已注册');
         }
     }
     
