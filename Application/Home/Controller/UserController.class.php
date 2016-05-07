@@ -46,7 +46,7 @@ class UserController extends HomeController {
 				$username = '用户_'.$uid;
 				$User->updateUsername($uid, $username);
 				$data['uid'] = $uid;
-				
+				$data['create_time'] = NOW_TIME;
 				//注册成功后登录
 				$uid = $User->login($mobile, $password);
 				if(0 < $uid){ //UC登录成功
@@ -92,8 +92,7 @@ class UserController extends HomeController {
 	            $this->renderFailed('验证码错误');
 	            break;
 	        default:
-	            $info['code'] = $resultCode;
-	            $this->renderFailed('短信验证失败', $info);
+	            $this->renderFailed('短信验证失败:'.$resultCode);
 	    }
 	}
 	
@@ -129,6 +128,7 @@ class UserController extends HomeController {
 				if($Member->login($uid)){ //登录用户
 				    $data = session('user_auth');
 				    $data['session_id'] = session_id();
+				    $data['create_time'] = NOW_TIME;
 					$this->renderSuccess('登录成功', $data);
 				} else {
 				    $this->renderFailed($this->showRegError($uid));
