@@ -96,6 +96,17 @@ class UserController extends HomeController {
 	    }
 	}
 	
+	/* 用户是否登录 */
+	public function isLogin() {
+	    if(IS_POST) {
+    	    if(is_login()){
+    	        $this->renderSuccess('您已经登录');
+    	    } else {
+    	        $this->renderFailed('您未登录');
+    	    }
+	    }
+	}
+	
 	/* 登录接口 */
 	public function login(){
 	    if(is_login()){
