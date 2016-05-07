@@ -46,6 +46,17 @@ class UserController extends HomeController {
 				$username = '用户_'.$uid;
 				$User->updateUsername($uid, $username);
 				$data['uid'] = $uid;
+				
+				//注册成功后登录
+				$uid = $User->login($mobile, $password);
+				if(0 < $uid){ //UC登录成功
+				    /* 登录用户 */
+				    $Member = D('Member');
+				    if($Member->login($uid)){ //登录用户
+				        $data = session('user_auth');
+				        $data['session_id'] = session_id();
+				    }
+				}
 				$this->renderSuccess('注册成功！', $data);
 			} else { //注册失败，显示错误信息
 			    $this->renderFailed($this->showRegError($uid));
