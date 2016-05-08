@@ -72,12 +72,121 @@ class WorkController extends HomeController {
 	}
 	
 	/**
-	 * 作品点赞
+	 * 作品点赞/喜欢
 	 */
 	public function like() {
-	    
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('请先登录');
+	        }
+	        
+	        $work_id = I('id', '', 'intval');
+	        if(empty($work_id)) {
+	            $this->renderFailed('作品id为空');
+	        }
+	        if(!$this->checkWorkExists($work_id)) {
+	            $this->renderFailed('作品不存在');
+	        }
+	        //判断是否已经点赞
+	        if($this->checkLike($uid, $work_id)) {
+	            $this->renderFailed('已经给该作品点赞');
+	        }
+	        
+	        //喜欢表增加对应关系
+	        $data['uid'] = $uid;
+	        $data['work_id'] = $work_id;
+	        $data['create_time'] = NOW_TIME;
+	        $Likes = M('likes');
+	    	if($Likes->add($data)) {
+	    	    //增加作品点赞数
+	    	    if($this->updateLike($work_id, 'add')) {
+	               $this->renderSuccess('点赞成功');
+	    	    } else {
+	    	        $this->renderFailed('更新点赞失败', $this->error);
+	    	    }
+	        }
+	        else {
+	            $this->renderFailed('点赞失败');
+	        }
+	    }
 	}
 	
+	/**
+	 * 取消点赞/喜欢
+	 */
+	public function unlike() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('请先登录');
+	        }
+	         
+	        $work_id = I('id', '', 'intval');
+	        if(empty($work_id)) {
+	            $this->renderFailed('作品id为空');
+	        }
+	        if(!$this->checkWorkExists($work_id)) {
+	            $this->renderFailed('作品不存在');
+	        }
+	        //判断是否已经点赞
+	        if(!$this->checkLike($uid, $work_id)) {
+	            $this->renderFailed('没有给该作品点赞');
+	        }
+	         
+	        //喜欢表去掉对应关系
+	        $map['uid'] = $uid;
+	        $map['work_id'] = $work_id;
+	        $Likes = M('likes');
+	        if($Likes->where($map)->delete()) {
+	            //减少作品点赞数
+	            if($this->updateLike($work_id, 'minus')) {
+	                $this->renderSuccess('取消点赞');
+	            } else {
+	                $this->renderFailed('取消点赞失败', $this->error);
+	            }
+	        }
+	        else {
+	            $this->renderFailed('取消点赞失败');
+	        }
+	    }
+	}
+	
+    /**
+     * 检查用户是否给某作品点赞
+     * @param int $uid
+     * @param int $work_id
+     */
+	private function checkLike($uid, $work_id) {
+	    $Work = M('likes');
+	    $map['uid'] = $uid;
+	    $map['work_id'] = $work_id;
+	    
+	    return $Work->field('id')->where($map)->find();
+	}
+	
+	/**
+	 * 更新作品喜欢数
+	 * @param int $work_id
+	 * @param string $type
+	 */
+	private function updateLike($work_id, $type) {
+	    $Work = M('work');
+	    //类型检查
+	    $types = array('add','minus');
+	    if(!in_array($type, $types)) {
+	        return false;
+	    }
+	    
+	    $data['id'] = $work_id;
+	    if($type === 'add') {
+	        $data['likes'] = array('exp', '`likes`+1');
+	    } else {
+	        $data['likes'] = array('exp', '`likes`-1');
+	    }
+	    
+	    return $Work->save($data);
+	}
 	/**
 	 * 我喜欢的作品
 	 */
