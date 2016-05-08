@@ -290,6 +290,32 @@ class SnsController extends HomeController {
 	}
 	
 	/**
+	 * 判断当前用户是否关注了某用户 
+	 */
+	public function isFollow() {
+	    if(IS_POST) {
+	        $who_follow = is_login();
+	        if(!$who_follow) {
+	            $this->renderFailed('请先登录');
+	        }
+	        
+	        $follow_who = I('uid', '', 'intval');
+	        if(empty($follow_who)) {
+	            $this->renderFailed('用户为空');
+	        }
+	        if(!$this->checkUidExists($follow_who)) {
+	            $this->renderFailed('用户不存在');
+	        }
+	        //关注判断
+	        if($this->checkFollow($who_follow, $follow_who)) {
+	            $this->renderSuccess('已经关注了该用户');
+	        } else {
+	            $this->renderFailed('未关注该用户');
+	        }
+	    }
+	}
+	
+	/**
 	 * 检查用户uid是否存在
 	 * @param int $uid
 	 */
