@@ -22,9 +22,9 @@ class MaterialController extends HomeController {
 	    $rows = I('rows', '20', 'intval');
 	    $cateid = I('cateid', '', 'intval');
 	    $pid = I('pid', '1', 'intval');
-	    //单次最大读取100
-	    if($rows > 100) {
-	        $rows = 100;
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
 	    }
 	    //读取分类id
 	    if(!empty($cateid)) {
@@ -59,6 +59,11 @@ class MaterialController extends HomeController {
 	    
 	    if(empty($cateid)) {
 	        $this->renderFailed('分类id为空');
+	    }
+	    
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
 	    }
 	    
 	    $list = M('Document')->alias('d')
@@ -124,6 +129,11 @@ class MaterialController extends HomeController {
 	    
 	    $page = I('page', '1', 'intval');
 	    $rows = I('rows', '20', 'intval');
+	    
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
 	    
 	    $list = M('Document')->alias('d')
 	    ->page($page, $rows)
@@ -193,6 +203,10 @@ class MaterialController extends HomeController {
 	    
 	    $page = I('page', '1', 'intval');
 	    $rows = I('rows', '20', 'intval');
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
 	    
 	    $list = M('work')
 	    ->page($page, $rows)

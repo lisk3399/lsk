@@ -25,6 +25,11 @@ class WorkController extends HomeController {
 	    $page = I('page', '1', 'intval');
 	    $rows = I('rows', '20', 'intval');
 	    
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
 	    ->field('w.id,w.cover_url,d.title')
@@ -197,6 +202,11 @@ class WorkController extends HomeController {
 	    }
 	    $page = I('page', '1', 'intval');
 	    $rows = I('rows', '20', 'intval');
+	    
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
 	    
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
