@@ -191,7 +191,26 @@ class WorkController extends HomeController {
 	 * 我喜欢的作品
 	 */
 	public function myLike() {
+	    $uid = is_login();
+	    if(!$uid) {
+	        $this->renderFailed('请先登录');
+	    }
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
 	    
+	    $list = M('Work')->alias('w')
+	    ->page($page, $rows)
+	    ->field('w.id,w.cover_url,d.title')
+	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->join('__LIKES__ l on l.uid = w.uid', 'left')
+	    ->where(array('w.uid'=>$uid))
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	     
+	    $this->renderSuccess('', $list);
 	}
 	
 	/**
