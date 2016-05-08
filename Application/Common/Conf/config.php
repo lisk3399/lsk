@@ -53,4 +53,6 @@ return array(
     'MOB_VERIFY_URL' => 'https://webapi.sms.mob.com/sms/verify',
     'MOB_APP_KEY' => '11f3481134820',
     
+    /* API每次请求最大数量 */
+    'API_MAX_ROWS' => 50,
 );
