@@ -287,7 +287,11 @@ class UcenterMemberModel extends Model{
 	 * @param string $mobile
 	 */
 	public function checkMobileExist($mobile) {
-	    return $this->where(array('mobile'=>$mobile))->find();
+	    $ret = $this->where(array('mobile'=>$mobile))->find();
+	    if(!$ret['id']) {
+	        return false;
+	    }
+	    return true;
 	}
 	
 	/**
