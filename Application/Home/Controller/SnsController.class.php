@@ -55,6 +55,57 @@ class SnsController extends HomeController {
 	}
 	
 	/**
+	 * 获取某用户的关注列表
+	 */
+	public function userFollow() {
+	    if(!is_login()) {
+	        $this->renderFailed('请先登录');
+	    }
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    $uid = I('uid', '', 'intval');
+	    if(empty($uid)) {
+	        $this->renderFailed('id为空');
+	    }
+	    if(!$this->checkUidExists($uid)) {
+	        $this->renderFailed('用户不存在');
+	    }
+	    $Follow = M('follow');
+	    $member_list = $Follow
+	    ->page($page, $rows)
+	    ->field('follow_who')
+	    ->where(array('who_follow'=>$uid))
+	    ->select();
+	     
+	    //数组转换
+	    $memberArr = array();
+	    foreach ($member_list as $key=>$row) {
+	        $memberArr[$key] = $row['follow_who'];
+	    }
+	    $uids = implode(',', $memberArr);
+	    //批量获取用户信息
+	    $User = new UserApi;
+	    $list = $User->batchMemberInfo($uids);
+	     
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	    
+	    $this->renderSuccess('', $list);
+	}
+	
+	/**
+	 * 获取某用户的粉丝列表
+	 */
+	public function userFans() {
+	    
+	}
+	
+	/**
 	 * 我的粉丝列表
 	 */
 	public function myFans() {
