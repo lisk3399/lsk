@@ -6,6 +6,7 @@
 
 namespace Home\Controller;
 
+use User\Api\UserApi;
 /**
  * 作品控制器
  */
@@ -74,6 +75,44 @@ class WorkController extends HomeController {
 	    
 	    $detail['create_time'] = date('Y-m-d', $detail['create_time']);
         $this->renderSuccess('', $detail);
+	}
+	
+	/**
+	 * 获取某用户作品列表
+	 */
+	public function userWork() {
+	    if(!is_login()) {
+	        $this->renderFailed('请先登录');
+	    }
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	     
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	     
+	    $uid = I('uid', '', 'intval');
+	    if(empty($uid)) {
+	        $this->renderFailed('id为空');
+	    }
+	    $User = new UserApi;
+	    if(!$User->checkUidExists($uid)) {
+	        $this->renderFailed('用户不存在');
+	    }
+	    
+	    $list = M('Work')->alias('w')
+	    ->page($page, $rows)
+	    ->field('w.id,w.cover_url,d.title')
+	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->where(array('w.uid'=>$uid))
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	     
+	    $this->renderSuccess('', $list);
 	}
 	
 	/**

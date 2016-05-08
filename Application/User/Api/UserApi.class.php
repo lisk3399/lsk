@@ -188,4 +188,18 @@ class UserApi extends Api{
         $info = $Member->field('uid,nickname,avatar')->where('uid in ('.$uids.')')->select();
         return $info;
     }
+    
+    /**
+     * 检查uid是否存在
+     * @param int $uid
+     */
+    public function checkUidExists($uid) {
+        $Member = M('member');
+        $map['uid'] = $uid;
+        $ret = $Member->field('uid')->where($map)->find();
+        if(!$ret['uid']) {
+            return false;
+        }
+        return true;
+    }
 }
