@@ -167,6 +167,23 @@ class UserController extends HomeController {
 	    }
 	}
 
+	/* 获取某个用户信息 */
+	public function getUserInfo(){
+	    if(is_login()) {
+	        $uid = I('uid', '', 'intval');
+	        if(empty($uid)) {
+	            $this->renderFailed('id为空');
+	        }
+	        $User = new UserApi;
+	        if(!$User->checkUidExists($uid)) {
+	            $this->renderFailed('用户不存在');
+	        }
+	        $userinfo = $User->info($uid);
+	
+	        $this->renderSuccess('获取单个用户信息', $userinfo);
+	    }
+	}
+	
 	/* 修改用户信息 */
 	public function updateUser(){
 	    if(IS_POST) {
