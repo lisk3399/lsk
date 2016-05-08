@@ -6,12 +6,91 @@
 
 namespace Home\Controller;
 
+use User\Api\UserApi;
 /**
  * 作品控制器
  */
 class SnsController extends HomeController {
 
 	public function index(){
+	}
+	
+	/**
+	 * 我关注的用户列表
+	 */
+	public function myFollow() {
+	    $uid = is_login();
+	    if(!$uid) {
+	        $this->renderFailed('请先登录');
+	    }
+	    
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    $Follow = M('follow');
+	    $member_list = $Follow
+	    ->page($page, $rows)
+        ->field('follow_who')
+	    ->where(array('who_follow'=>$uid))
+	    ->select();
+	    
+	    //数组转换
+	    $memberArr = array();
+	    foreach ($member_list as $key=>$row) {
+	        $memberArr[$key] = $row['follow_who'];
+	    }
+	    $uids = implode(',', $memberArr);
+	    //批量获取用户信息
+	    $User = new UserApi;
+	    $list = $User->batchMemberInfo($uids);
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	     
+	    $this->renderSuccess('', $list);
+	}
+	
+	/**
+	 * 我的粉丝列表
+	 */
+	public function myFans() {
+	    $uid = is_login();
+	    if(!$uid) {
+	        $this->renderFailed('请先登录');
+	    }
+	    
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    $Follow = M('follow');
+	    $member_list = $Follow
+	    ->page($page, $rows)
+        ->field('who_follow')
+	    ->where(array('follow_who'=>$uid))
+	    ->select();
+	    
+	    //数组转换
+	    $memberArr = array();
+	    foreach ($member_list as $key=>$row) {
+	        $memberArr[$key] = $row['who_follow'];
+	    }
+	    $uids = implode(',', $memberArr);
+	    //批量获取用户信息
+	    $User = new UserApi;
+	    $list = $User->batchMemberInfo($uids);
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	    
+	    $this->renderSuccess('', $list);
 	}
 	
 	/**
@@ -29,6 +108,9 @@ class SnsController extends HomeController {
 	        $follow_who = I('uid', '', 'intval');
 	        if(!$this->checkUidExists($follow_who)) {
 	            $this->renderFailed('关注用户不存在');
+	        }
+	        if($who_follow == $follow_who) {
+	            $this->renderFailed('不能关注自己');
 	        }
 	        //查看是否已经关注
 	        if($this->checkFollow($who_follow, $follow_who)) {
@@ -97,6 +179,10 @@ class SnsController extends HomeController {
             //批量关注
             $followArr = explode(',', $follow_list);
             foreach ($followArr as $follow_who) {
+                //不能关注自己
+                if($who_follow == $follow_who) {
+                    continue;
+                }
                 //如果已经关注直接跳过
                 if($this->checkFollow($who_follow, $follow_who)) {
                     continue;

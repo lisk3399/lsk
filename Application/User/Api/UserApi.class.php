@@ -177,4 +177,15 @@ class UserApi extends Api{
     public function autoLogin($user) {
         return D('Member')->autoLogin($user); 
     }
+    
+    /**
+     * 批量用户信息
+     * @param string $uids 用户id字符串
+     */
+    public function batchMemberInfo($uids) {
+        $info = array();
+        $Member = M('member');
+        $info = $Member->field('uid,nickname,avatar')->where('uid in ('.$uids.')')->select();
+        return $info;
+    }
 }
