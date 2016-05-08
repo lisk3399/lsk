@@ -263,6 +263,45 @@ class WorkController extends HomeController {
 	}
 	
 	/**
+	 * 用户喜欢的作品列表
+	 */
+	public function userLike() {
+	    if(!is_login()) {
+	        $this->renderFailed('请先登录');
+	    }
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	     
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+	    $uid = I('uid', '', 'intval');
+	    if(empty($uid)) {
+	        $this->renderFailed('id为空');
+	    }
+	    $User = new UserApi;
+	    if(!$User->checkUidExists($uid)) {
+	        $this->renderFailed('用户不存在');
+	    }
+	    
+	    $list = M('Work')->alias('w')
+	    ->page($page, $rows)
+	    ->field('w.id,w.cover_url,d.title')
+	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->join('__LIKES__ l on l.uid = w.uid', 'left')
+	    ->where(array('w.uid'=>$uid))
+	    ->select();
+	     
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	    
+	    $this->renderSuccess('', $list);
+	}
+	
+	/**
 	 * 检查作品是否存在
 	 * @param int $work_id
 	 */
