@@ -204,10 +204,8 @@ class SnsController extends HomeController {
 	 * @param int $uid
 	 */
 	private function checkUidExists($uid) {
-	    $Member = M('member');
-	    $map['uid'] = $uid;
-	    $ret = $Member->field('uid')->where($map)->find();
-	    if(!$ret['uid']) {
+	    $User = new UserApi;
+	    if(!$User->checkUidExists($uid)) {
 	        return false;
 	    }
 	    return true;
