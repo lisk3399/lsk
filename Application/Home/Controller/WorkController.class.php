@@ -281,8 +281,9 @@ class WorkController extends HomeController {
 	    
 	    $info = M('work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title')
+	    ->field('w.id,w.cover_url,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where('w.uid in ('.$uids.')')
 	    ->select();
 	    
