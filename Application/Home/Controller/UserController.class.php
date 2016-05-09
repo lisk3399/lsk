@@ -32,7 +32,7 @@ class UserController extends HomeController {
 		    $repassword = I('post.repassword', '', 'trim');
 		    $verify = I('post.verify', '', 'trim');
 		    $platform = I('post.platform', '', 'trim');
-		    $device_id = I('post.$device_id', '', 'trim');
+		    $device_id = I('post.device_id', '', 'trim');
 		    
 			//短信验证
             $ret = $this->sms_verify($mobile, $verify);
