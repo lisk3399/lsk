@@ -92,9 +92,13 @@ class WorkController extends HomeController {
     	    $video_url = I('video_url', '', 'trim');
     	    $cover_url = I('cover_url', '', 'trim');
     	    $description = I('description', '', 'trim');
+    	    $is_original = I('is_original', 0, 'intval');
     	    
-    	    if(empty($material_id)) {
-    	        $this->renderFailed('素材为空');
+    	    //非原创素材id不为空
+    	    if($is_original == 0){
+    	        if(empty($material_id)) {
+    	            $this->renderFailed('素材为空');
+    	        }
     	    }
     	    if(empty($video_url)) {
     	        $this->renderFailed('视频为空');
@@ -108,6 +112,7 @@ class WorkController extends HomeController {
     	    $data['video_url'] = $video_url;
     	    $data['cover_url'] = $cover_url;
     	    $data['description'] = $description;
+    	    $data['is_original'] = $is_original;
     	    $data['create_time'] = NOW_TIME;
     	    
     	    $Work = M('work');
