@@ -34,14 +34,15 @@ class SnsController extends HomeController {
         $User = new UserApi;
         $uids = $User->getUserFollow($uid, $page, $rows);
 	    
-	    //批量获取用户信息
-	    $list = $User->batchMemberInfo($uids);
-	    
-	    if(count($list) == 0) {
-	        $this->renderFailed('没有更多了');
-	    }
-	     
-	    $this->renderSuccess('', $list);
+        if(!empty($uids)) {
+            //批量获取用户信息
+            $list = $User->batchMemberInfo($uids);
+            if(count($list) == 0) {
+                $this->renderFailed('没有更多了');
+            }
+            $this->renderSuccess('', $list);
+        }
+        $this->renderFailed('没有更多了');
 	}
 	
 	/**
@@ -77,15 +78,17 @@ class SnsController extends HomeController {
 	        $memberArr[$key] = $row['follow_who'];
 	    }
 	    $uids = implode(',', $memberArr);
-	    //批量获取用户信息
-	    $User = new UserApi;
-	    $list = $User->batchMemberInfo($uids);
-	     
-	    if(count($list) == 0) {
-	        $this->renderFailed('没有更多了');
-	    }
 	    
-	    $this->renderSuccess('', $list);
+	    if(!empty($uids)) {
+	        //批量获取用户信息
+	        $User = new UserApi;
+	        $list = $User->batchMemberInfo($uids);
+	        if(count($list) == 0) {
+	            
+	        }
+	        $this->renderSuccess('', $list);
+	    }
+	    $this->renderFailed('没有更多了');
 	}
 	
 	/**
@@ -123,15 +126,17 @@ class SnsController extends HomeController {
 	        $memberArr[$key] = $row['who_follow'];
 	    }
 	    $uids = implode(',', $memberArr);
-	    //批量获取用户信息
-	    $User = new UserApi;
-	    $list = $User->batchMemberInfo($uids);
-	     
-	    if(count($list) == 0) {
-	        $this->renderFailed('没有更多了');
+	    
+	    if(!empty($uids)) {
+	        //批量获取用户信息
+	        $User = new UserApi;
+	        $list = $User->batchMemberInfo($uids);
+	        if(count($list) == 0) {
+	             
+	        }
+	        $this->renderSuccess('', $list);
 	    }
-	     
-	    $this->renderSuccess('', $list);
+	    $this->renderFailed('没有更多了');
 	}
 	
 	/**
@@ -162,15 +167,16 @@ class SnsController extends HomeController {
 	        $memberArr[$key] = $row['who_follow'];
 	    }
 	    $uids = implode(',', $memberArr);
-	    //批量获取用户信息
-	    $User = new UserApi;
-	    $list = $User->batchMemberInfo($uids);
-	    
-	    if(count($list) == 0) {
-	        $this->renderFailed('没有更多了');
+	    if(!empty($uids)) {
+	        //批量获取用户信息
+	        $User = new UserApi;
+	        $list = $User->batchMemberInfo($uids);
+	        if(count($list) == 0) {
+	            
+	        }
+	        $this->renderSuccess('', $list);
 	    }
-	    
-	    $this->renderSuccess('', $list);
+	    $this->renderFailed('没有更多了');
 	}
 	
 	/**
