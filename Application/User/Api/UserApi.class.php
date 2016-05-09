@@ -202,4 +202,28 @@ class UserApi extends Api{
         }
         return true;
     }
+    
+    /**
+     * 获取某用户关注用户列表
+     * @param int $uid
+     * @param int $page
+     * @param int $rows
+     * @return 返回字符串用户名(如：1,2,3,4)
+     */
+    public function getUserFollow($uid, $page, $rows) {
+        $Follow = M('follow');
+        $member_list = $Follow
+        ->page($page, $rows)
+        ->field('follow_who')
+        ->where(array('who_follow'=>$uid))
+        ->select();
+        
+        $memberArr = array();
+        foreach ($member_list as $key=>$row) {
+            $memberArr[$key] = $row['follow_who'];
+        }
+        $uids = implode(',', $memberArr);
+        
+        return $uids;
+    }
 }

@@ -30,21 +30,11 @@ class SnsController extends HomeController {
 	    if($rows > C('API_MAX_ROWS')) {
 	        $rows = C('API_MAX_ROWS');
 	    }
-	    $Follow = M('follow');
-	    $member_list = $Follow
-	    ->page($page, $rows)
-        ->field('follow_who')
-	    ->where(array('who_follow'=>$uid))
-	    ->select();
+	    //获取关注用户列表
+        $User = new UserApi;
+        $uids = $User->getUserFollow($uid, $page, $rows);
 	    
-	    //数组转换
-	    $memberArr = array();
-	    foreach ($member_list as $key=>$row) {
-	        $memberArr[$key] = $row['follow_who'];
-	    }
-	    $uids = implode(',', $memberArr);
 	    //批量获取用户信息
-	    $User = new UserApi;
 	    $list = $User->batchMemberInfo($uids);
 	    
 	    if(count($list) == 0) {

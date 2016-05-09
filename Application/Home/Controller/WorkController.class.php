@@ -60,18 +60,18 @@ class WorkController extends HomeController {
 	    if($rows > C('API_MAX_ROWS')) {
 	        $rows = C('API_MAX_ROWS');
 	    }
-	     
-	    $list = M('Work')->alias('w')
-	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title')
-	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-	    ->where(array('w.uid'=>$uid))
-	    ->select();
+	    
+	    //获取关注用户列表
+	    $User = new UserApi;
+	    $uids = $User->getUserFollow($uid, $page, $rows);
+	    
+	    //批量获取用户作品
+	    $list = $User->batchUserWork($uids);
 	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
-	     
+	    
 	    $this->renderSuccess('', $list);
 	}
 	
@@ -264,6 +264,17 @@ class WorkController extends HomeController {
 	            $this->renderFailed('取消点赞失败');
 	        }
 	    }
+	}
+	
+	/**
+	 * 批量获取用户作品
+	 * @param string $uids 用户id字符串
+	 */
+	public function batchUserWork($uids) {
+	    $info = array();
+	    $Member = M('member');
+	    $info = $Member->field('uid,nickname,avatar')->where('uid in ('.$uids.')')->select();
+	    return $info;
 	}
 	
     /**
