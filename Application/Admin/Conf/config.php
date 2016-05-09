@@ -59,10 +59,10 @@ return array(
         'rename'=>false
     ),
     'UPLOAD_QINIU_CONFIG'=>array(
-        'accessKey'=>'__ODsglZwwjRJNZHAu7vtcEf-zgIxdQAY-QqVrZD',
-        'secrectKey'=>'Z9-RahGtXhKeTUYy9WCnLbQ98ZuZ_paiaoBjByKv',
-        'bucket'=>'onethinktest',
-        'domain'=>'onethinktest.u.qiniudn.com',
+        'accessKey'=>'BX3FxNDH3aFGwGSb8Yue745EgiumlqGpqthQ8x1u',
+        'secrectKey'=>'JqFwvXfT8TuLIb_UxyohIdnIS8oqzY-I9ifMqHyc',
+        'bucket'=>'doushow',
+        'domain'=>'vod.doushow.com',
         'timeout'=>3600,
     ),
 

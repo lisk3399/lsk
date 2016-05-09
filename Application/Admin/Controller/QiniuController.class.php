@@ -21,7 +21,7 @@ class QiniuController extends AdminController {
             'accessKey'=>'BX3FxNDH3aFGwGSb8Yue745EgiumlqGpqthQ8x1u',
             'secrectKey'=>'JqFwvXfT8TuLIb_UxyohIdnIS8oqzY-I9ifMqHyc',
             'bucket'=>'doushow',
-            'domain'=>'7xrcy3.com1.z0.glb.clouddn.com'
+            'domain'=>'vod.doushow.com'
         );
         $this->qiniu = new QiniuStorage($config);
         parent:: _initialize();
