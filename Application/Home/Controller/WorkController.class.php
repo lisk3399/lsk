@@ -65,14 +65,17 @@ class WorkController extends HomeController {
 	    $User = new UserApi;
 	    $uids = $User->getUserFollow($uid, $page, $rows);
 	    
-	    //批量获取用户作品
-	    $list = $User->batchUserWork($uids);
-	    
-	    if(count($list) == 0) {
-	        $this->renderFailed('没有更多了');
+	    if(!empty($uids)) {
+	        //批量获取用户作品
+	        $list = $this->batchUserWork($uids, $page, $rows);
+	         
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	         
+	        $this->renderSuccess('', $list);
 	    }
-	    
-	    $this->renderSuccess('', $list);
+	    $this->renderFailed('没有更多了');
 	}
 	
 	/**
@@ -100,6 +103,7 @@ class WorkController extends HomeController {
     	        $this->renderFailed('首图为空');
     	    }
     	    
+    	    $data['uid'] = $uid;
     	    $data['material_id'] = $material_id;
     	    $data['video_url'] = $video_url;
     	    $data['cover_url'] = $cover_url;
@@ -268,12 +272,20 @@ class WorkController extends HomeController {
 	
 	/**
 	 * 批量获取用户作品
-	 * @param string $uids 用户id字符串
+	 * @param string $uids 用户id字符串(1,2,3,4)
+	 * @param int $page
+	 * @param int $rows
 	 */
-	public function batchUserWork($uids) {
+	public function batchUserWork($uids, $page, $rows) {
 	    $info = array();
-	    $Member = M('member');
-	    $info = $Member->field('uid,nickname,avatar')->where('uid in ('.$uids.')')->select();
+	    
+	    $info = M('work')->alias('w')
+	    ->page($page, $rows)
+	    ->field('w.id,w.cover_url,d.title')
+	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->where('w.uid in ('.$uids.')')
+	    ->select();
+	    
 	    return $info;
 	}
 	
