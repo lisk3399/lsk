@@ -158,63 +158,66 @@ class UserController extends HomeController {
 	
 	/* 获取用户信息 */
 	public function userInfo(){
-	    if(is_login()) {
-	        $uid = session('user_auth.uid');
-	        $User = new UserApi;
-	        $userinfo = $User->info($uid);
-            
-	        $this->renderSuccess('获取用户信息', $userinfo);
+	    if(!is_login()) {
+	        $this->renderFailed('请先登录');
 	    }
+	    $uid = session('user_auth.uid');
+	    $User = new UserApi;
+	    $userinfo = $User->info($uid);
+            
+	    $this->renderSuccess('获取用户信息', $userinfo);
 	}
 
 	/* 获取某个用户信息 */
 	public function getUserInfo(){
-	    if(is_login()) {
-	        $uid = I('uid', '', 'intval');
-	        if(empty($uid)) {
-	            $this->renderFailed('id为空');
-	        }
-	        $User = new UserApi;
-	        if(!$User->checkUidExists($uid)) {
-	            $this->renderFailed('用户不存在');
-	        }
-	        $userinfo = $User->info($uid);
-	
-	        $this->renderSuccess('获取单个用户信息', $userinfo);
+	    if(!is_login()) {
+	        $this->renderFailed('请先登录');
 	    }
+	    $uid = I('uid', '', 'intval');
+	    if(empty($uid)) {
+	        $this->renderFailed('id为空');
+	    }
+	    $User = new UserApi;
+	    if(!$User->checkUidExists($uid)) {
+	        $this->renderFailed('用户不存在');
+	    }
+	    $userinfo = $User->info($uid);
+	    
+	    $this->renderSuccess('获取单个用户信息', $userinfo);
 	}
 	
 	/* 修改用户信息 */
 	public function updateUser(){
 	    if(IS_POST) {
-    	    if(is_login()) {
-    	        $uid = session('user_auth.uid');
-    	        $data['nickname'] = I('post.nickname', '', 'trim');
-    	        $data['avatar'] = I('post.avatar', '', 'trim');
-    	        $data['signature'] = I('post.signature', '', 'trim');
-    	        $data['sex'] = I('post.sex', '0', 'intval');
-    	        $data['birthday'] = I('post.birthday', '', 'trim');
-    	        
-    	        if(empty($data['nickname'])) {
-    	            $this->renderFailed('昵称不为空');
-    	        }
-    	        if(empty($data['avatar'])) {
-    	            $this->renderFailed('头像不为空');
-    	        }
-    	        
-    	        //更新用户信息
-    	        $Member = D('Member');
-    	        $data = $Member->create($data);
-    	        if($data){
-    	            $ret = $Member->where(array('uid'=>$uid))->save($data);
-    	            if($ret) {
-    	                $this->renderSuccess('保存成功');
-    	            } else {
-    	                $this->renderFailed('保存失败');
-    	            }
+    	    if(!is_login()) {
+    	        $this->renderFailed('您还未登录');
+    	    }
+    	    $uid = session('user_auth.uid');
+    	    $data['nickname'] = I('post.nickname', '', 'trim');
+    	    $data['avatar'] = I('post.avatar', '', 'trim');
+    	    $data['signature'] = I('post.signature', '', 'trim');
+    	    $data['sex'] = I('post.sex', '0', 'intval');
+    	    $data['birthday'] = I('post.birthday', '', 'trim');
+    	    
+    	    if(empty($data['nickname'])) {
+    	        $this->renderFailed('昵称不为空');
+    	    }
+    	    if(empty($data['avatar'])) {
+    	        $this->renderFailed('头像不为空');
+    	    }
+    	    
+    	    //更新用户信息
+    	    $Member = D('Member');
+    	    $data = $Member->create($data);
+    	    if($data){
+    	        $ret = $Member->where(array('uid'=>$uid))->save($data);
+    	        if($ret) {
+    	            $this->renderSuccess('保存成功');
+    	        } else {
+    	            $this->renderFailed('保存失败');
     	        }
     	    }
-	    }
+    	}
 	}
 	
 	/* 验证码，用于登录和注册 */
@@ -248,12 +251,12 @@ class UserController extends HomeController {
      * @author huajie <banhuajie@163.com>
      */
     public function updatePwd(){
-		if ( !is_login() ) {
+        $uid = is_login();
+		if (!$uid) {
 			$this->renderFailed( '您还没有登陆');
 		}
         if ( IS_POST ) {
             //获取参数
-            $uid        =   is_login();
             $oldPwd   =   I('post.old', '', 'trim');
             $repassword = I('post.repassword', '', 'trim');
             $data['password'] = I('post.password', '', 'trim');
