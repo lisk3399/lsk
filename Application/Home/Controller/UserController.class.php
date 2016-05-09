@@ -209,6 +209,8 @@ class UserController extends HomeController {
     	            $ret = $Member->where(array('uid'=>$uid))->save($data);
     	            if($ret) {
     	                $this->renderSuccess('保存成功');
+    	            } else {
+    	                $this->renderFailed('保存失败');
     	            }
     	        }
     	    }
