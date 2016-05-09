@@ -46,6 +46,76 @@ class WorkController extends HomeController {
 	}
 	
 	/**
+	 * 我关注的用户作品
+	 */
+	public function followUserWork() {
+	    $uid = is_login();
+	    if(!$uid) {
+	        $this->renderFailed('请先登录');
+	    }
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	     
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	     
+	    $list = M('Work')->alias('w')
+	    ->page($page, $rows)
+	    ->field('w.id,w.cover_url,d.title')
+	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->where(array('w.uid'=>$uid))
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	     
+	    $this->renderSuccess('', $list);
+	}
+	
+	/**
+	 * 发布作品 
+	 */
+	public function pubWork() {
+	    if(IS_POST) {
+    	    $uid = is_login();
+    	    if(!$uid) {
+    	        $this->renderFailed('请先登录');
+    	    }
+    	    
+    	    $material_id = I('mid', '', 'intval');
+    	    $video_url = I('video_url', '', 'trim');
+    	    $cover_url = I('cover_url', '', 'trim');
+    	    $description = I('description', '', 'trim');
+    	    
+    	    if(empty($material_id)) {
+    	        $this->renderFailed('素材为空');
+    	    }
+    	    if(empty($video_url)) {
+    	        $this->renderFailed('视频为空');
+    	    }
+    	    if(empty($cover_url)) {
+    	        $this->renderFailed('首图为空');
+    	    }
+    	    
+    	    $data['material_id'] = $material_id;
+    	    $data['video_url'] = $video_url;
+    	    $data['cover_url'] = $cover_url;
+    	    $data['description'] = $description;
+    	    $data['create_time'] = NOW_TIME;
+    	    
+    	    $Work = M('work');
+    	    if($Work->add($data)) {
+    	        $this->renderSuccess('发布成功');
+    	    } else {
+    	        $this->renderFailed('发布失败，请重试');
+    	    }
+	    }
+	}
+	
+	/**
 	 * 作品详情
 	 */
 	public function workDetail() {
