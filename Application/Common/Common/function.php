@@ -24,7 +24,14 @@ const ONETHINK_ADDON_PATH = './Addons/';
 function is_login(){
     $user = session('user_auth');
     if (empty($user)) {
-        return 0;
+        //判断是否cookie也为空
+        $cookie_name = C('AUTH_COOKIE');
+        if(!$_COOKIE[$cookie_name]) {
+            return false;
+        }
+        else {
+            return $_COOKIE[$cookie_name];
+        }
     } else {
         return session('user_auth_sign') == data_auth_sign($user) ? $user['uid'] : 0;
     }

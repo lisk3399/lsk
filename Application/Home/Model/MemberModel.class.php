@@ -65,6 +65,9 @@ class MemberModel extends Model{
     public function logout(){
         session('user_auth', null);
         session('user_auth_sign', null);
+        
+        $cookie_name = C('AUTH_COOKIE');
+        setcookie($cookie_name, '', -time(), '/', '', false, true);
     }
 
     /**
@@ -91,6 +94,9 @@ class MemberModel extends Model{
         session('user_auth', $auth);
         session('user_auth_sign', data_auth_sign($auth));
 
+        $cookie_name = C('AUTH_COOKIE');
+        setcookie($cookie_name, $auth['uid'], time()+86400*30, '/', '', false, true);
+        $_COOKIE[$cookie_name] = $auth['uid'];
     }
 
     /**

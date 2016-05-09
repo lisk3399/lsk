@@ -55,4 +55,5 @@ return array(
     
     /* API每次请求最大数量 */
     'API_MAX_ROWS' => 50,
+    'AUTH_COOKIE' => 'DBH_AUTH'
 );
