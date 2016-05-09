@@ -27,8 +27,8 @@ class UserApi extends Api{
      * @param  string $mobile   用户手机号码
      * @return integer          注册成功-用户信息，注册失败-错误编号
      */
-    public function register($mobile, $password, $repassword, $verify){
-        return $this->model->register($mobile, $password, $repassword, $verify);
+    public function register($mobile, $password, $repassword, $verify, $platform, $device_id){
+        return $this->model->register($mobile, $password, $repassword, $verify, $platform, $device_id);
     }
 
     /**

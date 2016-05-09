@@ -88,12 +88,14 @@ class UcenterMemberModel extends Model{
 	 * @param  string $password 用户密码
 	 * @return integer          注册成功-用户信息，注册失败-错误编号
 	 */
-	public function register($mobile, $password, $repassword, $verify){
+	public function register($mobile, $password, $repassword, $verify, $platform, $device_id){
 		$data = array(
 			'password' => $password,
 			'mobile'   => $mobile,
 		    'repassword' => $repassword,
-		    'verify' => $verify
+		    'verify' => $verify,
+		    'platform' => $platform,
+		    'device_id' => $device_id
 		);
 
 		/* 添加用户 */

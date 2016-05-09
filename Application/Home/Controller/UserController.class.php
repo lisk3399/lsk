@@ -31,6 +31,8 @@ class UserController extends HomeController {
 		    $password = I('post.password', '', 'trim');
 		    $repassword = I('post.repassword', '', 'trim');
 		    $verify = I('post.verify', '', 'trim');
+		    $platform = I('post.platform', '', 'trim');
+		    $device_id = I('post.$device_id', '', 'trim');
 		    
 			//短信验证
             $ret = $this->sms_verify($mobile, $verify);
@@ -40,7 +42,7 @@ class UserController extends HomeController {
             
 			/* 调用注册接口注册用户 */
             $User = new UserApi;
-			$uid = $User->register($mobile, $password, $repassword, $verify);
+			$uid = $User->register($mobile, $password, $repassword, $verify, $platform, $device_id);
 			if(0 < $uid){ //注册成功
 				//TODO: 发送验证邮件
 				$username = '用户_'.$uid;
