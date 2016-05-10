@@ -89,11 +89,10 @@ class ClassesController extends HomeController {
                 $this->renderFailed('请先登录');
             }
             
-            $class_name = I('class_name', '', 'trim');
-            if(empty($class_name)) {
-                $this->renderFailed('请输入班级名');
+            $keywords = I('keywords', '', 'trim');
+            if(empty($keywords)) {
+                $this->renderFailed('请输入搜索关键词');
             }
-
         	$page = I('page', '1', 'intval');
 	        $rows = I('rows', '20', 'intval');
 	     
@@ -102,7 +101,7 @@ class ClassesController extends HomeController {
 	            $rows = C('API_MAX_ROWS');
 	        }
 	        
-            $result = M('classes')->page($page, $rows)->field('id,class')->where('class like "'.$class_name.'%"')->select();
+            $result = M('classes')->page($page, $rows)->field('id,class')->where('class like "'.$keywords.'%"')->select();
             if($result['id']) {
                 $this->renderSuccess('查询结果', $result);
             }
