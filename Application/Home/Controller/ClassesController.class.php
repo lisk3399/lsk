@@ -102,7 +102,7 @@ class ClassesController extends HomeController {
 	        }
 	        
             $result = M('classes')->page($page, $rows)->field('id,class')->where('class like "'.$keywords.'%"')->select();
-            if($result['id']) {
+            if(is_array($result) && count($result) > 0) {
                 $this->renderSuccess('查询结果', $result);
             }
             $this->renderFailed('暂无结果');
