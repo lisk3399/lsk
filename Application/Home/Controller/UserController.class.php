@@ -159,10 +159,10 @@ class UserController extends HomeController {
 	
 	/* 获取用户信息 */
 	public function userInfo(){
-	    if(!is_login()) {
+	    $uid = is_login();
+	    if(!$uid) {
 	        $this->renderFailed('请先登录');
 	    }
-	    $uid = session('user_auth.uid');
 	    $User = new UserApi;
 	    $userinfo = $User->info($uid);
             
