@@ -34,7 +34,7 @@ class IndexController extends HomeController {
                 'domain'=>'vod.doushow.com'
             );
             $Qiniu = new QiniuStorage($config);
-            $data['token'] = $Qiniu->UploadToken($config['accessKey'], $config['secrectKey'], $config);
+            $data['token'] = $Qiniu->UploadToken($config['secrectKey'], $config['accessKey'], $config);
             $this->renderSuccess('', $data);
         }
     }
