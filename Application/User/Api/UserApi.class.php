@@ -227,4 +227,37 @@ class UserApi extends Api{
         
         return $uids;
     }
+    
+    /**
+     * 获取某班级下所有用户
+     * @param int $class_id
+     * @param int $page
+     * @param int $rows
+     * @return 返回字符串用户名(如：1,2,3,4)
+     */
+    public function getClassUser($class_id, $page, $rows) {
+        $Member = M('member');
+        $member_list = $Member
+        ->page($page, $rows)
+        ->field('uid')
+        ->where(array('classid'=>$class_id))
+        ->select();
+    
+        $memberArr = array();
+        foreach ($member_list as $key=>$row) {
+            $memberArr[$key] = $row['uid'];
+        }
+        $uids = implode(',', $memberArr);
+    
+        return $uids;
+    }
+    
+    /**
+     * 获取用户所在班级id
+     */
+    public function getClassByUid($uid) {
+        $Member = M('member');
+        $map['uid'] = $uid;
+        return $Member->field('classid')->where($map)->find();
+    }
 }

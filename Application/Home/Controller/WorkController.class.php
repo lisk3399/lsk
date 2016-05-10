@@ -106,6 +106,42 @@ class WorkController extends HomeController {
 	}
 	
 	/**
+	 * 班级下所有用户作品
+	 */
+	public function classUserWork() {
+	    $uid = is_login();
+	    if(!$uid) {
+	        $this->renderFailed('请先登录');
+	    }
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+	    //获取班级用户列表
+	    $User = new UserApi;
+	    $class = $User->getClassByUid($uid);
+	    $class_id = $class['classid'];
+	    
+	    $uids = $User->getClassUser($class_id, $page, $rows);
+	    
+	    if(!empty($uids)) {
+	        //批量获取用户作品
+	        $list = $this->batchUserWork($uids, $page, $rows);
+	
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	
+	        $this->renderSuccess('', $list);
+	    }
+	    $this->renderFailed('没有更多了');
+	}
+	
+	/**
 	 * 发布作品 
 	 */
 	public function pubWork() {
