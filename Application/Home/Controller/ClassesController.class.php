@@ -50,8 +50,33 @@ class ClassesController extends HomeController {
      * 加入班级
      */
     public function joinClass() {
-        //用户增加班级属性
-        //
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录');
+            }
+            //是否已经有班级
+            $class_id = $this->isJoin($uid);
+            if($class_id) {
+                $class_info = $this->getByClassId($class_id);
+                $this->renderFailed('您已经加入过'.$class_info['class']);
+            }
+            
+            //加入某班级
+            $class_id = I('class_id', '', 'intval');
+            if(empty($class_id)) {
+                $this->renderFailed('班级id为空');
+            }
+            //用户未加入该班级
+            if(!$this->isJoinClass($uid, $class_id)) {
+                $data['uid'] = $uid;
+                $data['classid'] = $class_id;
+                M('member')->save($data);
+                $this->renderFailed('加入成功');
+            } else {
+                $this->renderFailed('您已经加入过该班级');
+            }
+        }
     }
     
     /**
@@ -61,4 +86,39 @@ class ClassesController extends HomeController {
         
     }
     
+    /**
+     * 检查是否加入班级
+     */
+    private function isJoinClass($uid, $class_id) {
+        $map['uid'] = $uid;
+        $map['classid'] = $class_id;
+        $info = M('member')->field('uid')->where($map)->find();
+        if(!$info['uid']) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * 检查是否已经有班级
+     */
+    private function isJoin($uid) {
+        $map['uid'] = $uid;
+        $info = M('member')->field('classid')->where($map)->find();
+        
+        if(!$info['classid']) {
+            return false;
+        }
+        return $info['classid'];
+    }
+    
+    /**
+     * 通过id获取班级
+     * @param unknown $class_id
+     */
+    private function getByClassId($class_id) {
+        $Classes = M('classes');
+        $map['id'] = $class_id;
+        return $Classes->where($map)->find();
+    }
 }
