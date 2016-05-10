@@ -84,7 +84,7 @@ class SnsController extends HomeController {
 	        $User = new UserApi;
 	        $list = $User->batchMemberInfo($uids);
 	        if(count($list) == 0) {
-	            
+	            $this->renderFailed('没有更多了');
 	        }
 	        $this->renderSuccess('', $list);
 	    }
@@ -132,7 +132,7 @@ class SnsController extends HomeController {
 	        $User = new UserApi;
 	        $list = $User->batchMemberInfo($uids);
 	        if(count($list) == 0) {
-	             
+	            $this->renderFailed('没有更多了');
 	        }
 	        $this->renderSuccess('', $list);
 	    }
@@ -172,7 +172,7 @@ class SnsController extends HomeController {
 	        $User = new UserApi;
 	        $list = $User->batchMemberInfo($uids);
 	        if(count($list) == 0) {
-	            
+	            $this->renderFailed('没有更多了');
 	        }
 	        $this->renderSuccess('', $list);
 	    }

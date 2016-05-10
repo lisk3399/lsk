@@ -187,6 +187,11 @@ class UserApi extends Api{
         $info = array();
         $Member = M('member');
         $info = $Member->field('uid,nickname,avatar')->where('uid in ('.$uids.')')->select();
+        if(!empty('uid')) {
+            foreach ($info as &$row) {
+                $row['avatar'] = !empty($row['avatar'])?$row['avatar']:C('USER_INFO_DEFAULT.avatar');
+            }
+        }
         return $info;
     }
     
@@ -249,6 +254,26 @@ class UserApi extends Api{
         }
         $uids = implode(',', $memberArr);
     
+        return $uids;
+    }
+    
+    /**
+     * 获取某个素材用户列表
+     * 
+     */
+    public function getMaterialUser($material_id, $page, $rows) {
+        $member_list = M('work')
+        ->page($page, $rows)
+        ->field('uid')
+        ->where(array('material_id'=>$material_id))
+        ->select();
+
+        $memberArr = array();
+        foreach ($member_list as $key=>$row) {
+            $memberArr[$key] = $row['uid'];
+        }
+        $uids = implode(',', $memberArr);
+        
         return $uids;
     }
     

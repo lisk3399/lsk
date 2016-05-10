@@ -6,6 +6,7 @@
 
 namespace Home\Controller;
 
+use User\Api\UserApi;
 /**
  * 素材控制器
  */
@@ -221,6 +222,41 @@ class MaterialController extends HomeController {
 	    $this->renderSuccess('', $list);
 	}
 	
+	/**
+	 * 某个素材下的用户列表
+	 */
+	public function materialUser() {
+	    $material_id = I('mid', '', 'intval');
+	    if(empty($material_id)) {
+	        $this->renderFailed('素材id为空');
+	    }
+	    //素材是否存在
+	    if(!$this->checkMaterialExists($material_id)) {
+	        $this->renderFailed('素材不存在');
+	    }
+	     
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+        $User = new UserApi;
+	    $uids = $User->getMaterialUser($material_id, $page, $rows);
+	    
+	    if(!empty($uids)) {
+	        //批量获取用户信息
+	        $User = new UserApi;
+	        $list = $User->batchMemberInfo($uids);
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	        $this->renderSuccess('', $list);
+	    }
+	    $this->renderFailed('没有更多了');
+	}	
+
 	/**
 	 * 检查素材是否存在
 	 * @param int $material_id 素材id
