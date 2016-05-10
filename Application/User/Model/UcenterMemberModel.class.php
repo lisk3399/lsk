@@ -36,6 +36,8 @@ class UcenterMemberModel extends Model{
 		array('password', '/^(?![^a-zA-Z]+$)(?!\D+$).{6,20}$/', -4, self::MUST_VALIDATE, 'regex'), //密码6-20位，包含字母和数字
 	    array('repassword', 'password', -5, self::MUST_VALIDATE, 'confirm'),  //两次密码输入不一致
 	    array('verify', 'require', -6, self::MUST_VALIDATE),
+	    
+	    array('device_id', 'require', -8, self::MUST_VALIDATE),
 	);
 
 	/* 用户模型自动完成 */
@@ -101,7 +103,6 @@ class UcenterMemberModel extends Model{
 		/* 添加用户 */
 		if($this->create($data)){
 			$uid = $this->add();
-			$this->save(array('nickname' => '用户_'.$uid));
 			return $uid ? $uid : 0; //0-未知错误，大于0-注册成功
 		} else {
 			return $this->getError(); //错误详情见自动验证注释
@@ -232,19 +233,6 @@ class UcenterMemberModel extends Model{
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * 更新昵称
-	 * @param int $uid
-	 * @param string $username
-	 */
-	public function updateUsername($uid, $username){
-	    $data = array(
-	        'id' => $uid,
-	        'username' => $username
-	    );
-	    return $this->save($data);
 	}
 	
 	/**

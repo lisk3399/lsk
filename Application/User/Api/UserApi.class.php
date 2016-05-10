@@ -100,10 +100,11 @@ class UserApi extends Api{
     /**
      * 更新昵称
      * @param int $uid
-     * @param string $username
      */
-    public function updateUsername($uid, $username) {
-        return $this->model->updateUsername($uid, $username);
+    public function updateNickname($uid) {
+		$data['uid'] = $uid;
+		$data['nickname'] = '用户_'.$uid;
+		M('member')->save($data);
     }
     
     /**

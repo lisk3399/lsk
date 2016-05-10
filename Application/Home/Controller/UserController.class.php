@@ -45,8 +45,6 @@ class UserController extends HomeController {
 			$uid = $User->register($mobile, $password, $repassword, $verify, $platform, $device_id);
 			if(0 < $uid){ //注册成功
 				//TODO: 发送验证邮件
-				$username = '用户_'.$uid;
-				$User->updateUsername($uid, $username);
 				$data['uid'] = $uid;
 				$data['create_time'] = NOW_TIME;
 				//注册成功后登录
@@ -59,6 +57,7 @@ class UserController extends HomeController {
 				        $data['session_id'] = session_id();
 				    }
 				}
+                $User->updateNickname($uid);
 				$this->renderSuccess('注册成功！', $data);
 			} else { //注册失败，显示错误信息
 			    $this->renderFailed($this->showRegError($uid));
@@ -242,6 +241,7 @@ class UserController extends HomeController {
 			case -5:  $error = '两次密码不一致'; break;
 			case -6: $error = '手机验证码不能为空'; break;
 			case -7: $error = '该手机号码被禁止注册'; break;
+			case -8: $error = '设备id为空'; break;
 			default:  $error = '未知错误';
 		}
 		return $error;
