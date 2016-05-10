@@ -203,6 +203,9 @@ class UserController extends HomeController {
     	    if(empty($data['nickname'])) {
     	        $this->renderFailed('昵称不为空');
     	    }
+    	    if(strlen($data['nickname'])<2 || strlen($data['nickname'])>60) {
+    	        $this->renderFailed(self::STATUS_FAILURE, '昵称由2-20个字符组成');
+    	    }
     	    if(empty($data['avatar'])) {
     	        $this->renderFailed('头像不为空');
     	    }
