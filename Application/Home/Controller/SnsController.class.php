@@ -337,6 +337,31 @@ class SnsController extends HomeController {
 	}
 	
 	/**
+	 * 推荐关注用户列表
+	 */
+	public function recommendUser() {
+	    if(IS_POST) {
+	        $page = I('page', '1', 'intval');
+	        $rows = I('rows', '20', 'intval');
+	         
+	        //限制单次最大读取数量
+	        if($rows > C('API_MAX_ROWS')) {
+	            $rows = C('API_MAX_ROWS');
+	        }
+	        
+	        $result = M('member')->page($page, $rows)->field('uid,nickname,avatar,sex')->order('uid desc')->select();
+	        if(is_array($result) && count($result) > 0) {
+	            //默认头像处理
+	            foreach ($result as &$row) {
+	                $row['avatar'] = !empty($row['avatar'])?$row['avatar']:C('USER_INFO_DEFAULT.avatar');
+	            }
+	            $this->renderSuccess('查询结果', $result);
+	        }
+	        $this->renderFailed('暂无结果');
+	    }
+	}
+	
+	/**
 	 * 检查用户uid是否存在
 	 * @param int $uid
 	 */
