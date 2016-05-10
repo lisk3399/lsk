@@ -83,7 +83,31 @@ class ClassesController extends HomeController {
      * 搜索班级
      */
     public function searchClass() {
-        
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录');
+            }
+            
+            $class_name = I('class_name', '', 'trim');
+            if(empty($class_name)) {
+                $this->renderFailed('请输入班级名');
+            }
+
+        	$page = I('page', '1', 'intval');
+	        $rows = I('rows', '20', 'intval');
+	     
+	        //限制单次最大读取数量
+	        if($rows > C('API_MAX_ROWS')) {
+	            $rows = C('API_MAX_ROWS');
+	        }
+	        
+            $result = M('classes')->page($page, $rows)->field('id,class')->where('class like "'.$class_name.'%"')->select();
+            if($result['id']) {
+                $this->renderSuccess('查询结果', $result);
+            }
+            $this->renderFailed('暂无结果');
+        }
     }
     
     /**
