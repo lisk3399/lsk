@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 
 namespace Home\Controller;
-use OT\DataDictionary;
+use Think\Upload\Driver\Qiniu\QiniuStorage;
 
 /**
  * 前台首页控制器
@@ -18,5 +18,20 @@ class IndexController extends HomeController {
 
     public function index(){
     }
-
+    
+    /**
+     * 七牛token
+     */
+    public function getToken() {
+        $config = array(
+            'accessKey'=>'BX3FxNDH3aFGwGSb8Yue745EgiumlqGpqthQ8x1u',
+            'secrectKey'=>'JqFwvXfT8TuLIb_UxyohIdnIS8oqzY-I9ifMqHyc',
+            'bucket'=>'doushow',
+            'domain'=>'vod.doushow.com'
+        );
+        $Qiniu = new QiniuStorage($config);
+        $info = $Qiniu->UploadToken($config['accessKey'], $config['secrectKey'], $config);
+        
+        $this->renderSuccess('', $info);
+    }
 }
