@@ -55,5 +55,11 @@ return array(
     
     /* API每次请求最大数量 */
     'API_MAX_ROWS' => 50,
-    'AUTH_COOKIE' => 'DBH_AUTH'
+    'AUTH_COOKIE' => 'DBH_AUTH',
+    
+    /* 默认用户信息 */
+    'USER_INFO_DEFAULT' => array(
+        'avatar' => 'http://vod.doushow.com/dbh_avatar_default.jpg',
+        'signature' => '这家伙很懒，什么签名都没写~'
+    ),
 );

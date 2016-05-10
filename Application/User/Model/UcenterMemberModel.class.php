@@ -149,6 +149,8 @@ class UcenterMemberModel extends Model{
 		}
 		$user = D('Member')->where($map)->field('uid,nickname,avatar,signature,sex,birthday,status')->find();
 		if(is_array($user) && $user['status'] == 1){
+		    $user['avatar'] = !empty($user['avatar'])?$user['avatar']: C('USER_INFO_DEFAULT.avatar');
+		    $user['signature'] = !empty($user['signature'])?$user['signature']: C('USER_INFO_DEFAULT.signature');
 			return $user;
 		} else {
 			return -1; //用户不存在或被禁用
