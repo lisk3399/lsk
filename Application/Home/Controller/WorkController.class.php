@@ -478,4 +478,81 @@ class WorkController extends HomeController {
 	    }
 	    return true;
 	}
+	
+	/**
+	 * 某个作品评论列表
+	 */
+	public function commentList() {
+	    $work_id = I('id', '', 'intval');
+	    if(empty($work_id)) {
+	        $this->renderFailed('作品id为空');
+	    }
+	    if(!$this->checkWorkExists($work_id)) {
+	        $this->renderFailed('作品不存在');
+	    }
+	
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	     
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+	    $count = M('comment')->alias('c')
+	    ->field('m.uid,m.nickname,m.avatar,c.content,c.create_time')
+	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+	    ->where(array('c.work_id'=>$work_id))->count();
+	    
+	    $list = M('comment')->alias('c')
+	    ->field('m.uid,m.nickname,m.avatar,c.content,c.create_time')
+	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+	    ->where(array('c.work_id'=>$work_id))
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	    
+	    $this->renderSuccess('', $list);
+	}
+	
+	/**
+	 * 发布评论
+	 */
+	public function pubComment() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('请先登录');
+	        }
+	        $work_id = I('id', '', 'intval');
+	        if(empty($work_id)) {
+	            $this->renderFailed('作品id为空');
+	        }
+	        if(!$this->checkWorkExists($work_id)) {
+	            $this->renderFailed('作品不存在');
+	        }
+	
+	        $content = I('content', '', 'trim');
+	        if(empty($content)) {
+	            $this->renderFailed('请输入内容');
+	        }
+	
+	        $data['uid'] = $uid;
+	        $data['work_id'] = $work_id;
+	        $data['content'] = $content;
+	        $data['create_time'] = NOW_TIME;
+	        
+	        //TODO:判断重复评论
+// 	        if($this->checkComment($uid, $work_id)) {
+// 	            
+// 	        }
+	        
+	        if(M('comment')->add($data)){
+	            $this->renderSuccess('评论成功');
+	        }
+	        $this->renderFailed('评论失败');
+	    }
+	}
 }
