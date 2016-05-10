@@ -209,6 +209,11 @@ class UserController extends HomeController {
     	    if(empty($data['avatar'])) {
     	        $this->renderFailed('头像不为空');
     	    }
+    	    if(!empty($data['signature'])) {
+    	        if(strlen($data['signature'])<2 || strlen($data['signature'])>300) {
+    	            $this->renderFailed(self::STATUS_FAILURE, '昵称由2-100个字符组成');
+    	        }
+    	    }
     	    
     	    //更新用户信息
     	    $Member = D('Member');
