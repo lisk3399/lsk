@@ -16,6 +16,33 @@ class WorkController extends HomeController {
 	}
 	
 	/**
+	 * 最新作品列表
+	 */
+	public function latestWork() {
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	     
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+	    //发布顺序倒序排列
+	    $list = M('Work')->alias('w')
+	    ->page($page, $rows)
+	    ->field('w.id,w.cover_url,d.title')
+	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->order('w.id desc')
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	     
+	    $this->renderSuccess('', $list);
+	}
+	
+	/**
 	 * 用户作品列表
 	 */
 	public function myWork() {
