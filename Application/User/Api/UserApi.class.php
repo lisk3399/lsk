@@ -260,4 +260,34 @@ class UserApi extends Api{
         $map['uid'] = $uid;
         return $Member->field('classid')->where($map)->find();
     }
+    
+    /**
+     * 给用户发消息
+     */
+    public function sendMessage($uid, $type) {
+        $data['uid'] = $uid;
+        $data['type'] = $type;
+        
+        $data['content'] = '';
+        switch ($type) {
+            case C('MESSAGE_TYPE.LIKE'):
+                $data['content'] = '有人给你点赞，快去看看';
+                break;
+            case C('MESSAGE_TYPE.AT'):
+                $data['content'] = '有人@你，快去看看';
+                break;
+            case C('MESSAGE_TYPE.LIKE'):
+                $data['content'] = '有人评论了你的作品，快去看看';
+                break;
+            case C('MESSAGE_TYPE.'):
+                $data['content'] = '有新的好友加你，快去看看';
+                break;
+                default:
+                    $data['content'] = '有新的系统消息';
+        }
+        $data['create_time'] = NOW_TIME;
+        M('message')->add($data);
+    }
+    
+    //TODO: 消息已读标记
 }

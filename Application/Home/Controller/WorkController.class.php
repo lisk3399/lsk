@@ -287,7 +287,10 @@ class WorkController extends HomeController {
 	    	if($Likes->add($data)) {
 	    	    //增加作品点赞数
 	    	    if($this->updateLike($work_id, 'add')) {
-	               $this->renderSuccess('点赞成功');
+// 	    	        $User = new UserApi();
+// 	    	        $type = C('MESSAGE_TYPE.LIKE');
+// 	    	        $User->sendMessage($uid, $type);
+	                $this->renderSuccess('点赞成功');
 	    	    } else {
 	    	        $this->renderFailed('更新点赞失败', $this->error);
 	    	    }

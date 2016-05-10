@@ -62,4 +62,13 @@ return array(
         'avatar' => 'http://vod.doushow.com/dbh_avatar_default.jpg',
         'signature' => '这家伙很懒，什么签名都没写~'
     ),
+    
+    /* 发送消息类型 */
+    'MESSAGE_TYPE' => array(
+        'LIKE' => 'LIKE',
+        'AT' => 'AT',
+        'COMMENT' => 'COMMENT',
+        'FRIENDS' => 'FRIENDS',
+        'SYSTEM' => 'SYSTEM',
+    ),
 );
