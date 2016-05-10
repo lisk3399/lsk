@@ -187,7 +187,7 @@ class UserApi extends Api{
         $info = array();
         $Member = M('member');
         $info = $Member->field('uid,nickname,avatar')->where('uid in ('.$uids.')')->select();
-        if(!empty('uid')) {
+        if(!empty($info['uid'])) {
             foreach ($info as &$row) {
                 $row['avatar'] = !empty($row['avatar'])?$row['avatar']:C('USER_INFO_DEFAULT.avatar');
             }
