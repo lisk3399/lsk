@@ -23,14 +23,19 @@ class IndexController extends HomeController {
      * 七牛token
      */
     public function getToken() {
-        $config = array(
-            'accessKey'=>'BX3FxNDH3aFGwGSb8Yue745EgiumlqGpqthQ8x1u',
-            'secrectKey'=>'JqFwvXfT8TuLIb_UxyohIdnIS8oqzY-I9ifMqHyc',
-            'bucket'=>'doushow',
-            'domain'=>'vod.doushow.com'
-        );
-        $Qiniu = new QiniuStorage($config);
-        $data['token'] = $Qiniu->UploadToken($config['accessKey'], $config['secrectKey'], $config);
-        $this->renderSuccess('', $data);
+        if(IS_POST) {
+            if(!is_login()) {
+                $this->renderFailed('failed');
+            }
+            $config = array(
+                'accessKey'=>'BX3FxNDH3aFGwGSb8Yue745EgiumlqGpqthQ8x1u',
+                'secrectKey'=>'JqFwvXfT8TuLIb_UxyohIdnIS8oqzY-I9ifMqHyc',
+                'bucket'=>'doushow',
+                'domain'=>'vod.doushow.com'
+            );
+            $Qiniu = new QiniuStorage($config);
+            $data['token'] = $Qiniu->UploadToken($config['accessKey'], $config['secrectKey'], $config);
+            $this->renderSuccess('', $data);
+        }
     }
 }
