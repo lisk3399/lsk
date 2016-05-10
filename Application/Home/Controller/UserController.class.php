@@ -190,10 +190,10 @@ class UserController extends HomeController {
 	/* 修改用户信息 */
 	public function updateUser(){
 	    if(IS_POST) {
-    	    if(!is_login()) {
+	        $uid = is_login();
+    	    if(!$uid) {
     	        $this->renderFailed('您还未登录');
     	    }
-    	    $uid = session('user_auth.uid');
     	    $data['nickname'] = I('post.nickname', '', 'trim');
     	    $data['avatar'] = I('post.avatar', '', 'trim');
     	    $data['signature'] = I('post.signature', '', 'trim');
