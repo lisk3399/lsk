@@ -85,9 +85,14 @@ class MemberModel extends Model{
         $this->save($data);
 
         /* 记录登录SESSION和COOKIES */
+        $avatar = !empty($user['avatar'])?$user['avatar']: C('USER_INFO_DEFAULT.avatar');
+        $signature = !empty($user['signature'])?$user['signature']: C('USER_INFO_DEFAULT.signature');
+        
         $auth = array(
             'uid'             => $user['uid'],
             'nickname'        => get_nickname($user['uid']),
+            'avatar'          => $avatar,
+            'signature'          => $signature,
             'last_login_time' => $user['last_login_time'],
         );
 
