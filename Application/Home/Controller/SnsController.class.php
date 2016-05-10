@@ -312,6 +312,31 @@ class SnsController extends HomeController {
 	}
 	
 	/**
+	 * 搜索用户
+	 */
+	public function searchUser() {
+	    if(IS_POST) {
+	        $keywords = I('keywords', '', 'trim');
+	        if(empty($keywords)) {
+	            $this->renderFailed('请输入搜索关键词');
+	        }
+	        $page = I('page', '1', 'intval');
+	        $rows = I('rows', '20', 'intval');
+	    
+	        //限制单次最大读取数量
+	        if($rows > C('API_MAX_ROWS')) {
+	            $rows = C('API_MAX_ROWS');
+	        }
+	         
+	        $result = M('member')->page($page, $rows)->field('uid,nickname,avatar')->where('nickname like "%'.$keywords.'%"')->select();
+	        if(is_array($result) && count($result) > 0) {
+	            $this->renderSuccess('查询结果', $result);
+	        }
+	        $this->renderFailed('暂无结果');
+	    }
+	}
+	
+	/**
 	 * 检查用户uid是否存在
 	 * @param int $uid
 	 */
