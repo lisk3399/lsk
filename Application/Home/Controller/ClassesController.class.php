@@ -118,7 +118,24 @@ class ClassesController extends HomeController {
     }
     
     /**
-     * 检查是否加入班级
+     * 检查是否加入过班级
+     */
+    public function checkJoin() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录');
+            }
+            
+            if($this->isJoin($uid)) {
+                $this->renderFailed('已经加入过');
+            }
+            $this->renderSuccess('未加入任何班级');
+        }
+    }
+    
+    /**
+     * 检查用户是否加入某个指定班级
      */
     private function isJoinClass($uid, $class_id) {
         $map['uid'] = $uid;
@@ -131,7 +148,7 @@ class ClassesController extends HomeController {
     }
     
     /**
-     * 检查是否已经有班级
+     * 检查用户是否加入过班级
      */
     private function isJoin($uid) {
         $map['uid'] = $uid;
