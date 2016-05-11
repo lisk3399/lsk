@@ -315,4 +315,18 @@ class UserApi extends Api{
     }
     
     //TODO: 消息已读标记
+    
+    /**
+     * 设置默认头像
+     * @param $info 数组
+     * @retur $info
+     */
+    public function setDefaultAvatar($info) {
+        if(is_array($info)) {
+            foreach ($info as &$row) {
+                $row['avatar'] = !empty($row['avatar'])?$row['avatar']:C('USER_INFO_DEFAULT.avatar');
+            }
+        }
+        return $info;
+    }
 }

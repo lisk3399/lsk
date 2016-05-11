@@ -36,14 +36,15 @@ class WorkController extends HomeController {
 	    ->order('w.id desc')
 	    ->select();
 	    
-	    foreach ($list as &$row) {
-	        $row['avatar'] = !empty($row['avatar'])?$row['avatar']:C('USER_INFO_DEFAULT.avatar');
-	    }
-	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
-	     
+	    
+		//设置默认头像
+	    if(is_array($list) && count($list)>0) {
+            $Api = new userapi;
+            $list = $Api->setDefaultAvatar($list);
+	    }
 	    $this->renderSuccess('', $list);
 	}
 	
@@ -96,15 +97,15 @@ class WorkController extends HomeController {
 	    //获取关注用户列表
 	    $User = new UserApi;
 	    $uids = $User->getUserFollow($uid, $page, $rows);
-	    
+
 	    if(!empty($uids)) {
 	        //批量获取用户作品
 	        $list = $this->batchUserWork($uids, $page, $rows);
-	         
+	        
 	        if(count($list) == 0) {
 	            $this->renderFailed('没有更多了');
 	        }
-	         
+	        
 	        $this->renderSuccess('', $list);
 	    }
 	    $this->renderFailed('没有更多了');
@@ -363,6 +364,11 @@ class WorkController extends HomeController {
 	    ->where('w.uid in ('.$uids.')')
 	    ->select();
 	    
+	    //设置默认头像
+	    if(is_array($info) && count($info)>0) {
+            $Api = new userapi;
+            $info = $Api->setDefaultAvatar($info);
+	    }
 	    return $info;
 	}
 	
