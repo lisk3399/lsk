@@ -40,7 +40,7 @@ class ClassesController extends HomeController {
             $Classes = M('classes');
             $info = $Classes->field('id,province,city,district,school,class')->where($map)->find();
             if($info['id']) {
-                $this->renderSuccess('已经存在', $info);
+                $this->renderFailed('已经存在', $info);
             }
             else {
                 $map['uid'] = $uid;
@@ -80,7 +80,7 @@ class ClassesController extends HomeController {
                 $data['uid'] = $uid;
                 $data['classid'] = $class_id;
                 M('member')->save($data);
-                $this->renderFailed('加入成功');
+                $this->renderSuccess('加入成功');
             } else {
                 $this->renderFailed('您已经加入过该班级');
             }
