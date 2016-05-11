@@ -253,7 +253,7 @@ class SnsController extends HomeController {
 	    if(IS_POST) {
 	        $who_follow = is_login();
 	        if(!$who_follow) {
-	            $this->renderFailed('请先登录');
+	            $this->renderFailed('请先登录', -1);
 	        }
 	        $follow_list = I('uids', '', 'trim');
 	        if(empty($follow_list)) {

@@ -318,10 +318,13 @@ abstract class Controller {
     }
     
     /* 返回失败json格式  */
-    public function renderFailed($msg = '') {
+    public function renderFailed($msg = '', $code = '') {
         $result['status'] = 0;
         if(!empty($msg)) {
             $result['info'] = $msg;
+        }
+        if(!empty($code)) {
+            $result['status'] = $code;
         }
         // 返回JSON数据格式到客户端 包含状态信息
         header('Content-Type:application/json; charset=utf-8');
