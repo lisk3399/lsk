@@ -27,6 +27,14 @@ class ClassesController extends HomeController {
             if(empty($class_name)) {
                 $this->renderFailed('请输入班级名');
             }
+            
+            //是否已经有班级
+            $class_id = $this->isJoin($uid);
+            if($class_id) {
+                $class_info = $this->getByClassId($class_id);
+                $this->renderFailed('您已经加入过'.$class_info['class']);
+            }
+            
             //检查班级是否存在
             $map['class'] = $class_name;
             $Classes = M('classes');
