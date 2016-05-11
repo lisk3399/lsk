@@ -30,10 +30,15 @@ class WorkController extends HomeController {
 	    //发布顺序倒序排列
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title')
+	    ->field('w.id,w.cover_url,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->join('__MEMBER__ m on m.uid = w.uid')
 	    ->order('w.id desc')
 	    ->select();
+	    
+	    foreach ($list as &$row) {
+	        $row['avatar'] = !empty($row['avatar'])?$row['avatar']:C('USER_INFO_DEFAULT.avatar');
+	    }
 	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
