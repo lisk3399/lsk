@@ -44,7 +44,7 @@ class UcenterMemberModel extends Model{
 	protected $_auto = array(
 		array('password', 'think_ucenter_md5', self::MODEL_BOTH, 'function', UC_AUTH_KEY),
 		array('reg_time', NOW_TIME, self::MODEL_INSERT),
-		array('reg_ip', 'get_client_ip', self::MODEL_INSERT, 'function', 1),
+		array('reg_ip', 'get_client_ip', self::MODEL_INSERT, 'function'),
 		array('update_time', NOW_TIME),
 		array('status', 'getStatus', self::MODEL_BOTH, 'callback'),
 	);
@@ -190,7 +190,7 @@ class UcenterMemberModel extends Model{
 		$data = array(
 			'id'              => $uid,
 			'last_login_time' => NOW_TIME,
-			'last_login_ip'   => get_client_ip(1),
+			'last_login_ip'   => get_client_ip(),
 		);
 		$this->save($data);
 	}
@@ -310,7 +310,7 @@ class UcenterMemberModel extends Model{
 	    $info = array(
 	        'mobile' => $mobile,
 	        'reg_time' => NOW_TIME,
-	        'reg_ip' => get_client_ip(1),
+	        'reg_ip' => get_client_ip(),
 	        'status' => 1
 	    );
 	    $uid = $this->add($info);

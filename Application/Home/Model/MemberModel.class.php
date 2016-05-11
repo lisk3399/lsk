@@ -19,7 +19,7 @@ class MemberModel extends Model{
     /* 用户模型自动完成 */
     protected $_auto = array(
         array('login', 0, self::MODEL_INSERT),
-        array('reg_ip', 'get_client_ip', self::MODEL_INSERT, 'function', 1),
+        array('reg_ip', 'get_client_ip', self::MODEL_INSERT, 'function'),
         array('reg_time', NOW_TIME, self::MODEL_INSERT),
         array('last_login_ip', 0, self::MODEL_INSERT),
         array('last_login_time', 0, self::MODEL_INSERT),
@@ -80,7 +80,7 @@ class MemberModel extends Model{
             'uid'             => $user['uid'],
             'login'           => array('exp', '`login`+1'),
             'last_login_time' => NOW_TIME,
-            'last_login_ip'   => get_client_ip(1),
+            'last_login_ip'   => get_client_ip(),
         );
         $this->save($data);
 
