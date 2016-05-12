@@ -205,6 +205,14 @@ class SnsController extends HomeController {
 	        
 	        //关注
 	        if($this->followOne($who_follow, $follow_who)) {
+	            //更新用户关注数
+	            $map['uid'] = $who_follow;
+	            M('member')->where($map)->setInc('follows');
+	            
+	            //更新被关注用户粉丝数
+	            $map['$uid'] = $follow_who;
+	            M('member')->where($map)->setInc('fans');
+	            
 	            $this->renderSuccess('关注成功');
 	        } else {
 	            $this->renderFailed('关注失败');
@@ -239,6 +247,13 @@ class SnsController extends HomeController {
 	    
 	        //取消关注
 	        if($Follow->where($map)->delete()) {
+	            //更新用户关注数
+	            $map['uid'] = $who_follow;
+	            M('member')->where($map)->setDec('follows');
+	             
+	            //更新被关注用户粉丝数
+	            $map['$uid'] = $follow_who;
+	            M('member')->where($map)->setDec('fans');
 	            $this->renderSuccess('取消关注成功');
 	        } else {
 	            $this->renderFailed('取消关注失败');

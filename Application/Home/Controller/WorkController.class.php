@@ -189,6 +189,9 @@ class WorkController extends HomeController {
     	        //更新素材作品数
     	        $map['id'] = $material_id;
     	        M('document')->where($map)->setInc('works');
+    	        //更新用户作品数
+    	        $map['$uid'] = $uid;
+    	        M('member')->where($map)->setInc('works');
     	        $this->renderSuccess('发布成功');
     	    } else {
     	        $this->renderFailed('发布失败，请重试');
@@ -300,9 +303,12 @@ class WorkController extends HomeController {
 	        $data['create_time'] = NOW_TIME;
 	        $Likes = M('likes');
 	    	if($Likes->add($data)) {
-	    	    //更新点赞数
+	    	    //更新作品点赞数
 	    	    $map['id'] = $work_id;
 	    	    M('work')->where($map)->setInc('likes');
+	    	    //更新用户点赞数
+	    	    $map['uid'] = $uid;
+	    	    M('member')->where($map)->setInc('likes');
 	    	    $this->renderSuccess('点赞成功');
 	    	    //TODO 发送消息
 	        }
@@ -339,9 +345,13 @@ class WorkController extends HomeController {
 	        $map['work_id'] = $work_id;
 	        $Likes = M('likes');
 	        if($Likes->where($map)->delete()) {
-	            //更新点赞数
+	            //更新作品点赞数
 	            $map['id'] = $work_id;
 	            M('work')->where($map)->setDec('likes');
+	            //更新用户点赞数
+	            $map['uid'] = $uid;
+	            M('member')->where($map)->setDec('likes');
+	            
 	            $this->renderSuccess('取消点赞');
 	        }
 	        else {
