@@ -32,7 +32,7 @@ class WorkController extends HomeController {
 	    ->page($page, $rows)
 	    ->field('w.id,w.cover_url,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-	    ->join('__MEMBER__ m on m.uid = w.uid')
+	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->order('w.id desc')
 	    ->select();
 	    
@@ -364,8 +364,8 @@ class WorkController extends HomeController {
 	 */
 	public function batchUserWork($uids, $page, $rows) {
 	    $info = array();
-	    
-	    $info = M('work')->alias('w')
+	    $Work = M('work');
+	    $info = $Work->alias('w')
 	    ->page($page, $rows)
 	    ->field('w.id,w.cover_url,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
@@ -432,19 +432,49 @@ class WorkController extends HomeController {
 	        $rows = C('API_MAX_ROWS');
 	    }
 	    
-	    $list = M('Work')->alias('w')
-	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title')
-	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-	    ->join('__LIKES__ l on l.uid = w.uid', 'left')
-	    ->where(array('w.uid'=>$uid))
+	    $Like = M('likes');
+	    $member_list = $Like->page($page, $rows)
+	    ->field('work_id')
+	    ->where(array('uid'=>$uid))
+	    ->order('id desc')
 	    ->select();
+	    
+	    //数组转换
+	    $memberArr = array();
+	    foreach ($member_list as $key=>$row) {
+	        $memberArr[$key] = $row['work_id'];
+	    }
+	    $ids = implode(',', $memberArr);
+	    $list = $this->getWorkByIds($ids, $page, $rows);	    
 	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
 	     
 	    $this->renderSuccess('', $list);
+	}
+	
+	/**
+	 * 根据id批量获取作品
+	 */
+	private function getWorkByIds($ids, $page, $rows) {
+	    $info = array();
+	    $Work = M('work');
+	    $info = $Work->alias('w')
+	    ->page($page, $rows)
+	    ->field('w.id,w.cover_url,d.title,m.avatar')
+	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
+	    ->where('w.id in ('.$ids.')')
+	    ->select();
+	    
+	    //设置默认头像
+	    if(is_array($info) && count($info)>0) {
+	        $Api = new userapi;
+	        $info = $Api->setDefaultAvatar($info);
+	    }
+	    
+	    return $info;
 	}
 	
 	/**
