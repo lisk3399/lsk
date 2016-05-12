@@ -27,6 +27,11 @@ class ClassesController extends HomeController {
             if(empty($class_name)) {
                 $this->renderFailed('请输入班级名');
             }
+            //创建班级字符限制
+//             if(!preg_match("/^[\u4e00-\u9fa5][a-zA-Z0-9]+$/u", $class_name)) {
+//                 $this->renderFailed('只能输入中文或数字');
+//             }
+//             $this->renderFailed('ok');
             
             //是否已经有班级
             $class_id = $this->isJoin($uid);
@@ -154,10 +159,10 @@ class ClassesController extends HomeController {
         $map['uid'] = $uid;
         $info = M('member')->field('classid')->where($map)->find();
         
-        if(!$info['classid']) {
-            return false;
+        if($info['classid']) {
+            return $info['classid'];
         }
-        return $info['classid'];
+        return false;
     }
     
     /**
