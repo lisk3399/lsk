@@ -209,7 +209,8 @@ class WorkController extends HomeController {
 	        $this->renderFailed('作品不存在');
 	    }
 	    
-	    $detail = M('Work')->alias('w')
+	    $Work = M('work');
+	    $detail = $Work->alias('w')
 	    ->field('m.nickname,m.avatar,dm.outlink,d.title,w.description,w.create_time')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__DOCUMENT_MATERIAL__ dm on dm.id = d.id', 'left')
@@ -222,6 +223,11 @@ class WorkController extends HomeController {
 	    }
 	    
 	    $detail['create_time'] = date('Y-m-d', $detail['create_time']);
+	    
+	    //更新查看数
+	    $map['id'] = $work_id;
+	    $Work->where($map)->setInc('views');
+	    
         $this->renderSuccess('', $detail);
 	}
 	
@@ -291,15 +297,11 @@ class WorkController extends HomeController {
 	        $data['create_time'] = NOW_TIME;
 	        $Likes = M('likes');
 	    	if($Likes->add($data)) {
-	    	    //增加作品点赞数
-	    	    if($this->updateLike($work_id, 'add')) {
-// 	    	        $User = new UserApi();
-// 	    	        $type = C('MESSAGE_TYPE.LIKE');
-// 	    	        $User->sendMessage($uid, $type);
-	                $this->renderSuccess('点赞成功');
-	    	    } else {
-	    	        $this->renderFailed('更新点赞失败', $this->error);
-	    	    }
+	    	    //更新点赞数
+	    	    $map['id'] = $work_id;
+	    	    M('work')->where($map)->setInc('likes');
+	    	    $this->renderSuccess('点赞成功');
+	    	    //TODO 发送消息
 	        }
 	        else {
 	            $this->renderFailed('点赞失败');
@@ -326,7 +328,7 @@ class WorkController extends HomeController {
 	        }
 	        //判断是否已经点赞
 	        if(!$this->checkLike($uid, $work_id)) {
-	            $this->renderFailed('没有给该作品点赞');
+	            //$this->renderFailed('没有给该作品点赞');
 	        }
 	         
 	        //喜欢表去掉对应关系
@@ -334,12 +336,10 @@ class WorkController extends HomeController {
 	        $map['work_id'] = $work_id;
 	        $Likes = M('likes');
 	        if($Likes->where($map)->delete()) {
-	            //减少作品点赞数
-	            if($this->updateLike($work_id, 'minus')) {
-	                $this->renderSuccess('取消点赞');
-	            } else {
-	                $this->renderFailed('取消点赞失败', $this->error);
-	            }
+	            //更新点赞数
+	            $map['id'] = $work_id;
+	            M('work')->where($map)->setDec('likes');
+	            $this->renderSuccess('取消点赞');
 	        }
 	        else {
 	            $this->renderFailed('取消点赞失败');
@@ -559,8 +559,11 @@ class WorkController extends HomeController {
 // 	        if($this->checkComment($uid, $work_id)) {
 // 	            
 // 	        }
-	        
-	        if(M('comment')->add($data)){
+	        $Comment = M('comment');
+	        if($Comment->add($data)){
+	            //更新评论数
+	            $map = array('id' => $work_id);
+	            $Comment->where($map)->setInc('comments');
 	            $this->renderSuccess('评论成功');
 	        }
 	        $this->renderFailed('评论失败');
