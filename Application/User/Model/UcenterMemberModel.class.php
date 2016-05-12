@@ -147,7 +147,7 @@ class UcenterMemberModel extends Model{
 		} else {
 			$map['uid'] = $uid;
 		}
-		$user = D('Member')->where($map)->field('uid,nickname,avatar,signature,sex,birthday,status')->find();
+		$user = D('Member')->where($map)->field('uid,nickname,avatar,signature,sex,birthday,status,works,likes,follows,fans')->find();
 		if(is_array($user) && $user['status'] == 1){
 		    $user['avatar'] = !empty($user['avatar'])?$user['avatar']: C('USER_INFO_DEFAULT.avatar');
 		    $user['signature'] = !empty($user['signature'])?$user['signature']: C('USER_INFO_DEFAULT.signature');
