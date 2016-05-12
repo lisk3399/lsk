@@ -51,7 +51,7 @@ class ClassesController extends HomeController {
                 $map['uid'] = $uid;
                 $ret = $Classes->add($map);
                 if($ret) {
-                    $this->renderSuccess('创建成功，我们会对学校进行审核');
+                    $this->renderSuccess('创建成功');
                 } else {
                     $this->renderFailed('创建失败请重试');
                 }
