@@ -188,6 +188,7 @@ class UserApi extends Api{
         $Member = M('member');
         $info = $Member->field('uid,nickname,avatar')->where('uid in ('.$uids.')')->select();
         if(!empty($info['uid'])) {
+            //默认头像
             foreach ($info as &$row) {
                 $row['avatar'] = !empty($row['avatar'])?$row['avatar']:C('USER_INFO_DEFAULT.avatar');
             }
