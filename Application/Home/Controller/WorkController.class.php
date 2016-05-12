@@ -186,6 +186,9 @@ class WorkController extends HomeController {
     	    
     	    $Work = M('work');
     	    if($Work->add($data)) {
+    	        //更新素材作品数
+    	        $map['id'] = $material_id;
+    	        M('document')->where($map)->setInc('works');
     	        $this->renderSuccess('发布成功');
     	    } else {
     	        $this->renderFailed('发布失败，请重试');

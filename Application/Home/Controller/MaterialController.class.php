@@ -111,6 +111,9 @@ class MaterialController extends HomeController {
 	        $data['mid'] = $material_id;
 	        $data['create_time'] = NOW_TIME;
 	        if($Fav->add($data)) {
+	            //更新收藏数
+	            $map['id'] = $material_id;
+	            M('document')->where($map)->setInc('favourite');
 	            $this->renderSuccess('收藏成功');
 	        }
 	        else {
