@@ -217,7 +217,7 @@ class WorkController extends HomeController {
 	    
 	    $Work = M('work');
 	    $detail = $Work->alias('w')
-	    ->field('m.nickname,m.avatar,dm.outlink,d.title,w.description,w.create_time,w.likes,w.views,w.comments')
+	    ->field('m.nickname,m.avatar,dm.outlink,d.title,w.cover_url,w.video_url,w.description,w.create_time,w.likes,w.views,w.comments')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__DOCUMENT_MATERIAL__ dm on dm.id = d.id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
