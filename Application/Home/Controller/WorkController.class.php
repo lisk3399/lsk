@@ -66,7 +66,7 @@ class WorkController extends HomeController {
 	    
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title')
+	    ->field('w.id,w.cover_url,d.title,w.views')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->where(array('w.uid'=>$uid))
 	    ->select();
