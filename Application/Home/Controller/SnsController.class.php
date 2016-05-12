@@ -157,7 +157,7 @@ class SnsController extends HomeController {
 	    $Follow = M('follow');
 	    $member_list = $Follow
 	    ->page($page, $rows)
-        ->field('who_follow')
+        ->field('who_follow,relation')
 	    ->where(array('follow_who'=>$uid))
 	    ->select();
 	    
@@ -171,7 +171,8 @@ class SnsController extends HomeController {
 	        //批量获取用户信息
 	        $User = new UserApi;
 	        $list = $User->batchMemberInfo($uids);
-	        if(count($list) == 0) {
+	        
+	        if(is_array($list) && count($list) == 0) {
 	            $this->renderFailed('没有更多了');
 	        }
 	        $this->renderSuccess('', $list);
