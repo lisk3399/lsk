@@ -221,12 +221,7 @@ class WorkController extends HomeController {
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__DOCUMENT_MATERIAL__ dm on dm.id = d.id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid')
-	    ->where(array('w.uid'=>$uid))
 	    ->find();
-	    
-	    if(count($detail) == 0) {
-	        $this->renderFailed('您还没有作品');
-	    }
 	    
 	    $detail['create_time'] = date('Y-m-d', $detail['create_time']);
 	    
