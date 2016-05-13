@@ -640,7 +640,7 @@ class WorkController extends HomeController {
     	    $Work = M('work');
     	    $list = $Work->alias('w')
     	    ->page($page, $rows)
-    	    ->field('w.id,w.cover_url,w.description,w.views,w.likes,w.comments,w.create_time,d.title,m.avatar')
+    	    ->field('w.id,w.cover_url,w.description,w.views,w.likes,w.comments,w.create_time,d.title,m.avatar,m.nickname')
     	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
     	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
     	    ->where(array('d.id'=>$material_id))
@@ -648,7 +648,7 @@ class WorkController extends HomeController {
     	    ->select();
     	    
     	    if(is_array($list) && count($list)>0) {
-    	        $Api->setDefaultAvatar($list);
+    	        $list = $Api->setDefaultAvatar($list);
     	        foreach ($list as &$row){
     	            $row['create_time'] = date('Y-m-d', $row['create_time']);
     	        }
