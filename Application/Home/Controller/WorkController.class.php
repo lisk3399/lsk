@@ -30,7 +30,7 @@ class WorkController extends HomeController {
 	    //发布顺序倒序排列
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title,m.avatar')
+	    ->field('w.id,w.cover_url,w.views,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->order('w.id desc')
@@ -259,7 +259,7 @@ class WorkController extends HomeController {
 	    
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title')
+	    ->field('w.id,w.cover_url,w.views,d.title')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->where(array('w.uid'=>$uid))
 	    ->select();
@@ -367,7 +367,7 @@ class WorkController extends HomeController {
 	    $Work = M('work');
 	    $info = $Work->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title,m.avatar')
+	    ->field('w.id,w.cover_url,w.views,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where('w.uid in ('.$uids.')')
@@ -503,7 +503,7 @@ class WorkController extends HomeController {
 	    
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title')
+	    ->field('w.id,w.cover_url,w.views,d.title')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__LIKES__ l on l.uid = w.uid', 'left')
 	    ->where(array('w.uid'=>$uid))
@@ -607,5 +607,43 @@ class WorkController extends HomeController {
 	        }
 	        $this->renderFailed('评论失败');
 	    }
+	}
+	
+	/**
+	 * 最新作品-某素材下的最新作品列表
+	 */
+	public function latestMaterialWork() {
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	     
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+		$material_id = I('mid', '', 'intval');
+	    if(empty($material_id)) {
+	        $this->renderFailed('没有素材');
+	    }
+	    //素材是否存在
+        $Api = new UserApi();
+	    if(!$Api->checkMaterialExists($material_id)) {
+	        $this->renderFailed('素材不存在');
+	    }
+	    
+	    $Work = M('work');
+	    $list = $Work->alias('w')
+	    ->page($page, $rows)
+	    ->field('w.id,w.cover_url,w.views,d.title')
+	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->where(array('d.id'=>$material_id))
+	    ->order('w.id desc')
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	     
+	    $this->renderSuccess('', $list);
 	}
 }
