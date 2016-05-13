@@ -610,7 +610,7 @@ class WorkController extends HomeController {
 	}
 	
 	/**
-	 * 最新作品-某素材下的最新作品列表
+	 * 最新作品-某素材下的作品列表
 	 */
 	public function latestMaterialWork() {
 	    if(IS_POST) {
@@ -623,6 +623,7 @@ class WorkController extends HomeController {
     	    }
     	    
     		$material_id = I('mid', '', 'intval');
+    		$order = I('order', '', 'trim');
     	    if(empty($material_id)) {
     	        $this->renderFailed('没有素材');
     	    }
@@ -632,13 +633,17 @@ class WorkController extends HomeController {
     	        $this->renderFailed('素材不存在');
     	    }
     	    
+    	    $order = 'w.id desc';
+    	    if(order === 'likes') {
+    	        $order = 'w.likes desc';
+    	    }
     	    $Work = M('work');
     	    $list = $Work->alias('w')
     	    ->page($page, $rows)
-    	    ->field('w.id,w.cover_url,w.views,d.title')
+    	    ->field('w.id,w.cover_url,w.views,w.likes,d.title')
     	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
     	    ->where(array('d.id'=>$material_id))
-    	    ->order('w.id desc')
+    	    ->order($order)
     	    ->select();
     	    
     	    if(count($list) == 0) {
