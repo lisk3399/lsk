@@ -33,6 +33,7 @@ class WorkController extends HomeController {
 	    ->field('w.id,w.material_id,w.cover_url,w.views,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
+	    ->where(array('is_delete'=>0))
 	    ->order('w.id desc')
 	    ->select();
 	    
@@ -68,7 +69,7 @@ class WorkController extends HomeController {
 	    ->page($page, $rows)
 	    ->field('w.id,w.cover_url,d.title,w.views')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-	    ->where(array('w.uid'=>$uid))
+	    ->where(array('w.uid'=>$uid,'is_delete'=>0))
 	    ->select();
 	     
 	    if(count($list) == 0) {
@@ -260,7 +261,7 @@ class WorkController extends HomeController {
 	    ->page($page, $rows)
 	    ->field('w.id,w.cover_url,w.views,d.title')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-	    ->where(array('w.uid'=>$uid))
+	    ->where(array('w.uid'=>$uid,'is_delete'=>0))
 	    ->select();
 	    
 	    if(count($list) == 0) {
@@ -370,6 +371,7 @@ class WorkController extends HomeController {
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where('w.uid in ('.$uids.')')
+	    ->where(array('is_delete'=>0))
 	    ->select();
 	    
 	    //设置默认头像
@@ -434,7 +436,7 @@ class WorkController extends HomeController {
 	    $Like = M('likes');
 	    $member_list = $Like->page($page, $rows)
 	    ->field('work_id')
-	    ->where(array('uid'=>$uid))
+	    ->where(array('uid'=>$uid,'is_delete'=>0))
 	    ->order('id desc')
 	    ->select();
 	    
@@ -505,7 +507,7 @@ class WorkController extends HomeController {
 	    ->field('w.id,w.cover_url,w.views,d.title')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__LIKES__ l on l.uid = w.uid', 'left')
-	    ->where(array('w.uid'=>$uid))
+	    ->where(array('w.uid'=>$uid,'is_delete'=>0))
 	    ->select();
 	     
 	    if(count($list) == 0) {
@@ -521,7 +523,7 @@ class WorkController extends HomeController {
 	 */
 	private function checkWorkExists($work_id) {
 	    $Material = M('work');
-	    $res = $Material->where(array('id'=>$work_id))->field('id')->find();
+	    $res = $Material->where(array('id'=>$work_id,'is_delete'=>0))->field('id')->find();
 	    if(!$res['id']) {
 	        return false;
 	    }
@@ -642,7 +644,7 @@ class WorkController extends HomeController {
     	    ->field('w.id,w.cover_url,w.description,w.views,w.likes,w.comments,w.create_time,d.title,m.avatar,m.nickname')
     	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
     	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
-    	    ->where(array('d.id'=>$material_id))
+    	    ->where(array('d.id'=>$material_id,'is_delete'=>0))
     	    ->order($order)
     	    ->select();
     	    

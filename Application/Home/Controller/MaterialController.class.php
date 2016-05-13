@@ -214,8 +214,8 @@ class MaterialController extends HomeController {
 	    
 	    $list = M('work')
 	    ->page($page, $rows)
-	    ->field('cover_url,likes,create_time')
-	    ->where(array('material_id'=>$material_id))
+	    ->field('id,cover_url,likes,create_time')
+	    ->where(array('material_id'=>$material_id,'is_delete'=>0))
 	    ->select();
 	    
 	    if(count($list) == 0) {
