@@ -330,4 +330,16 @@ class UserApi extends Api{
         }
         return $info;
     }
+    
+    /**
+     * 检查素材是否存在
+     */
+    public function checkMaterialExists($material_id) {
+        $Material = M('document_material');
+        $res = $Material->where(array('id'=>$material_id))->field('id')->find();
+        if(!$res['id']) {
+            return false;
+        }
+        return true;
+    }
 }

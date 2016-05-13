@@ -265,11 +265,10 @@ class MaterialController extends HomeController {
 	 * @param int $material_id 素材id
 	 */
 	private function checkMaterialExists($material_id) {
-	    $Material = M('document_material');
-	    $res = $Material->where(array('id'=>$material_id))->field('id')->find();
-	    if(!$res['id']) {
-	        return false;
+	    $Api = new UserApi();
+	    if($Api->checkMaterialExists($material_id)) {
+	        return true;
 	    }
-	    return true;
+        return false;
 	}
 }
