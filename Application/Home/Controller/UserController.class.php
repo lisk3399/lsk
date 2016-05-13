@@ -170,7 +170,7 @@ class UserController extends HomeController {
 	}
 
 	/* 根据用户id获取用户信息 */
-	public function getUserInfo(){
+	public function getUserInfoByID(){
 	    if(!is_login()) {
 	        $this->renderFailed('请先登录');
 	    }
@@ -184,7 +184,7 @@ class UserController extends HomeController {
 	    }
 	    $userinfo = $User->info($uid);
 	    
-	    $this->renderSuccess('获取单个用户信息', $userinfo);
+	    $this->renderSuccess('获取用户信息', $userinfo);
 	}
 	
 	/* 修改用户信息 */
