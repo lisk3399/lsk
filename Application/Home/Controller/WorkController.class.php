@@ -30,7 +30,7 @@ class WorkController extends HomeController {
 	    //发布顺序倒序排列
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,w.views,d.title,m.avatar')
+	    ->field('w.id,w.material_id,w.cover_url,w.views,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->order('w.id desc')
@@ -131,7 +131,6 @@ class WorkController extends HomeController {
 	    $User = new UserApi;
 	    $class = $User->getClassByUid($uid);
 	    $class_id = $class['classid'];
-	    
 	    $uids = $User->getClassUser($class_id, $page, $rows);
 	    
 	    if(!empty($uids)) {
