@@ -129,7 +129,7 @@ class ClassesController extends HomeController {
         if(IS_POST) {
             $uid = is_login();
             if(!$uid) {
-                $this->renderFailed('请先登录');
+                $this->renderFailed('请先登录', -1);
             }
             
             if($this->isJoin($uid)) {

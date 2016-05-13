@@ -9,6 +9,7 @@
 
 namespace Admin\Controller;
 use Think\Upload\Driver\Qiniu\QiniuStorage;
+use Think\Upload\Driver\Qiniu\Etag;
 
 /**
  * 七牛扩展类测试控制器
@@ -134,12 +135,22 @@ tpl;
     //上传单个文件 用uploadify
     public function uploadOne(){
         $file = $_FILES['qiniu_file'];
+        $filename = explode('.', $file['name']);
+        $ext = $filename[1];
+        
+        //重新生成文件名
+        $etag = new Etag();
+        $etagname = $etag->GetEtag($file['tmp_name']);
+
+        $fileName = $etagname[0].'.'.$ext;
         $file = array(
             'name'=>'file',
-            'fileName'=>$file['name'],
+            'fileName'=>$fileName,
             'fileBody'=>file_get_contents($file['tmp_name'])
         );
+        
         $config = array();
+        
         $result = $this->qiniu->upload($config, $file);
         if($result){
             $this->success('上传成功','', $result);
