@@ -157,7 +157,7 @@ class UserController extends HomeController {
 		}
 	}
 	
-	/* 获取用户信息 */
+	/* 获取登录用户信息 */
 	public function userInfo(){
 	    $uid = is_login();
 	    if(!$uid) {
@@ -169,7 +169,7 @@ class UserController extends HomeController {
 	    $this->renderSuccess('获取用户信息', $userinfo);
 	}
 
-	/* 获取某个用户信息 */
+	/* 根据用户id获取用户信息 */
 	public function getUserInfo(){
 	    if(!is_login()) {
 	        $this->renderFailed('请先登录');
@@ -210,8 +210,8 @@ class UserController extends HomeController {
     	        $this->renderFailed('头像不为空');
     	    }
     	    if(!empty($data['signature'])) {
-    	        if(strlen($data['signature'])<2 || strlen($data['signature'])>300) {
-    	            $this->renderFailed(self::STATUS_FAILURE, '昵称由2-100个字符组成');
+    	        if(strlen($data['signature'])<2 || strlen($data['signature'])>75) {
+    	            $this->renderFailed(self::STATUS_FAILURE, '昵称由2-25个字符组成');
     	        }
     	    }
     	    
