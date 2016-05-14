@@ -333,6 +333,7 @@ class SnsController extends HomeController {
 	public function searchUser() {
 	    if(IS_POST) {
 	        $keywords = I('keywords', '', 'trim');
+	        
 	        if(empty($keywords)) {
 	            $this->renderFailed('请输入搜索关键词');
 	        }
@@ -346,6 +347,9 @@ class SnsController extends HomeController {
 	         
 	        $result = M('member')->page($page, $rows)->field('uid,nickname,avatar')->where('nickname like "%'.$keywords.'%"')->select();
 	        if(is_array($result) && count($result) > 0) {
+	            $Api = new UserApi;
+	            $result = $Api->setDefaultAvatar($result);
+	            
 	            $this->renderSuccess('查询结果', $result);
 	        }
 	        $this->renderFailed('暂无结果');
