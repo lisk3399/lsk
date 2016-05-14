@@ -109,7 +109,7 @@ class MaterialController extends HomeController {
 	        
 	        //是否收藏过
 	        $Fav = M('material_fav');
-	        $res = $Fav->where(array('mid'=>$material_id))->field('id')->find();
+	        $res = $Fav->where(array('mid'=>$material_id,'uid'=>$uid))->field('id')->find();
 	        if($res['id']) {
 	            $this->renderFailed('您已经收藏过了');
 	        }
@@ -126,6 +126,48 @@ class MaterialController extends HomeController {
 	        }
 	        else {
 	            $this->renderSuccess('收藏失败');
+	        }
+	    }
+	}
+	
+	/**
+	 * 取消收藏素材
+	 */
+	public function removeFavMaterial() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('请先登录');
+	        }
+	         
+	        $material_id = I('mid', '', 'intval');
+	        if(empty($material_id)) {
+	            $this->renderFailed('请选择要收藏的对象');
+	        }
+	        //素材是否存在
+	        if(!$this->checkMaterialExists($material_id)) {
+	            $this->renderFailed('素材不存在');
+	        }
+	         
+	        //是否收藏过
+	        $Fav = M('material_fav');
+	        $res = $Fav->where(array('mid'=>$material_id,'uid'=>$uid))->field('id')->find();
+	        if(!$res['id']) {
+	            $this->renderFailed('您没有收藏该素材');
+	        }
+	         
+	        //取消收藏
+	        $data['uid'] = $uid;
+	        $data['mid'] = $material_id;
+	        
+	        if($Fav->where($data)->delete()) {
+	            //更新收藏数
+	            $map['id'] = $material_id;
+	            M('document')->where($map)->setDec('favourite');
+	            $this->renderSuccess('取消收藏成功');
+	        }
+	        else {
+	            $this->renderSuccess('取消收藏失败');
 	        }
 	    }
 	}
