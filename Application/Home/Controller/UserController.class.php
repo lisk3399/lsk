@@ -34,6 +34,33 @@ class UserController extends HomeController {
 		    $platform = I('post.platform', '', 'trim');
 		    $device_id = I('post.device_id', '', 'trim');
 		    
+		    if(empty($mobile)) {
+		        $this->renderFailed('手机号码不能为空');
+		    }
+		    if(!preg_match('/^1(3[0-9]|5[0-35-9]|8[025-9])\d{8}$/', $mobile)) {
+		        $this->renderFailed('手机号码格式不正确');
+		    }
+		    if(empty($password)) {
+		        $this->renderFailed('密码不能为空');
+		    }
+		    if(!preg_match('/^[0-9a-zA-Z]{6,20}$/', $password)) {
+		        $this->renderFailed('密码长度为6-20位的字母和数字');
+		    }
+		    if(empty($repassword)) {
+		        $this->renderFailed('重复密码不能为空');
+		    }
+		    if($password !== $repassword) {
+		        $this->renderFailed('两次密码输入不一致');
+		    }
+		    if(empty($verify)) {
+		        $this->renderFailed('请输入手机获取到的验证码');
+		    }
+		    //手机号唯一验证
+		    $Api = new UserApi;
+		    if($Api->checkMobileExist($mobile)) {
+		        $this->renderFailed('该手机号已经注册');
+		    }
+            
 			//短信验证
             $ret = $this->sms_verify($mobile, $verify);
             if(!ret) {
@@ -306,6 +333,9 @@ class UserController extends HomeController {
             }
             if(empty($password)) {
                 $this->renderFailed('请输入密码');
+            }
+            if(!preg_match('/^[0-9a-zA-Z]{6,20}$/', $password)) {
+                $this->renderFailed('密码长度为6-20位的字母和数字');
             }
             if(empty($verify)) {
                 $this->renderFailed('请输入验证码');

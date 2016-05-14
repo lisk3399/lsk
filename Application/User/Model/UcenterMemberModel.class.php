@@ -26,18 +26,7 @@ class UcenterMemberModel extends Model{
 
 	/* 用户模型自动验证 */
 	protected $_validate = array(
-	    /* 验证手机号码 */
-	    array('mobile', 'require', -1, self::MUST_VALIDATE), //手机号码不能为空
-	    array('mobile', '/^1(3[0-9]|5[0-35-9]|8[025-9])\d{8}$/', -2, self::MUST_VALIDATE, 'regex'), //手机格式不正确
 	    array('mobile', '', -3, self::MUST_VALIDATE, 'unique'), //手机号已经存在
-	    array('mobile', 'checkDenyMobile', -7, self::MUST_VALIDATE, 'callback'), //手机禁止注册
-	    
-		/* 验证密码 */
-		array('password', '/^(?![^a-zA-Z]+$)(?!\D+$).{6,20}$/', -4, self::MUST_VALIDATE, 'regex'), //密码6-20位，包含字母和数字
-	    array('repassword', 'password', -5, self::MUST_VALIDATE, 'confirm'),  //两次密码输入不一致
-	    array('verify', 'require', -6, self::MUST_VALIDATE),
-	    
-	    array('device_id', 'require', -8, self::MUST_VALIDATE),
 	);
 
 	/* 用户模型自动完成 */
