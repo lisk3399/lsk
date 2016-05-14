@@ -450,4 +450,33 @@ class UserController extends HomeController {
         unset($data['username']);
         return $data;
     }
+    
+    /**
+     * 用户反馈
+     */
+    public function feedback() {
+        if(IS_POST) {
+            $content = I('content', '', 'trim');
+            if(empty($content)) {
+                $this->renderFailed('请输入您想反馈的内容');
+            }
+            if(!preg_match('/^[0-9a-zA-Z\x{4e00}-\x{9fa5}]{3,200}$/u', $content)) {
+                $this->renderFailed('请输入长度为3-200的中英文或数字');
+            }
+            $mobile = I('mobile', '', 'trim');
+            $data['content'] = $content;
+            $data['mobile'] = !empty($mobile) ? $mobile : '';
+            $data['create_time'] = NOW_TIME;
+            
+            $FeedBack = M('feedback');
+            if($FeedBack->create($data)) {
+                $ret = $FeedBack->add();
+                if($ret) {
+                    $this->renderSuccess('感谢您的反馈');
+                } else {
+                    $this->renderSuccess('反馈失败');
+                }
+            }
+        }
+    }
 }
