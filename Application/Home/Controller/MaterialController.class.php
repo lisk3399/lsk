@@ -58,25 +58,33 @@ class MaterialController extends HomeController {
 	    $rows = I('rows', '20', 'intval');
 	    $cateid = I('cateid', '', 'intval');
 	    
-	    if(empty($cateid)) {
-	        $this->renderFailed('分类id为空');
-	    }
+	    if(!empty($cateid)) {
+	        $map = array('category_id'=>$cateid);
+	    } else {
+	        $map = '1 = 1';
+	    } 
 	    
 	    //限制单次最大读取数量
 	    if($rows > C('API_MAX_ROWS')) {
 	        $rows = C('API_MAX_ROWS');
 	    }
 	    
-	    $list = M('Document')->alias('d')
+	    $Document = M('Document');
+	    $list = $Document->alias('d')
 	    ->page($page, $rows)
 	    ->field('d.id,d.title,d.description,d.cover_id,m.*')
 	    ->join('__DOCUMENT_MATERIAL__ m on d.id = m.id', 'left')
-	    ->where(array('category_id'=>$cateid))
+	    ->where($map)
 	    ->select();
 	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
+	    //处理封面图
+	    foreach ($list as &$row) {
+	        $row['cover_url'] = !empty($row['cover_id']) ? C('WEBSITE_URL').get_cover($row['cover_id'], 'path') :'';
+	    }
+	    
 	    $this->renderSuccess('', $list);
 	}
 	
