@@ -342,4 +342,17 @@ class UserApi extends Api{
         }
         return true;
     }
+    
+    /**
+     * 根据文件id获取文件url
+     */
+    public function getFileUrl($id) {
+        $File = M('file');
+        $info = $File->getById($id);
+        if($info['id']) {
+            return $info['url'];
+        }
+        return '';
+    }
+    
 }

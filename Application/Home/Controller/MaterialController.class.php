@@ -7,6 +7,9 @@
 namespace Home\Controller;
 
 use User\Api\UserApi;
+use Think\Model;
+use Common\Api\ModelApi;
+
 /**
  * 素材控制器
  */
@@ -75,14 +78,20 @@ class MaterialController extends HomeController {
 	    ->field('d.id,d.title,d.description,d.cover_id,m.*')
 	    ->join('__DOCUMENT_MATERIAL__ m on d.id = m.id', 'left')
 	    ->where($map)
+	    ->order('d.id desc')
 	    ->select();
 	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
-	    //处理封面图
+	    
+	    //附件id转附件链接
+	    $Api = new UserApi;
 	    foreach ($list as &$row) {
 	        $row['cover_url'] = !empty($row['cover_id']) ? C('WEBSITE_URL').get_cover($row['cover_id'], 'path') :'';
+	        $row['audio'] = !empty($row['audio']) ? $Api->getFileUrl($row['audio']) :'';
+	        $row['lyrics'] = !empty($row['lyrics']) ? $Api->getFileUrl($row['lyrics']) :'';
+	        $row['video'] = !empty($row['video']) ? $Api->getFileUrl($row['video']) :'';
 	    }
 	    
 	    $this->renderSuccess('', $list);
@@ -202,9 +211,13 @@ class MaterialController extends HomeController {
 	    }
 	    
 	    //获取封面图片
+	    $Api = new UserApi;
 	    foreach ($list as &$row) {
 	        $cover_img = get_cover($row['cover_id'], 'path');
 	        $row['cover_img'] = C('WEBSITE_URL').$cover_img;
+	        $row['audio'] = !empty($row['audio']) ? $Api->getFileUrl($row['audio']) :'';
+	        $row['lyrics'] = !empty($row['lyrics']) ? $Api->getFileUrl($row['lyrics']) :'';
+	        $row['video'] = !empty($row['video']) ? $Api->getFileUrl($row['video']) :'';
 	    }
 	    
 	    $this->renderSuccess('', $list);
@@ -234,9 +247,12 @@ class MaterialController extends HomeController {
     	    
     	    //获取素材封面
     	    $cover_img = get_cover($detail['cover_id'], 'path');
-    	    $detail['cover_img'] = C('WEBSITE_URL').$cover_img;
+    	    $detail['cover_url'] = C('WEBSITE_URL').$cover_img;
     	    //获取素材附件
-    	    $detail['attach_url'] = get_attach($detail['attach']);
+    	    $Api = new UserApi;
+    	    $detail['audio'] = !empty($detail['audio']) ? $Api->getFileUrl($detail['audio']) :'';
+    	    $detail['lyrics'] = !empty($detail['lyrics']) ? $Api->getFileUrl($detail['lyrics']) :'';
+    	    $detail['video'] = !empty($detail['video']) ? $Api->getFileUrl($detail['video']) :'';
     	    
     	    $this->renderSuccess('', $detail);
 	    }
