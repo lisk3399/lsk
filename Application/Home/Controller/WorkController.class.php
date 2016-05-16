@@ -30,7 +30,7 @@ class WorkController extends HomeController {
 	    //发布顺序倒序排列
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.material_id,w.cover_url,w.views,d.title,m.avatar')
+	    ->field('w.id,w.material_id,w.cover_url,w.views,w.likes,d.title,m.avatar,m.nickname')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where(array('is_delete'=>0))
@@ -544,19 +544,21 @@ class WorkController extends HomeController {
 	
 	    $page = I('page', '1', 'intval');
 	    $rows = I('rows', '20', 'intval');
-	     
+	    
 	    //限制单次最大读取数量
 	    if($rows > C('API_MAX_ROWS')) {
 	        $rows = C('API_MAX_ROWS');
 	    }
 	    
-	    $count = M('comment')->alias('c')
-	    ->field('m.uid,m.nickname,m.avatar,c.content,c.create_time')
+	    $Comment = M('comment');
+	    $count = $Comment->alias('c')
+	    ->field('m.uid')
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
 	    ->where(array('c.work_id'=>$work_id))->count();
 	    
-	    $list = M('comment')->alias('c')
-	    ->field('m.uid,m.nickname,m.avatar,c.content,c.create_time')
+	    $list = $Comment->alias('c')
+	    ->page($page, $rows)
+	    ->field('m.uid,m.nickname,m.avatar,c.to_uid,c.content,c.create_time')
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
 	    ->where(array('c.work_id'=>$work_id))
 	    ->select();
@@ -564,6 +566,9 @@ class WorkController extends HomeController {
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
+	    //设置默认头像
+	    $Api = new UserApi;
+	    $list = $Api->setDefaultAvatar($list);
 	    
 	    $this->renderSuccess('', $list);
 	}
@@ -660,6 +665,28 @@ class WorkController extends HomeController {
     	    }
     	     
     	    $this->renderSuccess('', $list);
+	    }
+	}
+	
+	/**
+	 * 增加浏览量
+	 */
+	public function addViews() {
+	    if(IS_POST) {
+	        if(!is_login()) {
+	            $this->renderFailed('需要登录');
+	        }
+    	    $work_id = I('id', '', 'intval');
+    	    if(empty($work_id)) {
+    	        $this->renderFailed('id为空');
+    	    }
+    	    $Work = M('work');
+    	    $map['id'] = $work_id;
+    	    $ret = $Work->where($map)->setInc('views');
+    	    
+    	    if($ret) {
+    	        $this->renderSuccess('success');
+    	    }
 	    }
 	}
 }

@@ -318,7 +318,7 @@ class UserApi extends Api{
     //TODO: 消息已读标记
     
     /**
-     * 设置默认头像
+     * 设置默认值
      * @param $info 数组
      * @retur $info
      */
