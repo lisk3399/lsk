@@ -13,7 +13,7 @@ class WorkController extends AdminController {
         
         $Work = M('work');
         $list = $Work->alias('w')
-        ->field('w.id,w.uid,w.material_id,w.is_original,w.video_url,w.cover_url,w.description,d.title,m.nickname')
+        ->field('w.id,w.uid,w.material_id,w.type,w.video_url,w.cover_url,w.description,d.title,m.nickname')
         ->join('__DOCUMENT__ d on w.material_id = d.id', 'left')
         ->join('__MEMBER__ m on m.uid = w.uid', 'left')
         ->order('w.id desc')->select();

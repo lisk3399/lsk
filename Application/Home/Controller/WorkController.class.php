@@ -42,10 +42,18 @@ class WorkController extends HomeController {
 	    }
 	    
 		//设置默认头像
-	    if(is_array($list) && count($list)>0) {
-            $Api = new userapi;
-            $list = $Api->setDefaultAvatar($list);
+        $Api = new userapi;
+        $list = $Api->setDefaultAvatar($list);
+	    //是否点赞输出
+	    $uid = is_login();
+	    if($uid) {
+            $list = $Api->getIsLike($list, $uid);
+	    } else {
+	        foreach ($list as &$row) {
+	            $row['is_like'] = 0;
+	        }
 	    }
+        
 	    $this->renderSuccess('', $list);
 	}
 	
@@ -161,10 +169,15 @@ class WorkController extends HomeController {
     	    $video_url = I('video_url', '', 'trim');
     	    $cover_url = I('cover_url', '', 'trim');
     	    $description = I('description', '', 'trim');
-    	    $is_original = I('is_original', 0, 'intval');
+    	    $type = I('type', '', 'trim');
     	    
+    	    //作品类型：原创/对口型/配音秀
+    	    $types = array('ORIGINAL', 'LIPSYNC', 'DUBBING');
+    	    if(!in_array($type, $types)) {
+    	        $this->renderFailed('类型不正确');
+    	    }
     	    //非原创素材id不为空
-    	    if($is_original == 0){
+    	    if($type != 'ORIGINAL'){
     	        if(empty($material_id)) {
     	            $this->renderFailed('素材为空');
     	        }
@@ -181,7 +194,7 @@ class WorkController extends HomeController {
     	    $data['video_url'] = $video_url;
     	    $data['cover_url'] = $cover_url;
     	    $data['description'] = $description;
-    	    $data['is_original'] = $is_original;
+    	    $data['type'] = $type;
     	    $data['create_time'] = NOW_TIME;
     	    
     	    $Work = M('work');

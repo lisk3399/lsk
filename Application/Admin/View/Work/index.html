@@ -6,7 +6,6 @@
 </block>
 
 <block name="body">
-
 	<!-- 按钮工具栏 -->
 	<div class="cf">
 		<div class="fl">
@@ -100,13 +99,13 @@
 						<td>{$data.id}</td>
 						<td>{$data.nickname}</td>
 						<td>{$data.title}</td>
-						<td><if condition="($data.is_original == 1)">原创<else />非原创</if></td>
+						<td><if condition="$data.type eq 'ORIGINAL'">原创<elseif condition="$data.type eq 'LIPSYNC'" />对口型<else />配音秀</if></td>
 						<td><img class="thumbnails" src="{$data.cover_url}" width='100px' height='100px;' /></td>
 						<td>
 						<video id="video_{$data.id}" src='' controls="controls" autoplay="autoplay" height="130px" width="auto" style="display:none"></video>
 						<a href='javascript:preview({$data.id}, "{$data.video_url}")'>预览</a>
 						</td>
-						<td>查看 修改 删除</td>
+						<td>查看 删除</td>
                     </tr>
                 </volist>
             </tbody>

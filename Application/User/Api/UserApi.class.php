@@ -355,4 +355,36 @@ class UserApi extends Api{
         return '';
     }
     
+    /**
+     * 用户是否给某用户点赞
+     * @param array $list 数组
+     * @param int $uid 用户id
+     */
+    public function getIsLike($list, $uid) {
+        if(is_array($list)) {
+            foreach ($list as &$row) {
+                $row['is_like'] = 0;
+                if($this->isLike($uid, $row['id'])){
+                    $row['is_like'] = 1;
+                }
+            }
+        }
+        return $list;
+    }
+    
+    /**
+     * 用户是否给某作品点赞
+     * @param int $uid
+     * @param int $work_id
+     */
+    public function isLike($uid, $work_id) {
+        $Like = M('likes');
+        $map['uid'] = $uid;
+        $map['work_id'] = $work_id;
+        $ret = $Like->field('id')->where($map)->find();
+        if($ret['id']) {
+            return true;
+        }
+        return false;
+    }
 }
