@@ -582,6 +582,9 @@ class WorkController extends HomeController {
 	    //设置默认头像
 	    $Api = new UserApi;
 	    $list = $Api->setDefaultAvatar($list);
+        foreach ($list as &$row) {
+            $row['content'] = rawurldecode($row['content']);
+        }
 	    
 	    $this->renderSuccess('', $list);
 	}
@@ -610,7 +613,7 @@ class WorkController extends HomeController {
 	
 	        $data['uid'] = $uid;
 	        $data['work_id'] = $work_id;
-	        $data['content'] = $content;
+	        $data['content'] = rawurlencode($content);
 	        $data['create_time'] = NOW_TIME;
 	        
 	        //TODO:判断重复评论
@@ -620,8 +623,9 @@ class WorkController extends HomeController {
 	        $Comment = M('comment');
 	        if($Comment->add($data)){
 	            //更新评论数
+	            $Work = M('work');
 	            $map = array('id' => $work_id);
-	            $Comment->where($map)->setInc('comments');
+	            $Work->where($map)->setInc('comments');
 	            $this->renderSuccess('评论成功');
 	        }
 	        $this->renderFailed('评论失败');
