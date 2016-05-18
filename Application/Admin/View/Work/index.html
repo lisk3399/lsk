@@ -6,6 +6,9 @@
 </block>
 
 <block name="body">
+	<div class="main-title">
+	当前分类：{$type}
+	</div>
 	<!-- 按钮工具栏 -->
 	<div class="cf">
 		<div class="fl">
@@ -29,9 +32,6 @@
 			</div>
             <button class="btn ajax-post" target-form="ids" url="{:U("Article/setStatus",array("status"=>1))}">启 用</button>
 			<button class="btn ajax-post" target-form="ids" url="{:U("Article/setStatus",array("status"=>0))}">禁 用</button>
-			<button class="btn ajax-post" target-form="ids" url="{:U("Article/move")}">移 动</button>
-			<button class="btn ajax-post" target-form="ids" url="{:U("Article/copy")}">复 制</button>
-			<button class="btn ajax-post" target-form="ids" hide-data="true" url="{:U("Article/paste")}">粘 贴</button>
 			<input type="hidden" class="hide-data" name="cate_id" value="{$cate_id}"/>
 			<input type="hidden" class="hide-data" name="pid" value="{$pid}"/>
 			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Article/setStatus",array("status"=>-1))}">删 除</button>

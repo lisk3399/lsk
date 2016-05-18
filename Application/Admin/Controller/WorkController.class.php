@@ -10,17 +10,36 @@ class WorkController extends AdminController {
     
     public function index() {
         //$this->getMenu();
-        
+        $type = I('type', '', 'trim');
+        if(!empty($type)) {
+            $map['w.type'] = $type;
+        } else {
+            $map = '1 = 1';
+        }
         $Work = M('work');
         $list = $Work->alias('w')
         ->field('w.id,w.uid,w.material_id,w.type,w.video_url,w.cover_url,w.description,d.title,m.nickname')
         ->join('__DOCUMENT__ d on w.material_id = d.id', 'left')
         ->join('__MEMBER__ m on m.uid = w.uid', 'left')
+        ->where($map)
         ->order('w.id desc')->select();
         
-        
         $this->assign('list', $list);
+        
+        if(!in_array($type, array('DUBBING', 'LIPSYNC', 'ORIGINAL'))) {
+            $this->error('类型不正确');
+        }
+        $types = array(
+            'DUBBING' => '配音秀',
+            'LIPSYNC' => '对口型',
+            'ORIGINAL' => '原创'
+        );
+        $this->assign('type', $types[$type]);
         $this->display();
+    }
+    
+    public function type() {
+        
     }
     
     /**
