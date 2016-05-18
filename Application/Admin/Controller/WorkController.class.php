@@ -13,6 +13,14 @@ class WorkController extends AdminController {
         $type = I('type', '', 'trim');
         if(!empty($type)) {
             $map['w.type'] = $type;
+            if(!in_array($type, array('DUBBING', 'LIPSYNC', 'ORIGINAL'))) {
+                $this->error('类型不正确');
+            }
+            $types = array(
+                'DUBBING' => '配音秀',
+                'LIPSYNC' => '对口型',
+                'ORIGINAL' => '原创'
+            );
         } else {
             $map = '1 = 1';
         }
@@ -25,15 +33,6 @@ class WorkController extends AdminController {
         ->order('w.id desc')->select();
         
         $this->assign('list', $list);
-        
-        if(!in_array($type, array('DUBBING', 'LIPSYNC', 'ORIGINAL'))) {
-            $this->error('类型不正确');
-        }
-        $types = array(
-            'DUBBING' => '配音秀',
-            'LIPSYNC' => '对口型',
-            'ORIGINAL' => '原创'
-        );
         $this->assign('type', $types[$type]);
         $this->display();
     }

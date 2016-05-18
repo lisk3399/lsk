@@ -30,13 +30,9 @@
 					</button>
 				</gt>
 			</div>
-            <button class="btn ajax-post" target-form="ids" url="{:U("Article/setStatus",array("status"=>1))}">启 用</button>
-			<button class="btn ajax-post" target-form="ids" url="{:U("Article/setStatus",array("status"=>0))}">禁 用</button>
 			<input type="hidden" class="hide-data" name="cate_id" value="{$cate_id}"/>
 			<input type="hidden" class="hide-data" name="pid" value="{$pid}"/>
-			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Article/setStatus",array("status"=>-1))}">删 除</button>
-			<!-- <button class="btn document_add" url="{:U('article/batchOperate',array('cate_id'=>$cate_id,'pid'=>I('pid',0)))}">导入</button> -->
-			<button class="btn list_sort" url="{:U('sort',array('cate_id'=>$cate_id,'pid'=>I('pid',0)),'')}">排序</button>
+			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setStatus",array("status"=>0))}">删 除</button>
 		</div>
 
 		<!-- 高级搜索 -->
@@ -105,7 +101,7 @@
 						<video id="video_{$data.id}" src='' controls="controls" autoplay="autoplay" height="130px" width="auto" style="display:none"></video>
 						<a href='javascript:preview({$data.id}, "{$data.video_url}")'>预览</a>
 						</td>
-						<td>查看 删除</td>
+						<td>删除</td>
                     </tr>
                 </volist>
             </tbody>
