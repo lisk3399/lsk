@@ -42,6 +42,7 @@ class ClassesController extends HomeController {
             
             //检查班级是否存在
             $map['class'] = $class_name;
+            $map['create_time'] = NOW_TIME;
             $Classes = M('classes');
             $info = $Classes->field('id,province,city,district,school,class')->where($map)->find();
             if($info['id']) {
