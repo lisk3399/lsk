@@ -84,7 +84,7 @@ class UserController extends HomeController {
 				        $data['session_id'] = session_id();
 				    }
 				}
-                $User->updateNickname($uid);
+                $data['nickname'] = $User->updateNickname($uid);
 				$this->renderSuccess('注册成功！', $data);
 			} else { //注册失败，显示错误信息
 			    $this->renderFailed($this->showRegError($uid));

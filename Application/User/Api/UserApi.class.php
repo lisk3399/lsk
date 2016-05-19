@@ -104,7 +104,11 @@ class UserApi extends Api{
     public function updateNickname($uid) {
 		$data['uid'] = $uid;
 		$data['nickname'] = '用户_'.$uid;
-		M('member')->save($data);
+		if(M('member')->save($data)) {
+		    return $data['nickname'];
+		} else {
+		    return '';
+		}
     }
     
     /**
