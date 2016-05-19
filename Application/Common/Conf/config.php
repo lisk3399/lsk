@@ -14,6 +14,7 @@
 return array(
     /* 站点配置 */
     'WEBSITE_URL' => 'http://42.120.11.155',
+    //'WEBSITE_URL' => 'http://192.168.20.3',
     
     /* 模块相关配置 */
     'AUTOLOAD_NAMESPACE' => array('Addons' => ONETHINK_ADDON_PATH), //扩展模块列表
@@ -59,7 +60,7 @@ return array(
     
     /* 默认用户信息 */
     'USER_INFO_DEFAULT' => array(
-        'avatar' => 'http://vod.doushow.com/dbh_avatar_default.jpg',
+        'avatar' => 'http://vod.doushow.com/dbh_avatar_default.png',
         'signature' => '这家伙很懒，什么签名都没写~'
     ),
     
