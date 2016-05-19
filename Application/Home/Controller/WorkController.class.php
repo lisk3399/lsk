@@ -106,7 +106,6 @@ class WorkController extends HomeController {
 	    //获取关注用户列表
 	    $User = new UserApi;
 	    $uids = $User->getUserFollow($uid, $page, $rows);
-
 	    if(!empty($uids)) {
 	        //批量获取用户作品
 	        $list = $this->batchUserWork($uids, $page, $rows);
@@ -243,6 +242,15 @@ class WorkController extends HomeController {
 	    //更新查看数
 	    $map['id'] = $work_id;
 	    $Work->where($map)->setInc('views');
+	    
+	    //是否点赞输出
+	    $Api = new UserApi;
+	    $detail['is_like'] = 0;
+	    if($uid) {
+	        if($Api->isLike($uid, $work_id)) {
+	            $detail['is_like'] = 1;
+	        }
+	    }
 	    
         $this->renderSuccess('', $detail);
 	}
