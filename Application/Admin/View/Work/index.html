@@ -32,7 +32,7 @@
 			</div>
 			<input type="hidden" class="hide-data" name="cate_id" value="{$cate_id}"/>
 			<input type="hidden" class="hide-data" name="pid" value="{$pid}"/>
-			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setStatus",array("status"=>0))}">删 除</button>
+			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setStatus",array("is_delete"=>1))}">删 除</button>
 		</div>
 
 		<!-- 高级搜索 -->
@@ -101,7 +101,7 @@
 						<video id="video_{$data.id}" src='' controls="controls" autoplay="autoplay" height="130px" width="auto" style="display:none"></video>
 						<a href='javascript:preview({$data.id}, "{$data.video_url}")'>预览</a>
 						</td>
-						<td>删除</td>
+						<td><a href='{:U("Work/setStatus",array("is_delete"=>1, "ids"=>$data["id"]))}'>删除</a></td>
                     </tr>
                 </volist>
             </tbody>
@@ -202,7 +202,11 @@ $(function(){
     });
 })
 function preview(id, url) {
-	$('#video_'+id).attr('src', url);
+	if($('#video_'+id).attr('src') == '') {
+		$('#video_'+id).attr('src', url);
+	} else {
+		$('#video_'+id).attr('src', '');
+	}
 	$('#video_'+id).toggle(500);
 }
 </script>

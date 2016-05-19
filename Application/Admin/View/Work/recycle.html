@@ -12,8 +12,8 @@
 	</div>
 
     <div class="tools auth-botton">
-        <button url="{:U('article/clear')}" class="btn ajax-get">清 空</button>
-        <button url="{:U('article/permit')}" class="btn ajax-post" target-form="ids">还 原</button>
+        <!-- <button url="{:U('work/clear')}" class="btn ajax-get">清 空</button> -->
+        <button url="{:U("Work/setStatus",array("is_delete"=>0))}" class="btn ajax-post" target-form="ids">还 原</button>
     </div>
 
 	<!-- 数据列表 -->
@@ -22,28 +22,30 @@
     <thead>
         <tr>
 		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
-		<th class="">编号</th>
-		<th class="">标题</th>
-		<th class="">创建者</th>
-		<th class="">类型</th>
-		<th class="">分类</th>
-		<th class="">删除时间</th>
-		<th class="">操作</th>
+					<th>编号</th>
+					<th>用户</th>
+					<th>素材名</th>
+					<th>类型</th>
+					<th>作品封面</th>
+					<th>作品</th>
+					<th>操作</th>
 		</tr>
     </thead>
     <tbody>
-		<volist name="list" id="vo">
-		<tr>
-            <td><input class="ids" type="checkbox" name="ids[]" value="{$vo.id}" /></td>
-			<td>{$vo.id} </td>
-			<td>{$vo.title}</td>
-			<td>{$vo.username} </td>
-			<td><span>{:get_document_type($vo['type'])}</span></td>
-			<td><span>{:get_cate($vo['category_id'])}</span></td>
-			<td><span>{$vo.update_time|time_format}</span></td>
-			<td><a href="{:U('article/permit?ids='.$vo['id'])}" class="ajax-get">还原</a>
-                </td>
-		</tr>
+		<volist name="list" id="data">
+		    <tr>
+		        <td><input class="ids" type="checkbox" value="{$data['id']}" name="ids[]"></td>
+				<td>{$data.id}</td>
+				<td>{$data.nickname}</td>
+				<td>{$data.title}</td>
+				<td><if condition="$data.type eq 'ORIGINAL'">原创<elseif condition="$data.type eq 'LIPSYNC'" />对口型<else />配音秀</if></td>
+				<td><img class="thumbnails" src="{$data.cover_url}" width='100px' height='100px;' /></td>
+				<td>
+				<video id="video_{$data.id}" src='' controls="controls" autoplay="autoplay" height="130px" width="auto" style="display:none"></video>
+				<a href='javascript:preview({$data.id}, "{$data.video_url}")'>预览</a>
+				</td>
+				<td><a href="{:U("Work/setStatus",array("is_delete"=>0, "ids"=>$data["id"]))}" class="ajax-get">还原</td>
+		    </tr>
 		</volist>
 	</tbody>
     </table> 
@@ -52,4 +54,14 @@
     <div class="page">
         {$_page}
     </div>
+    <script>
+function preview(id, url) {
+	if($('#video_'+id).attr('src') == '') {
+		$('#video_'+id).attr('src', url);
+	} else {
+		$('#video_'+id).attr('src', '');
+	}
+	$('#video_'+id).toggle(500);
+}
+</script>
 </block>
