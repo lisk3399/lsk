@@ -30,7 +30,7 @@ class WorkController extends HomeController {
 	    //发布顺序倒序排列
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,d.title,m.avatar,m.nickname')
+	    ->field('w.id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,d.title,d.cover_id,m.avatar,m.nickname')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where(array('is_delete'=>0))
@@ -44,6 +44,12 @@ class WorkController extends HomeController {
 		//设置默认头像
         $Api = new userapi;
         $list = $Api->setDefaultAvatar($list);
+        
+        //设置素材封面图
+        foreach ($list as &$row) {
+            $row['material_cover_url'] = !empty($row['cover_id'])?get_cover($row['cover_id'], 'path'):'';
+            unset($row['cover_id']);
+        }
 	    //是否点赞输出
 	    $uid = is_login();
 	    if($uid) {
