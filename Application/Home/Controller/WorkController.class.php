@@ -47,7 +47,7 @@ class WorkController extends HomeController {
         
         //设置素材封面图
         foreach ($list as &$row) {
-            $row['material_cover_url'] = !empty($row['cover_id'])?get_cover($row['cover_id'], 'path'):'';
+            $row['material_cover_url'] = !empty($row['cover_id'])?C('WEBSITE_URL').get_cover($row['cover_id'], 'path'):'';
             unset($row['cover_id']);
         }
 	    //是否点赞输出
@@ -235,7 +235,7 @@ class WorkController extends HomeController {
 	    
 	    $Work = M('work');
 	    $detail = $Work->alias('w')
-	    ->field('m.nickname,m.avatar,d.title,w.cover_url,w.video_url,w.description,w.create_time,w.likes,w.views,w.comments')
+	    ->field('m.nickname,m.avatar,d.title,d.cover_id,w.cover_url,w.video_url,w.description,w.create_time,w.likes,w.views,w.comments')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__DOCUMENT_MATERIAL__ dm on dm.id = d.id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
@@ -245,10 +245,12 @@ class WorkController extends HomeController {
 	    $detail['create_time'] = date('Y-m-d', $detail['create_time']);
         $detail['avatar'] = !empty($detail['avatar'])?$detail['avatar']:C('USER_INFO_DEFAULT.avatar');
 	    
-	    //更新查看数
-	    $map['id'] = $work_id;
-	    $Work->where($map)->setInc('views');
-	    
+        //设置素材封面图
+        if(!empty($detail['cover_id'])) {
+            $detail['material_cover_url'] = C('WEBSITE_URL').get_cover($detail['cover_id'], 'path');
+            unset($detail['cover_id']);
+        }
+        
 	    //是否点赞输出
 	    $Api = new UserApi;
 	    $detail['is_like'] = 0;
@@ -257,6 +259,10 @@ class WorkController extends HomeController {
 	            $detail['is_like'] = 1;
 	        }
 	    }
+
+	    //更新查看数
+	    $map['id'] = $work_id;
+	    $Work->where($map)->setInc('views');
 	    
         $this->renderSuccess('', $detail);
 	}
