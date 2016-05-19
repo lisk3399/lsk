@@ -230,7 +230,7 @@ class WorkController extends HomeController {
 	    
 	    $Work = M('work');
 	    $detail = $Work->alias('w')
-	    ->field('m.nickname,m.avatar,dm.outlink,d.title,w.cover_url,w.video_url,w.description,w.create_time,w.likes,w.views,w.comments')
+	    ->field('m.nickname,m.avatar,d.title,w.cover_url,w.video_url,w.description,w.create_time,w.likes,w.views,w.comments')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__DOCUMENT_MATERIAL__ dm on dm.id = d.id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
@@ -238,6 +238,7 @@ class WorkController extends HomeController {
 	    ->find();
 	    
 	    $detail['create_time'] = date('Y-m-d', $detail['create_time']);
+        $detail['avatar'] = !empty($detail['avatar'])?$detail['avatar']:C('USER_INFO_DEFAULT.avatar');
 	    
 	    //更新查看数
 	    $map['id'] = $work_id;
