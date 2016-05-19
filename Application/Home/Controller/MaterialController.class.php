@@ -60,12 +60,7 @@ class MaterialController extends HomeController {
 	    $page = I('page', '1', 'intval');
 	    $rows = I('rows', '20', 'intval');
 	    $cateid = I('cateid', '', 'intval');
-	    
-	    if(!empty($cateid)) {
-	        $map = array('category_id'=>$cateid);
-	    } else {
-	        $map = '1 = 1';
-	    } 
+	    $pid = I('pid', '', 'intval');
 	    
 	    //限制单次最大读取数量
 	    if($rows > C('API_MAX_ROWS')) {
@@ -73,14 +68,28 @@ class MaterialController extends HomeController {
 	    }
 	    
 	    $Document = M('Document');
-	    $list = $Document->alias('d')
+	    $Document = $Document->alias('d')
 	    ->page($page, $rows)
 	    ->field('d.id,d.title,d.description,d.cover_id,m.*')
-	    ->join('__DOCUMENT_MATERIAL__ m on d.id = m.id', 'left')
-	    ->where($map)
+	    ->join('__DOCUMENT_MATERIAL__ m on d.id = m.id', 'left');
+	    
+	    //传分类id
+	    if(!empty($cateid)) {
+	        $map = array('d.category_id'=>$cateid);
+	    }
+	    //传父类id
+	    elseif (!empty($pid)) {
+	        $map = array('c.pid'=>$pid);
+	        $Document->join('__CATEGORY__ c on c.id = d.category_id', 'left');
+	    }
+	    else {
+	        $map = '1 = 1';
+	    }
+	    
+	    $list = $Document->where($map)
 	    ->order('d.id desc')
 	    ->select();
-	    
+
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
