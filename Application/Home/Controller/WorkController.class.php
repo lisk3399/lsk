@@ -30,7 +30,7 @@ class WorkController extends HomeController {
 	    //发布顺序倒序排列
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,m.uid,w.material_id,w.cover_url,w.video_url,w.views,w.likes,d.title,d.cover_id,m.avatar,m.nickname')
+	    ->field('w.id,w.uid,w.material_id,w.cover_url,w.video_url,w.views,w.likes,d.title,d.cover_id,m.avatar,m.nickname')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where(array('is_delete'=>0))
@@ -81,7 +81,7 @@ class WorkController extends HomeController {
 	    
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,d.title,w.views')
+	    ->field('w.id,w.uid,w.cover_url,d.title,w.views')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->where(array('w.uid'=>$uid,'is_delete'=>0))
 	    ->select();
@@ -293,7 +293,7 @@ class WorkController extends HomeController {
 	    
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,w.views,d.title')
+	    ->field('w.id,w.uid,w.cover_url,w.views,d.title')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->where(array('w.uid'=>$uid,'is_delete'=>0))
 	    ->select();
@@ -401,7 +401,7 @@ class WorkController extends HomeController {
 	    $Work = M('work');
 	    $info = $Work->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,w.views,d.title,m.avatar')
+	    ->field('w.id,w.uid,w.cover_url,w.views,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where('w.uid in ('.$uids.')')
@@ -538,7 +538,7 @@ class WorkController extends HomeController {
 	    
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.cover_url,w.views,d.title')
+	    ->field('w.id,w.uid,w.cover_url,w.views,d.title')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__LIKES__ l on l.uid = w.uid', 'left')
 	    ->where(array('w.uid'=>$uid,'is_delete'=>0))
@@ -684,7 +684,7 @@ class WorkController extends HomeController {
     	    $Work = M('work');
     	    $list = $Work->alias('w')
     	    ->page($page, $rows)
-    	    ->field('w.id,w.cover_url,w.description,w.views,w.likes,w.comments,w.create_time,d.title,m.avatar,m.nickname')
+    	    ->field('w.id,w.uid,w.cover_url,w.description,w.views,w.likes,w.comments,w.create_time,d.title,m.avatar,m.nickname')
     	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
     	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
     	    ->where(array('d.id'=>$material_id,'is_delete'=>0))
