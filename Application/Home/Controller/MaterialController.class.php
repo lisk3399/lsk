@@ -94,6 +94,7 @@ class MaterialController extends HomeController {
 	        $this->renderFailed('没有更多了');
 	    }
 	    
+	    $uid = is_login();
 	    //附件id转附件链接
 	    $Api = new UserApi;
 	    foreach ($list as &$row) {
@@ -101,6 +102,10 @@ class MaterialController extends HomeController {
 	        $row['audio'] = !empty($row['audio']) ? $Api->getFileUrl($row['audio']) :'';
 	        $row['lyrics'] = !empty($row['lyrics']) ? $Api->getFileUrl($row['lyrics']) :'';
 	        $row['video'] = !empty($row['video']) ? $Api->getFileUrl($row['video']) :'';
+	        $row['is_fav'] = 0;
+	        if($uid) {
+	            $row['is_fav'] = $Api->isFav($uid, $row['id']);
+	        }
 	    }
 	    
 	    $this->renderSuccess('', $list);

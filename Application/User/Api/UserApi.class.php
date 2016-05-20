@@ -348,6 +348,20 @@ class UserApi extends Api{
     }
     
     /**
+     * 是否收藏
+     */
+    public function isFav($uid, $mid) {
+        $Fav = M('material_fav');
+        $map['mid'] = $mid; //素材id
+        $map['uid'] = $uid; //用户id
+        $ret = $Fav->field('id')->where($map)->find();
+        if($ret['id']) {
+            return 1;
+        }
+        return 0;
+    }
+    
+    /**
      * 根据文件id获取文件url
      */
     public function getFileUrl($id) {
