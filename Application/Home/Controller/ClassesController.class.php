@@ -42,16 +42,17 @@ class ClassesController extends HomeController {
             
             //检查班级是否存在
             $map['class'] = $class_name;
-            $map['create_time'] = NOW_TIME;
             $Classes = M('classes');
-            $info = $Classes->field('id,province,city,district,school,class')->where($map)->find();
+            $info = $Classes->field('id')->where($map)->find();
             if($info['id']) {
                 $this->renderFailed('已经存在', $info);
             }
             else {
                 $map['uid'] = $uid;
+                $map['create_time'] = NOW_TIME;
                 $ret = $Classes->add($map);
                 if($ret) {
+                    $this->autoJoinClass($uid, $ret);
                     $this->renderSuccess('创建成功');
                 } else {
                     $this->renderFailed('创建失败请重试');
@@ -91,6 +92,18 @@ class ClassesController extends HomeController {
                 $this->renderFailed('您已经加入过该班级');
             }
         }
+    }
+    
+    /**
+     * 创建班级后自动加入
+     */
+    private function autoJoinClass($uid, $class_id) {
+        $data['uid'] = $uid;
+        $data['classid'] = $class_id;
+        if(M('member')->save($data)) {
+            return true;
+        }
+        return false;
     }
     
     /**
