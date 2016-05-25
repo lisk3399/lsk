@@ -21,7 +21,7 @@ class ClassesController extends HomeController {
         if(IS_POST) {
             $uid = is_login();
             if(!$uid) {
-                $this->renderFailed('请先登录');
+                $this->renderFailed('请先登录', '-1');
             }
             $class_name = I('class_name', '', 'trim');
             if(empty($class_name)) {
@@ -68,7 +68,7 @@ class ClassesController extends HomeController {
         if(IS_POST) {
             $uid = is_login();
             if(!$uid) {
-                $this->renderFailed('请先登录');
+                $this->renderFailed('请先登录', '-1');
             }
             //是否已经有班级
             $class_id = $this->isJoin($uid);
@@ -113,7 +113,7 @@ class ClassesController extends HomeController {
         if(IS_POST) {
             $uid = is_login();
             if(!$uid) {
-                $this->renderFailed('请先登录');
+                $this->renderFailed('请先登录', '-1');
             }
             
             $keywords = I('keywords', '', 'trim');
