@@ -335,11 +335,11 @@ class UserController extends HomeController {
             if(empty($verify)) {
                 $this->renderFailed('请输入验证码');
             }
-//             //后端短信验证
-//             $ret = $this->sms_verify($mobile, $verify);
-//             if(!ret) {
-//                 $this->renderFailed('短信验证失败~');
-//             }
+            //后端短信验证
+            $ret = $this->sms_verify($mobile, $verify);
+            if(!ret) {
+                $this->renderFailed('短信验证失败~');
+            }
             if(empty($password)) {
                 $this->renderFailed('请输入新密码');
             }
