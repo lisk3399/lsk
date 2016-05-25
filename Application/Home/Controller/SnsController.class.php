@@ -422,6 +422,15 @@ class SnsController extends HomeController {
 	    $data['create_time'] = NOW_TIME;
 	    
 	    if($Follow->add($data)) {
+	        
+	        //更新用户关注数
+	        $map['uid'] = $who_follow;
+	        M('member')->where($map)->setInc('follows');
+	         
+	        //更新被关注用户粉丝数
+	        $map['$uid'] = $follow_who;
+	        M('member')->where($map)->setInc('fans');
+	        
 	        return true;
 	    } else {
 	        return false;
