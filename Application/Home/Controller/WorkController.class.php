@@ -607,7 +607,8 @@ class WorkController extends HomeController {
             $row['content'] = rawurldecode($row['content']);
         }
 	    
-	    $this->renderSuccess('', $list);
+        $extra['count'] = $count;
+	    $this->renderSuccess('', $list, $extra);
 	}
 	
 	/**
