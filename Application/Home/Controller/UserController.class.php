@@ -37,14 +37,19 @@ class UserController extends HomeController {
 		    if(empty($mobile)) {
 		        $this->renderFailed('手机号码不能为空');
 		    }
+		    //手机号唯一验证
+		    $Api = new UserApi;
+		    if($Api->checkMobileExist($mobile)) {
+		        $this->renderFailed('该手机号已经注册');
+		    }
 		    if(!preg_match('/^1(3[0-9]|5[0-35-9]|8[025-9])\d{8}$/', $mobile)) {
 		        $this->renderFailed('手机号码格式不正确');
 		    }
 		    if(empty($password)) {
 		        $this->renderFailed('密码不能为空');
 		    }
-		    if(!preg_match('/^[0-9a-zA-Z]{6,20}$/', $password)) {
-		        $this->renderFailed('密码长度为6-20位的字母和数字');
+		    if(!preg_match('/^([0-9]|[a-z]|[A-Z]){6,20}$/', $password)) {
+		        $this->renderFailed('密码长度为6-20位的字母或数字');
 		    }
 		    if(empty($repassword)) {
 		        $this->renderFailed('重复密码不能为空');
@@ -55,12 +60,6 @@ class UserController extends HomeController {
 		    if(empty($verify)) {
 		        $this->renderFailed('请输入手机获取到的验证码');
 		    }
-		    //手机号唯一验证
-		    $Api = new UserApi;
-		    if($Api->checkMobileExist($mobile)) {
-		        $this->renderFailed('该手机号已经注册');
-		    }
-            
 			//短信验证
             $ret = $this->sms_verify($mobile, $verify);
             if(!ret) {
@@ -117,7 +116,7 @@ class UserController extends HomeController {
 	            $this->renderFailed('请求校验验证码频繁（5分钟内同一号码最多只能校验三次）');
 	            break;
 	        case '468':
-	            $this->renderFailed('验证码错误');
+	            $this->renderFailed('验证码错误或已经使用，请稍后重新获取验证码');
 	            break;
 	        default:
 	            $this->renderFailed('短信验证失败:'.$resultCode);
@@ -272,7 +271,7 @@ class UserController extends HomeController {
 			case -1:  $error = '手机号码不能为空'; break;
 			case -2:  $error = '手机格式不正确'; break;
 			case -3:  $error = '该手机号已经注册过'; break;
-			case -4:  $error = '密码长度在6-20个字符，包含字母和数字'; break;
+			case -4:  $error = '密码长度在6-20个字母或数字'; break;
 			case -5:  $error = '两次密码不一致'; break;
 			case -6: $error = '手机验证码不能为空'; break;
 			case -7: $error = '该手机号码被禁止注册'; break;
@@ -304,7 +303,9 @@ class UserController extends HomeController {
             if($data['password'] !== $repassword){
                 $this->renderFailed('您输入的新密码与确认密码不一致');
             }
-
+            if(!preg_match('/^([0-9]|[a-z]|[A-Z]){6,20}$/', $data['password'])) {
+                $this->renderFailed('密码长度为6-20位字母或数字');
+            }
             $Api = new UserApi();
             $res = $Api->updatePwd($uid, $oldPwd, $data['password']);
             if($res['status']){
@@ -331,23 +332,37 @@ class UserController extends HomeController {
             if(!$Api->checkMobileExist($mobile)) {
                 $this->renderFailed('该手机号码未注册');
             }
-            if(empty($password)) {
-                $this->renderFailed('请输入密码');
-            }
-            if(!preg_match('/^[0-9a-zA-Z]{6,20}$/', $password)) {
-                $this->renderFailed('密码长度为6-20位的字母和数字');
-            }
             if(empty($verify)) {
                 $this->renderFailed('请输入验证码');
             }
-            //后端短信验证
-            $ret = $this->sms_verify($mobile, $verify);
-            if(!ret) {
-                $this->renderFailed('短信验证失败~');
+//             //后端短信验证
+//             $ret = $this->sms_verify($mobile, $verify);
+//             if(!ret) {
+//                 $this->renderFailed('短信验证失败~');
+//             }
+            if(empty($password)) {
+                $this->renderFailed('请输入新密码');
+            }
+            if(!preg_match('/^([0-9]|[a-z]|[A-Z]){6,20}$/', $password)) {
+                $this->renderFailed('密码长度为6-20位字母或数字');
             }
             $res = $Api->resetPwd($mobile, $password);
             if($res['status']){
-                $this->renderSuccess('重置成功');
+                $uid = $Api->login($mobile, $password);
+                if(0 < $uid){ //UC登录成功
+                    /* 登录用户 */
+                    $Member = D('Member');
+                    if($Member->login($uid)){ //登录用户
+                        $data = session('user_auth');
+                        $data['session_id'] = session_id();
+                        $data['create_time'] = NOW_TIME;
+                    }
+                }
+                if(!empty($data['session_id'])) {
+                    $this->renderSuccess('重置成功', $data);
+                } else {
+                    $this->renderFailed('重置失败请稍后重试');
+                }
             }
             else {
                 $this->renderFailed($res['info']);

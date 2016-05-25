@@ -32,10 +32,8 @@ class MemberModel extends Model{
      * @return boolean      ture-登录成功，false-登录失败
      */
     public function login($uid){
-        /* 检测是否在当前应用注册 */
         $user = $this->field(true)->find($uid);
         if(!$user){ //未注册
-            /* 在当前应用中注册用户 */
         	$Api = new UserApi();
         	$info = $Api->info($uid);
             $user = $this->create(array('nickname' => $info[1], 'status' => 1));
