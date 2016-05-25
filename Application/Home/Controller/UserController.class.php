@@ -490,8 +490,8 @@ class UserController extends HomeController {
             if(empty($content)) {
                 $this->renderFailed('请输入您想反馈的内容');
             }
-            if(!preg_match('/^[0-9a-zA-Z\x{4e00}-\x{9fa5}]{3,200}$/u', $content)) {
-                $this->renderFailed('请输入长度为3-200的中英文或数字');
+            if(strlen($content)<3 || strlen($content)>600) {
+                $this->renderFailed(self::STATUS_FAILURE, '昵称由3-200个字符组成');
             }
             $mobile = I('mobile', '', 'trim');
             $data['content'] = $content;
