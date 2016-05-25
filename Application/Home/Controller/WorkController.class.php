@@ -595,6 +595,7 @@ class WorkController extends HomeController {
 	    ->field('m.uid,m.nickname,m.avatar,c.to_uid,c.content,c.create_time')
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
 	    ->where(array('c.work_id'=>$work_id))
+	    ->order('c.id desc')
 	    ->select();
 	    
 	    if(count($list) == 0) {
