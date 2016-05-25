@@ -146,7 +146,6 @@ class WorkController extends HomeController {
 	    $class = $User->getClassByUid($uid);
 	    $class_id = $class['classid'];
 	    $uids = $User->getClassUser($class_id, $page, $rows);
-	    
 	    if(!empty($uids)) {
 	        //批量获取用户作品
 	        $list = $this->batchUserWork($uids, $page, $rows);
@@ -406,6 +405,7 @@ class WorkController extends HomeController {
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where('w.uid in ('.$uids.')')
 	    ->where(array('is_delete'=>0))
+	    ->order('w.id desc')
 	    ->select();
 	    
 	    //设置默认头像
