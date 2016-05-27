@@ -207,7 +207,7 @@ class WorkController extends HomeController {
     	        $map['id'] = $material_id;
     	        M('document')->where($map)->setInc('works');
     	        //更新用户作品数
-    	        $map['$uid'] = $uid;
+    	        $map['uid'] = $uid;
     	        M('member')->where($map)->setInc('works');
     	        $this->renderSuccess('发布成功');
     	    } else {
