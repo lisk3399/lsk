@@ -29,8 +29,8 @@ class ClassesController extends HomeController {
             }
             
             //创建班级字符限制
-            if(!preg_match('/^[0-9a-zA-Z\x{4e00}-\x{9fa5}]{3,30}$/u', $class_name)) {
-                $this->renderFailed('只能输入长度为3-30的中英文或数字');
+            if(!preg_match('/^[0-9a-zA-Z\x{4e00}-\x{9fa5}]{2,30}$/u', $class_name)) {
+                $this->renderFailed('只能输入长度为2-30的中英文或数字');
             }
             
             //是否已经有班级
