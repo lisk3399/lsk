@@ -428,7 +428,7 @@ class SnsController extends HomeController {
 	        M('member')->where($map)->setInc('follows');
 	         
 	        //更新被关注用户粉丝数
-	        $map['$uid'] = $follow_who;
+	        $map['uid'] = $follow_who;
 	        M('member')->where($map)->setInc('fans');
 	        
 	        return true;
