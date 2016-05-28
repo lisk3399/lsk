@@ -91,7 +91,7 @@ class MaterialController extends HomeController {
 	    ->select();
 
 	    if(count($list) == 0) {
-	        $this->renderFailed('没有更多了');
+	        $this->renderFailed('没有更多了', -1);
 	    }
 	    
 	    $uid = is_login();
