@@ -60,11 +60,11 @@ class UserController extends HomeController {
 		    if(empty($verify)) {
 		        $this->renderFailed('请输入手机获取到的验证码');
 		    }
-// 			//短信验证
-//             $ret = $this->sms_verify($mobile, $verify);
-//             if(!ret) {
-//                 $this->renderFailed('短信验证失败~');
-//             }
+			//短信验证
+            $ret = $this->sms_verify($mobile, $verify);
+            if(!ret) {
+                $this->renderFailed('短信验证失败~');
+            }
             
 			/* 调用注册接口注册用户 */
             $User = new UserApi;
