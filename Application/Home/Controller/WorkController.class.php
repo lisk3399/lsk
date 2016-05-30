@@ -470,22 +470,23 @@ class WorkController extends HomeController {
 	    $Like = M('likes');
 	    $member_list = $Like->page($page, $rows)
 	    ->field('work_id')
-	    ->where(array('uid'=>$uid,'is_delete'=>0))
+	    ->where(array('uid'=>$uid))
 	    ->order('id desc')
 	    ->select();
+	    
+	    if(count($member_list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
 	    
 	    //数组转换
 	    $memberArr = array();
 	    foreach ($member_list as $key=>$row) {
 	        $memberArr[$key] = $row['work_id'];
 	    }
-	    $ids = implode(',', $memberArr);
-	    $list = $this->getWorkByIds($ids, $page, $rows);	    
-	    
-	    if(count($list) == 0) {
-	        $this->renderFailed('没有更多了');
-	    }
 	     
+	    $ids = implode(',', $memberArr);
+	    $list = $this->getWorkByIds($ids, $page, $rows);
+	    
 	    $this->renderSuccess('', $list);
 	}
 	
