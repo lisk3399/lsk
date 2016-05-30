@@ -157,7 +157,7 @@ class SnsController extends HomeController {
 	    $Follow = M('follow');
 	    $member_list = $Follow
 	    ->page($page, $rows)
-        ->field('who_follow,relation')
+        ->field('who_follow')
 	    ->where(array('follow_who'=>$uid))
 	    ->select();
 	    
