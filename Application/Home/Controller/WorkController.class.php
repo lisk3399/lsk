@@ -468,23 +468,23 @@ class WorkController extends HomeController {
 	    }
 	    
 	    $Like = M('likes');
-	    $member_list = $Like->page($page, $rows)
+	    $work_list = $Like->page($page, $rows)
 	    ->field('work_id')
 	    ->where(array('uid'=>$uid))
 	    ->order('id desc')
 	    ->select();
 	    
-	    if(count($member_list) == 0) {
+	    if(count($work_list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
 	    
 	    //数组转换
-	    $memberArr = array();
-	    foreach ($member_list as $key=>$row) {
-	        $memberArr[$key] = $row['work_id'];
+	    $workArr = array();
+	    foreach ($work_list as $key=>$row) {
+	        $workArr[$key] = $row['work_id'];
 	    }
 	     
-	    $ids = implode(',', $memberArr);
+	    $ids = implode(',', $workArr);
 	    $list = $this->getWorkByIds($ids, $page, $rows);
 	    
 	    $this->renderSuccess('', $list);
@@ -537,17 +537,25 @@ class WorkController extends HomeController {
 	        $this->renderFailed('用户不存在');
 	    }
 	    
-	    $list = M('Work')->alias('w')
-	    ->page($page, $rows)
-	    ->field('w.id,w.uid,w.cover_url,w.views,d.title')
-	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-	    ->join('__LIKES__ l on l.uid = w.uid', 'left')
-	    ->where(array('w.uid'=>$uid,'is_delete'=>0))
+	    $Like = M('likes');
+	    $work_list = $Like->page($page, $rows)
+	    ->field('work_id')
+	    ->where(array('uid'=>$uid))
+	    ->order('id desc')
 	    ->select();
-	     
-	    if(count($list) == 0) {
+	    
+	    if(count($work_list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
+	    
+	    //数组转换
+	    $workArr = array();
+	    foreach ($work_list as $key=>$row) {
+	        $workArr[$key] = $row['work_id'];
+	    }
+	    
+	    $ids = implode(',', $workArr);
+	    $list = $this->getWorkByIds($ids, $page, $rows);
 	    
 	    $this->renderSuccess('', $list);
 	}
