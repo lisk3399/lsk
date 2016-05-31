@@ -344,8 +344,13 @@ class SnsController extends HomeController {
 	        if($rows > C('API_MAX_ROWS')) {
 	            $rows = C('API_MAX_ROWS');
 	        }
-	         
-	        $result = M('member')->page($page, $rows)->field('uid,nickname,avatar')->where('nickname like "%'.$keywords.'%"')->select();
+	        
+	        $Member = M('member');
+	        $result = $Member->page($page, $rows)
+	        ->field('uid,nickname,avatar')
+	        ->where('nickname like "%'.$keywords.'%"')
+	        ->select();
+	        
 	        if(is_array($result) && count($result) > 0) {
 	            $Api = new UserApi;
 	            $result = $Api->setDefaultAvatar($result);
