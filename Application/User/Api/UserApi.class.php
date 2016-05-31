@@ -405,4 +405,17 @@ class UserApi extends Api{
         }
         return false;
     }
+    
+    /**
+     * 检测密码格式
+     * @param $password
+     * @return boolean
+     */
+    public function checkPwdFormat($password) {
+        //之前为包含自护和数字 /^(?![^a-zA-Z]+$)(?!\D+$).{6,20}$/
+        if(!preg_match('/^[0-9A-Za-z]{6,20}$/', $password)) {
+            return false;
+        }
+        return true;
+    }
 }

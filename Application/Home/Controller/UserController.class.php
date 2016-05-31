@@ -48,7 +48,7 @@ class UserController extends HomeController {
 		    if(empty($password)) {
 		        $this->renderFailed('密码不能为空');
 		    }
-		    if(!preg_match('/^([0-9]|[a-z]|[A-Z]){6,20}$/', $password)) {
+		    if(!$Api->checkPwdFormat($password)) {
 		        $this->renderFailed('密码长度为6-20位的字母或数字');
 		    }
 		    if(empty($repassword)) {
@@ -303,8 +303,10 @@ class UserController extends HomeController {
             if($data['password'] !== $repassword){
                 $this->renderFailed('您输入的新密码与确认密码不一致');
             }
-            if(!preg_match('/^([0-9]|[a-z]|[A-Z]){6,20}$/', $data['password'])) {
-                $this->renderFailed('密码长度为6-20位字母或数字');
+            $Api = new UserApi;
+            //密码验证
+            if(!$Api->checkPwdFormat($data['password'])) {
+                $this->renderFailed('密码长度为6-20个字母或数字');
             }
             $Api = new UserApi();
             $res = $Api->updatePwd($uid, $oldPwd, $data['password']);
@@ -343,9 +345,11 @@ class UserController extends HomeController {
             if(empty($password)) {
                 $this->renderFailed('请输入新密码');
             }
-            if(!preg_match('/^([0-9]|[a-z]|[A-Z]){6,20}$/', $password)) {
-                $this->renderFailed('密码长度为6-20位字母或数字');
+            //密码验证
+            if(!$Api->checkPwdFormat($password)) {
+                $this->renderFailed('密码长度为6-20个字母或数字');
             }
+            
             $res = $Api->resetPwd($mobile, $password);
             if($res['status']){
                 $uid = $Api->login($mobile, $password);

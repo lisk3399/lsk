@@ -255,10 +255,6 @@ class UcenterMemberModel extends Model{
 	        $this->error = '参数错误！';
 	        return false;
 	    }
-	    //密码格式验证
-	    if(!$this->checkPwdFormat($password)) {
-	        return false;
-	    }
 	    $data['password'] = think_ucenter_md5($password, UC_AUTH_KEY);
 	    return $this->where(array('mobile'=>$mobile))->save($data);
 	}
@@ -270,19 +266,6 @@ class UcenterMemberModel extends Model{
 	public function checkMobileExist($mobile) {
 	    $ret = $this->where(array('mobile'=>$mobile))->find();
 	    if(!$ret['id']) {
-	        return false;
-	    }
-	    return true;
-	}
-	
-	/**
-	 * 检测密码格式
-	 * @param $password
-	 * @return boolean
-	 */
-	private function checkPwdFormat($password) {
-	    if(!preg_match('/^(?![^a-zA-Z]+$)(?!\D+$).{6,20}$/', $password)) {
-	        $this->error = '密码长度在6-20个字符，包含字母和数字';
 	        return false;
 	    }
 	    return true;
