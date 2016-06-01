@@ -612,6 +612,9 @@ class WorkController extends HomeController {
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
+	    if($page>1 && count($list)==0) {
+	        $this->renderFailed('没有更多了', -1);
+	    }
 	    //设置默认头像
 	    $Api = new UserApi;
 	    $list = $Api->setDefaultAvatar($list);
