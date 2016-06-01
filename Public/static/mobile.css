@@ -9,8 +9,8 @@ img{border: 0px;}
 a{text-decoration: none;}
 .fleft{clear: left;float: left;}
 .fright{clear: right;float: right;}
-.main {height: 100%;width: 100%;background-image: url(../../img/mobile/bj.jpg);background-repeat: repeat;	}
-.zt {height: 100%;background-image: url(../../img/mobile/yao.png);background-repeat: no-repeat;background-position: center;}
+.main {height: 100%;width: 100%;background-image: url(../Home/images/bj.jpg);background-repeat: repeat;	}
+.zt {height: 100%;background-image: url(../Home/images/yao.png);background-repeat: no-repeat;background-position: center;}
 @media screen and (max-width:707px){
 .zt {background-size:100%;}
 }
@@ -46,7 +46,7 @@ a{text-decoration: none;}
 	background-color: #fdb92c;
 	border-radius: 45px;
 	display: block;
-	background-image: url(../../img/mobile/apple.png);
+	background-image: url(../Home/images/apple.png);
 	background-repeat: no-repeat;
 	background-position: center center;
 }
@@ -56,7 +56,7 @@ a{text-decoration: none;}
 	background-color: #36d787;
 	border-radius: 45px;
 	display:block;
-	background-image: url(../../img/mobile/android.png);
+	background-image: url(../Home/images/android.png);
 	background-repeat: no-repeat;
 	background-position: center center;
 
@@ -70,7 +70,7 @@ a{text-decoration: none;}
 }
 .top .zt {
 	height: 100%;
-	background-image: url(../../img/mobile/yao.png);
+	background-image: url(../Home/images/yao.png);
 	background-repeat: no-repeat;
 	background-position: right 20px;
 	background-size:58%;
@@ -140,7 +140,7 @@ a{text-decoration: none;}
 	/*border:1px solid #fff;*/
 	/*border-width: 1px 0 0 1px;*/
 	box-sizing:border-box;
-	background: url(../../img/mobile/loading.GIF) no-repeat center center;
+	background: url(../Home/images/loading.GIF) no-repeat center center;
 }
 .video li img{
 	width: 100%;
@@ -180,7 +180,7 @@ a{text-decoration: none;}
 	bottom: 0;
 	left:0;
 	z-index: 99;
-	background-image: url(../../img/mobile/hy.png);
+	background-image: url(../Home/images/hy.png);
 	background-repeat: repeat-x;
 	width: 100%;
 	padding-bottom: 6px;
@@ -267,13 +267,13 @@ a{text-decoration: none;}
 	height: 60px;
 	width: 200px;
 	border-radius: 30px;
-	background-image: url(../../img/mobile/xz.png);
+	background-image: url(../Home/images/xz.png);
 	background-repeat: no-repeat;
 	background-position: center center;
 }
 .top2 {
 	height: auto; padding-bottom:5%;
-	background-image: url(../../img/mobile/zpbj.jpg);
+	background-image: url(../Home/images/zpbj.jpg);
 	background-size:200%;
 	background-repeat: no-repeat;
 	background-position: center top;
@@ -420,7 +420,7 @@ width: 12px;
 height: 12px;
 position: relative;
 display: inline-block;
-background: url(../../img/mobile/top3_zan.png) no-repeat;
+background: url(../Home/images/top3_zan.png) no-repeat;
 background-size: 12px;
 }
 .top3_like2{
@@ -429,13 +429,13 @@ height: 19px;
 background-position: 0px -21px;
 position: relative;
 display: inline-block;
-background: url(../../img/mobile/top3_zan.png) no-repeat;
+background: url(../Home/images/top3_zan.png) no-repeat;
 background-size: 41px;
 }
 .top3_xz
 {position: relative;
 display: inline-block;
-background: url(../../img/mobile/h5_xz.png) no-repeat;
+background: url(../Home/images/h5_xz.png) no-repeat;
 background-size:100%;
 width: 20px;
 height: 20px;
@@ -524,7 +524,7 @@ top:4px; left:5px;
 	color: #ffb71b;
 	font-size: 1em;
 	line-height: 40px;
-	background-image: url(../../img/mobile/yytb.png);
+	background-image: url(../Home/images/yytb.png);
 	background-repeat: no-repeat;
 	background-position: 10px center;
 	background-size:15%;
@@ -655,7 +655,7 @@ top:4px; left:5px;
 	width: 19px;
 	height: 19px;
 	font-size: 15px;
-	background: url(../../img/mobile/i-down.png) no-repeat;
+	background: url(../Home/images/i-down.png) no-repeat;
 	background-size: 19px 19px;
 	vertical-align: -5px
 }
@@ -706,7 +706,7 @@ top:4px; left:5px;
 	color: #ffb71b;
 	font-size: 15px;
 	line-height: 30px;
-	background-image: url(../../img/mobile/yytb.png);
+	background-image: url(../Home/images/yytb.png);
 	background-repeat: no-repeat;
 	background-position: 7px center;
 	background-size:20px 20px;
