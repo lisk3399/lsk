@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>在线播放</title>
+<script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+<meta name="viewport" id="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0" />
+{:hook('pageHeader')}
+</head>
+<body class="inner">
+<div>
+	<div>
+		<section>
+		<div>
+			<div>
+				<div>
+					<video id='video' autoplay="autoplay" controls style="width:100%;height:auto;" src=""></video>
+				</div>
+			</div>
+		</div>
+		</section>
+	</div>
+</div>
+<script type="text/javascript">
+var id = parseInt(getUrlParam('id'));
+var video = id+'.mp4';
+$("#video").attr('src', video);
+function getUrlParam(name) {
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r!=null) return unescape(r[2]); return null;
+}
+</script>	
+</body>
+</html>
