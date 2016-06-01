@@ -695,11 +695,12 @@ class WorkController extends HomeController {
     	    if(!$Api->checkMaterialExists($material_id)) {
     	        $this->renderFailed('素材不存在');
     	    }
-    	    
-    	    $order = 'w.id desc';
-    	    if(order === 'likes') {
+    	    if($order == 'likes') {
     	        $order = 'w.likes desc';
+    	    } else {
+    	        $order = 'w.id desc';
     	    }
+    	    
     	    $Work = M('work');
     	    $list = $Work->alias('w')
     	    ->page($page, $rows)
