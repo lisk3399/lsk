@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="viewport"content="width=device-width, initial-scale=1"/>
-<title>快来看这个逗比孩的视频，真是笑死我了！</title>
+<title>逗比孩-<if condition="$info['title']">{$info.title}<else/>原创</if></title>
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
@@ -91,7 +91,7 @@
         </video>
     </div>
             <div class="xx">
-        <div class="zzm"><a href="javascript:void(0)" title="{$info.title}">{$info.title}</a></div>
+        <div class="zzm"><a href="javascript:void(0)" title="{$info.title}"><if condition="$info['title']">{$info.title}<else/>原创</if></a></div>
         <div class="yanyi"></div>
     </div>
     <div class="gd">
@@ -142,8 +142,7 @@
 <div style="clear:both"></div>
 <div class="gg">
 	<div class="xkxlogo">
-		<img src=""
-			width="100%" title="逗比孩">
+		<img src="__PUBLIC__/Home/images/dbh_icon.png" width="100%" title="逗比孩">
 	</div>
 	<div class="xkxwz">
 		<span>逗比孩</span><br>
