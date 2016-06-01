@@ -7,6 +7,8 @@
 /.settings/org.eclipse.php.core.prefs
 /readme.html
 /license.txt
+/apimanager
+/web_logs
 /Data
 /Runtime
 /Uploads
