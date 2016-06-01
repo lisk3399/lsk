@@ -9,7 +9,6 @@ use Think\Page;
 class WorkController extends AdminController {
     
     public function index() {
-        //$this->getMenu();
         $type = I('type', '', 'trim');
         if(!empty($type)) {
             $map['w.type'] = $type;
@@ -49,14 +48,14 @@ class WorkController extends AdminController {
             $this->error('请选择要操作的数据');
         }
         if(empty($ids)){
-            $this->error('状态为空');
+            $this->error('id为空');
         }
         
         $Work = M('work');
         $map['id'] = array('IN', $ids);
         $data['is_delete'] = $is_delete;
         if($Work->where($map)->save($data)) {
-            $this->success('操作成功');
+            $this->success('操作成功');exit;
         }
         $this->error('操作失败');
     }
