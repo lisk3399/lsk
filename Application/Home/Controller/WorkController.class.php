@@ -202,14 +202,16 @@ class WorkController extends HomeController {
     	    $data['create_time'] = NOW_TIME;
     	    
     	    $Work = M('work');
-    	    if($Work->add($data)) {
+    	    $ret = $Work->add($data);
+    	    if($ret) {
     	        //更新素材作品数
     	        $map['id'] = $material_id;
     	        M('document')->where($map)->setInc('works');
     	        //更新用户作品数
     	        $map['uid'] = $uid;
     	        M('member')->where($map)->setInc('works');
-    	        $this->renderSuccess('发布成功');
+    	        $data['work_id'] = $ret;
+    	        $this->renderSuccess('发布成功', $data);
     	    } else {
     	        $this->renderFailed('发布失败，请重试');
     	    }
