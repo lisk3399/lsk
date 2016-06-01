@@ -1,35 +1,160 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta charset="utf-8" />
-<title>在线播放</title>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport"content="width=device-width, initial-scale=1"/>
+<title>快来看这个逗比孩的视频，真是笑死我了！</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
 <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
-<meta name="viewport" id="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0" />
-{:hook('pageHeader')}
+<link href="__STATIC__/mobile.css"  rel="stylesheet" type="text/css"/>
+<script>
+	var agent = "ios";
+	var is_ios = "1";
+	sUserAgent = navigator.userAgent.toLowerCase();   
+	bIsIpad = sUserAgent.match(/ipad/i) == "ipad";     
+	bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";    
+	bIsAndroid = sUserAgent.match(/android/i) == "android";
+    var weixin = sUserAgent.match(/MicroMessenger/i) == "micromessenger";
+    var qq =navigator.userAgent.match(/QQ\//i) == "QQ/";
+	function is_weixin(){  
+	    var ua = navigator.userAgent.toLowerCase();  
+	    if(ua.match(/MicroMessenger/i)=="micromessenger") {  
+	        return true;  
+	    } else {  
+	        return false;  
+	    }  
+	}
+	function download(){
+	    if(is_weixin()){
+	  		window.location.href = "";//渠道包是“微信”
+	    }else{
+	    		if(bIsAndroid){
+	    			window.location.href = ""; //安卓下载
+	  		}else{
+	  			window.location.href = ""; //苹果下载地址
+	  		}
+	    }
+	}
+    function lanchVideoInfo(vid,videoType) {
+        if (weixin||qq) {
+            document.getElementById('school_browser').style.display='block';
+            scrollTo(0,0);
+        }else{
+            videoType=videoType?videoType:0;
+            var url_prefix = 'jump';
+            if (bIsAndroid) {
+                url_prefix = 'public/start';
+            }
+            var url = 'xkx://' + url_prefix + '?type=4&dataStr=' + vid + '&videoType='+videoType;
+            document.location.href = url;
+            setTimeout(function(){
+                download();
+            },2000);
+        }
+    }
+    function costar(){
+        if (weixin||qq) {
+            document.getElementById('school_browser').style.display='block';
+            scrollTo(0,0);
+        }else{
+            var url_prefix = 'jump';
+            if (bIsAndroid) {
+                url_prefix = 'public/start';
+            }
+            var url = 'xkx://' + url_prefix;
+            window.location.href = url;
+            setTimeout(function(){
+                download();
+            },2000);
+        }
+    }
+	
+	if ("wView" in window) {
+		window.wView.allowsInlineMediaPlayback = "YES";
+		window.wView.mediaPlaybackRequiresUserAction = "NO";
+	}
+
+</script>
 </head>
-<body class="inner">
-<div>
-	<div>
-		<section>
-		<div>
-			<div>
-				<div>
-					<video id='video' autoplay="autoplay" controls style="width:100%;height:auto;" src=""></video>
-				</div>
-			</div>
-		</div>
-		</section>
-	</div>
+<body>
+<img src="http://xkx.static.xiaoka.tv/img/feature/tip.png" width="100%" alt="" id="school_browser" style="display: none">
+    <!-- 对嘴 -->
+    <div class="top3">
+        <div class="tx1"><img src="{$info.avatar}" alt="{$info.nickname}"></div>
+        <div class="name2">{$info.nickname}<br/><span style="color:#7b7b8b;">{$info.create_time}</span></div>
+        <div class="top3_zan"><i class="top3_like1" style="margin-right:5px;"></i><span></span></div>
+    </div>
+    <div class="sp">
+        <video id="video" style="min-width:320px;min-height:320px;" autoplay="autoplay"  controls="controls" x-webkit-airplay="true" webkit-playsinline="true" src="{$info.video_url}" poster="{$info.cover_url}" width="100%">
+        </video>
+    </div>
+            <div class="xx">
+        <div class="zzm"><a href="javascript:void(0)" title="{$info.title}">{$info.title}</a></div>
+        <div class="yanyi"></div>
+    </div>
+    <div class="gd">
+        <a href="javascript:void(0)" title="下载逗比孩">
+        想看我更多作品？快来下载逗比孩吧！
+        <i class="top3_xz"></i></a>
+    
 </div>
-<script type="text/javascript">
-var id = parseInt(getUrlParam('id'));
-var video = id+'.mp4';
-$("#video").attr('src', video);
-function getUrlParam(name) {
-    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-    var r = window.location.search.substr(1).match(reg);
-    if (r!=null) return unescape(r[2]); return null;
-}
-</script>	
+
+<div style="clear:both"></div>
+<script>
+    end_adv_video="";
+    if(end_adv_video){
+        i=1;
+        document.getElementById("video").addEventListener('ended',function(){
+            if(i==1){
+                $('#video').attr('src',end_adv_video);
+            }else{
+                $('#video').attr('src',"{$info.video_url}");
+            }
+            i++;
+        },false);
+    }else{
+        $('#video').attr('loop','loop');
+    }
+
+    function setArrow(triggerObj,targetObj){
+        if(!triggerObj||$.type(triggerObj)!='object'||!targetObj||$.type(targetObj)!='object'){return}
+            var os = triggerObj.offset();
+        var em = targetObj.find('em');
+        em.length&&
+        em.css({
+            left:os.left+triggerObj.width()/2-10
+        }).show();
+    }
+    setArrow($('.yh-box li:first'),$('#first-person'));
+    $('.yh-box').on('click','li',function(){
+        var tt = $(this),
+                i = tt.index(),
+                $target = i?$('#last-person'):$('#first-person');
+
+        setArrow(tt,$target);
+        $target.show().siblings('.intro-box').hide();
+    });
+</script>
+    
+<div class="tit"></div>
+<div style="clear:both"></div>
+<div class="gg">
+	<div class="xkxlogo">
+		<img src=""
+			width="100%" title="逗比孩">
+	</div>
+	<div class="xkxwz">
+		<span>逗比孩</span><br>
+	</div>
+	<div class="download">
+		<a href="javascript:download();" title="下载逗比孩IOS"><em
+			class="i-down"></em>下载</a>
+	</div>
+
+</div>
+
+<div style="clear: both"></div>
 </body>
 </html>
