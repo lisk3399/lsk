@@ -267,7 +267,11 @@ class MaterialController extends HomeController {
     	    $detail['audio'] = !empty($detail['audio']) ? $Api->getFileUrl($detail['audio']) :'';
     	    $detail['lyrics'] = !empty($detail['lyrics']) ? $Api->getFileUrl($detail['lyrics']) :'';
     	    $detail['video'] = !empty($detail['video']) ? $Api->getFileUrl($detail['video']) :'';
-    	    
+    	    $detail['is_fav'] = 0;
+    	    $uid = is_login();
+    	    if($uid) {
+    	       $detail['is_fav'] = $Api->isFav($uid, $material_id);
+    	    }
     	    $this->renderSuccess('', $detail);
 	    }
 	}
