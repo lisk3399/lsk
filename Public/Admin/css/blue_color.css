@@ -309,7 +309,7 @@ select {
     background-color: #353535;
 }
 .header .logo {
-    background: url(../images/blue_color/bg_icon.png) no-repeat 0 -45px;
+    /*background: url(../images/blue_color/bg_icon.png) no-repeat 0 -45px;*/
 }
 /* 主导航 */
 .main-nav a {
