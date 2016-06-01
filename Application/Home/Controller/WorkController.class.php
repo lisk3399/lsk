@@ -150,6 +150,9 @@ class WorkController extends HomeController {
 	        //批量获取用户作品
 	        $list = $this->batchUserWork($uids, $page, $rows);
 	
+	        //管理员发布作品需要放在最前面两个位置
+	        //查找管理员作品
+	        
 	        if(count($list) == 0) {
 	            $this->renderFailed('没有更多了');
 	        }
