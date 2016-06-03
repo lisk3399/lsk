@@ -329,13 +329,12 @@ class MaterialController extends HomeController {
 	        $rows = C('API_MAX_ROWS');
 	    }
 	    
-        $User = new UserApi;
-	    $uids = $User->getMaterialUser($material_id, $page, $rows);
+        $Api = new UserApi;
+	    $uids = $Api->getMaterialUser($material_id, $page, $rows);
 	    
 	    if(!empty($uids)) {
 	        //批量获取用户信息
-	        $User = new UserApi;
-	        $list = $User->batchMemberInfo($uids);
+	        $list = $Api->batchMemberInfo($uids);
 	        if(count($list) == 0) {
 	            $this->renderFailed('没有更多了');
 	        }

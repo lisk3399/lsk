@@ -191,7 +191,7 @@ class UserApi extends Api{
         $info = array();
         $Member = M('member');
         $info = $Member->field('uid,nickname,avatar')->where('uid in ('.$uids.')')->select();
-        if(!empty($info['uid'])) {
+        if(is_array($info)) {
             //默认头像
             foreach ($info as &$row) {
                 $row['avatar'] = !empty($row['avatar'])?$row['avatar']:C('USER_INFO_DEFAULT.avatar');
@@ -267,10 +267,11 @@ class UserApi extends Api{
      * 
      */
     public function getMaterialUser($material_id, $page, $rows) {
-        $member_list = M('work')
-        ->page($page, $rows)
-        ->field('uid')
+        $Work = M('work');
+        $member_list = $Work->page($page, $rows)
+        ->field('distinct uid')
         ->where(array('material_id'=>$material_id))
+        ->order('id desc')
         ->select();
 
         $memberArr = array();
