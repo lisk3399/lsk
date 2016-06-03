@@ -111,12 +111,11 @@ class WorkController extends HomeController {
 	    }
 	    
 	    //获取关注用户列表
-	    $User = new UserApi;
-	    $uids = $User->getUserFollow($uid, $page, $rows);
+	    $Api = new UserApi;
+	    $uids = $Api->getUserFollow($uid, $page, $rows);
 	    if(!empty($uids)) {
 	        //批量获取用户作品
-	        $list = $this->batchUserWork($uids, $page, $rows);
-	        
+	        $list = $this->batchUserWork($uids);
 	        if(count($list) == 0) {
 	            $this->renderFailed('没有更多了');
 	        }
@@ -143,13 +142,13 @@ class WorkController extends HomeController {
 	    }
 	    
 	    //获取班级用户列表
-	    $User = new UserApi;
-	    $class = $User->getClassByUid($uid);
+	    $Api = new UserApi;
+	    $class = $Api->getClassByUid($uid);
 	    $class_id = $class['classid'];
-	    $uids = $User->getClassUser($class_id, $page, $rows);
+	    $uids = $Api->getClassUser($class_id, $page, $rows);
 	    if(!empty($uids)) {
 	        //批量获取用户作品
-	        $list = $this->batchUserWork($uids, $page, $rows);
+	        $list = $this->batchUserWork($uids);
 	
 	        //管理员发布作品需要放在最前面两个位置
 	        //查找管理员作品
@@ -398,14 +397,12 @@ class WorkController extends HomeController {
 	/**
 	 * 批量获取用户作品
 	 * @param string $uids 用户id字符串(1,2,3,4)
-	 * @param int $page
 	 * @param int $rows
 	 */
-	public function batchUserWork($uids, $page, $rows) {
+	public function batchUserWork($uids) {
 	    $info = array();
 	    $Work = M('work');
 	    $info = $Work->alias('w')
-	    ->page($page, $rows)
 	    ->field('w.id,w.uid,w.cover_url,w.views,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
@@ -729,7 +726,7 @@ class WorkController extends HomeController {
 	}
 	
 	/**
-	 * 增加浏览量
+	 * 作品增加浏览量
 	 */
 	public function addViews() {
 	    if(IS_POST) {

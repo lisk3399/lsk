@@ -227,6 +227,7 @@ class UserApi extends Api{
         ->page($page, $rows)
         ->field('follow_who')
         ->where(array('who_follow'=>$uid))
+        ->order('id desc')
         ->select();
         
         $memberArr = array();
@@ -251,6 +252,7 @@ class UserApi extends Api{
         ->page($page, $rows)
         ->field('uid')
         ->where(array('classid'=>$class_id))
+        ->order('uid desc')
         ->select();
     
         $memberArr = array();
