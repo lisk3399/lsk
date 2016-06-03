@@ -477,7 +477,7 @@ class WorkController extends HomeController {
 	    $work_list = $Like->page($page, $rows)
 	    ->field('work_id')
 	    ->where(array('uid'=>$uid))
-	    ->order('id desc')
+	    ->order('work_id desc')
 	    ->select();
 	    
 	    if(count($work_list) == 0) {
@@ -491,7 +491,7 @@ class WorkController extends HomeController {
 	    }
 	     
 	    $ids = implode(',', $workArr);
-	    $list = $this->getWorkByIds($ids, $page, $rows);
+	    $list = $this->getWorkByIds($ids, $rows);
 	    
 	    $this->renderSuccess('', $list);
 	}
@@ -499,15 +499,16 @@ class WorkController extends HomeController {
 	/**
 	 * 根据id批量获取作品
 	 */
-	private function getWorkByIds($ids, $page, $rows) {
+	private function getWorkByIds($ids, $rows) {
 	    $info = array();
 	    $Work = M('work');
 	    $info = $Work->alias('w')
-	    ->page($page, $rows)
 	    ->field('w.id,w.uid,w.cover_url,w.views,d.title,m.avatar')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where('w.id in ('.$ids.')')
+	    ->order('w.id desc')
+	    ->limit($rows)
 	    ->select();
 	    
 	    //设置默认头像
@@ -547,7 +548,7 @@ class WorkController extends HomeController {
 	    $work_list = $Like->page($page, $rows)
 	    ->field('work_id')
 	    ->where(array('uid'=>$uid))
-	    ->order('id desc')
+	    ->order('work_id desc')
 	    ->select();
 	    
 	    if(count($work_list) == 0) {
@@ -561,7 +562,7 @@ class WorkController extends HomeController {
 	    }
 	    
 	    $ids = implode(',', $workArr);
-	    $list = $this->getWorkByIds($ids, $page, $rows);
+	    $list = $this->getWorkByIds($ids, $rows);
 	    
 	    $this->renderSuccess('', $list);
 	}
