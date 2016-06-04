@@ -238,9 +238,9 @@ class MaterialController extends HomeController {
 	            $row['is_fav'] = $Api->isFav($uid, $row['id']);
 	        }
 	        if($row['pid'] == 2) {
-	            $row['type'] = 'VOICE';
+	            $row['type'] = 'LIPSYNC';//对口型素材
 	        } else {
-	            $row['type'] = 'VIDEO';
+	            $row['type'] = 'DUBBING';//配音秀素材
 	        }
 	    }
 	    
