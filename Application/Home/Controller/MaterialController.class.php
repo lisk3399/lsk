@@ -228,10 +228,14 @@ class MaterialController extends HomeController {
 	    $Api = new UserApi;
 	    foreach ($list as &$row) {
 	        $cover_img = get_cover($row['cover_id'], 'path');
-	        $row['cover_img'] = C('WEBSITE_URL').$cover_img;
+	        $row['cover_url'] = C('WEBSITE_URL').$cover_img;
 	        $row['audio'] = !empty($row['audio']) ? $Api->getFileUrl($row['audio']) :'';
 	        $row['lyrics'] = !empty($row['lyrics']) ? $Api->getFileUrl($row['lyrics']) :'';
 	        $row['video'] = !empty($row['video']) ? $Api->getFileUrl($row['video']) :'';
+	        $row['is_fav'] = 0;
+	        if($uid) {
+	            $row['is_fav'] = $Api->isFav($uid, $row['id']);
+	        }
 	    }
 	    
 	    $this->renderSuccess('', $list);
