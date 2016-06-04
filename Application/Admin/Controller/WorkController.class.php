@@ -25,16 +25,9 @@ class WorkController extends AdminController {
             $map['is_delete'] = 0;
             $types[$type] = '全部';
         }
+        //获取作品列表
+        $list = $this->getWorkList($map);
         
-        $Work = M('work');
-        $list = $Work->alias('w')
-        ->field('w.id,w.uid,w.material_id,w.type,w.video_url,w.cover_url,w.description,d.title,m.nickname')
-        ->join('__DOCUMENT__ d on w.material_id = d.id', 'left')
-        ->join('__MEMBER__ m on m.uid = w.uid', 'left')
-        ->where($map)
-        ->order('w.id desc')->select();
-        
-        //echo $Work->getLastSql();die;
         $this->assign('list', $list);
         $this->assign('type', $types[$type]);
         $this->display();
@@ -62,15 +55,47 @@ class WorkController extends AdminController {
     
     public function recycle() {
         $map['is_delete'] = 1;
+        $list = $this->getWorkList($map);
+        
+        $this->assign('list', $list);
+        $this->display();
+    }
+    
+    /*
+     * 获取作品列表
+     */
+    private function getWorkList($map) {
+        $REQUEST = (array)I('request.');
+        $page = I('p', '', 'intval');
+        //分页配置
+        if( isset($REQUEST['r']) ){
+            $listRows = (int)$REQUEST['r'];
+        }else{
+            $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
+        }
+        
         $Work = M('work');
-        $list = $Work->alias('w')
+        $select = $Work->alias('w')
+        ->page($page, $listRows)
         ->field('w.id,w.uid,w.material_id,w.type,w.video_url,w.cover_url,w.description,d.title,m.nickname')
         ->join('__DOCUMENT__ d on w.material_id = d.id', 'left')
         ->join('__MEMBER__ m on m.uid = w.uid', 'left')
         ->where($map)
-        ->order('w.id desc')->select();
+        ->order('w.id desc');
         
-        $this->assign('list', $list);
-        $this->display();
+        $list = $select->select();
+        $total = $Work->alias('w')->where($map)->count();
+        
+        $page = new \Think\Page($total, $listRows, $REQUEST);
+        if($total>$listRows){
+            $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+        }
+        $p =$page->show();
+        
+        $this->assign('_page', $p? $p: '');
+        $this->assign('_total',$total);
+        $options['limit'] = $page->firstRow.','.$page->listRows;     
+        
+        return $list;
     }
 }

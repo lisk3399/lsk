@@ -9,15 +9,8 @@ use Think\Page;
 class CommentController extends AdminController {
 
     public function index() {
-        $Comment = M('Comment');
-        $where = 'c.is_delete = 0';
-        $list = $Comment->alias('c')
-        ->field('c.id,c.to_uid,c.create_time,m.nickname,d.title,w.description')
-        ->join('__WORK__ w on w.id = c.work_id', 'left')
-        ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
-        ->where($where)
-        ->order('c.id desc')->select();
+        $map['c.is_delete'] = 0;
+        $list = $this->getCommentList($map);
         
         //内容格式化
         foreach ($list as &$row) {
@@ -30,15 +23,8 @@ class CommentController extends AdminController {
     }
     
     public function recycle() {
-        $Comment = M('Comment');
-        $where = 'c.is_delete = 1';
-        $list = $Comment->alias('c')
-        ->field('c.id,c.to_uid,c.create_time,m.nickname,d.title,w.description')
-        ->join('__WORK__ w on w.id = c.work_id', 'left')
-        ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
-        ->where($where)
-        ->order('c.id desc')->select();
+        $map['c.is_delete'] = 1;
+        $list = $this->getCommentList($map);
         
         //内容格式化
         foreach ($list as &$row) {
@@ -66,5 +52,44 @@ class CommentController extends AdminController {
             $this->success('操作成功');exit;
         }
         $this->error('操作失败');
+    }
+    
+    /*
+     * 获取评论列表
+     */
+    private function getCommentList($map) {
+        $REQUEST = (array)I('request.');
+        $page = I('p', '', 'intval');
+        //分页配置
+        if( isset($REQUEST['r']) ){
+            $listRows = (int)$REQUEST['r'];
+        }else{
+            $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
+        }
+    
+        $Comment = M('Comment');
+        $select = $Comment->alias('c')
+        ->page($page, $listRows)
+        ->field('c.id,c.to_uid,c.create_time,m.nickname,d.title,w.description')
+        ->join('__WORK__ w on w.id = c.work_id', 'left')
+        ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+        ->where($map)
+        ->order('c.id desc');
+    
+        $list = $select->select();
+        $total = $Comment->alias('c')->where($map)->count();
+    
+        $page = new \Think\Page($total, $listRows, $REQUEST);
+        if($total>$listRows){
+            $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+        }
+        $p =$page->show();
+    
+        $this->assign('_page', $p? $p: '');
+        $this->assign('_total',$total);
+        $options['limit'] = $page->firstRow.','.$page->listRows;
+    
+        return $list;
     }
 }
