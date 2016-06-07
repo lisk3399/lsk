@@ -235,7 +235,8 @@ class MaterialController extends HomeController {
 	    $Api = new UserApi;
 	    foreach ($list as &$row) {
 	        $cover_img = get_cover($row['cover_id'], 'path');
-	        $row['cover_url'] = C('WEBSITE_URL').$cover_img;
+	        //$row['cover_url'] = C('WEBSITE_URL').$cover_img;
+	        $row['cover_img'] = C('WEBSITE_URL').$cover_img;
 	        $row['audio'] = !empty($row['audio']) ? $Api->getFileUrl($row['audio']) :'';
 	        $row['lyrics'] = !empty($row['lyrics']) ? $Api->getFileUrl($row['lyrics']) :'';
 	        $row['video'] = !empty($row['video']) ? $Api->getFileUrl($row['video']) :'';
