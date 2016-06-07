@@ -18,12 +18,7 @@ use Think\Upload\Driver\Qiniu\Etag;
 class QiniuController extends AdminController {
 
     public function _initialize(){
-        $config = array(
-            'accessKey'=>'BX3FxNDH3aFGwGSb8Yue745EgiumlqGpqthQ8x1u',
-            'secrectKey'=>'JqFwvXfT8TuLIb_UxyohIdnIS8oqzY-I9ifMqHyc',
-            'bucket'=>'doushow',
-            'domain'=>'vod.doushow.com'
-        );
+        $config = C('QINIU');
         $this->qiniu = new QiniuStorage($config);
         parent:: _initialize();
     }

@@ -224,7 +224,24 @@
 			$replace = array("\\\\", "\\\"");
 			return str_replace($find, $replace, $str);
 		}
-
+        
+		/**
+		 * 视频转gif
+		 * @param $key
+		 */
+		public function video2gif($key, $config) {
+		    $bucket = urlencode($config['bucket']);
+		    //TODO 通知url需要更换，通知完去更新gif地址
+		    $notifyURL = urlencode('http://dbh.doushow.com');
+		    $fops = urldecode('avthumb/gif');
+		    $path = $config['api'].'pfop/?bucket='.$bucket.'&key='.$key.'&fops='.$fops.'&notifyURL='.$notifyURL.'&force=force';
+		    $method = 'POST';
+		    
+		    $accessToken = $this->accessToken($path);
+		    $res = $this->request($path, $method, array('Authorization'=>"QBox $accessToken"));
+		    var_dump($res);die;
+		}
+		
 	    /**
 	     * 请求百度云服务器
 	     * @param  string   $path    请求的PATH

@@ -751,6 +751,25 @@ class WorkController extends HomeController {
 	 * 七牛video转gif
 	 */
 	public function video2gif() {
-	    
+	    if(IS_POST) {
+	        if(!is_login()) {
+	            $this->renderFailed('访问拒绝');
+	        }
+	        //七牛视频key
+    	    $key = I('key', '', 'trim');
+    	    if(empty($key)) {
+    	        $this->renderFailed('key错误');
+    	    }
+    	    
+    	    $config = C('QINIU');
+    	    $Qiniu = new QiniuStorage($config);
+    	    
+    	    $res = $Qiniu->info($key);
+    	    if(empty($res['hash'])) {
+    	        $this->renderFailed('视频不存在');
+    	    }
+    	    
+    	    $Qiniu->video2gif($key, $config);
+	    }
 	}
 }
