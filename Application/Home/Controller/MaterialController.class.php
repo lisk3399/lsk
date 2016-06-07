@@ -71,8 +71,8 @@ class MaterialController extends HomeController {
 	    $Document = $Document->alias('d')
 	    ->page($page, $rows)
 	    ->field('d.id,d.title,d.description,d.cover_id,m.*')
-	    ->join('__DOCUMENT_MATERIAL__ m on d.id = m.id', 'left')
-	    ->join('__CATEGORY__ c on c.id = d.category_id', 'left');
+	    ->join('__DOCUMENT_MATERIAL__ m on d.id = m.id', 'left');
+	    //->join('__CATEGORY__ c on c.id = d.category_id', 'left');
 	    
 	    //传分类id
 	    if(!empty($cateid)) {
@@ -107,11 +107,11 @@ class MaterialController extends HomeController {
 	        if($uid) {
 	            $row['is_fav'] = $Api->isFav($uid, $row['id']);
 	        }
-	        if($row['pid'] == 2) {
-	            $row['type'] = 'LIPSYNC';//对口型素材
-	        } else {
-	            $row['type'] = 'DUBBING';//配音秀素材
-	        }
+// 	        if($row['pid'] == 2) {
+// 	            $row['type'] = 'LIPSYNC';//对口型素材
+// 	        } else {
+// 	            $row['type'] = 'DUBBING';//配音秀素材
+// 	        }
 	    }
 	    
 	    $this->renderSuccess('', $list);
