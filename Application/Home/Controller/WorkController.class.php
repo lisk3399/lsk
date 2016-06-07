@@ -31,7 +31,7 @@ class WorkController extends HomeController {
 	    //发布顺序倒序排列
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.uid,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname')
+	    ->field('w.id,w.uid,w.topic_id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
 	    ->where(array('is_delete'=>0))
@@ -82,7 +82,7 @@ class WorkController extends HomeController {
 	    
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.uid,w.cover_url,d.title,w.views')
+	    ->field('w.id,w.uid,w.topic_id,w.cover_url,d.title,w.views')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->where(array('w.uid'=>$uid,'is_delete'=>0))
 	    ->select();
@@ -177,6 +177,8 @@ class WorkController extends HomeController {
     	    $cover_url = I('cover_url', '', 'trim');
     	    $description = I('description', '', 'trim');
     	    $type = I('type', '', 'trim');
+    	    $topic = I('topic', '', 'trim');
+    	    $topic_id = I('topic_id', '', 'intval');
     	    
     	    //作品类型：原创/对口型/配音秀
     	    $types = array('ORIGINAL', 'LIPSYNC', 'DUBBING');
@@ -196,6 +198,18 @@ class WorkController extends HomeController {
     	        $this->renderFailed('首图为空');
     	    }
     	    
+    	    //发布作品话题
+    	    if(!empty($topic)){
+    	        if(!$this->isTopicExists($topic)){
+    	            $topic_id = $this->createTopic($topic, $uid);
+    	            $data['topic_id'] = $topic_id;
+    	        }
+    	    }
+    	    //比一比视频直接关联topic
+    	    if(!empty($topic_id) && $this->isTopicIDExists($topic_id)) {
+    	        $data['topic_id'] = $topic_id;
+    	    }
+
     	    $data['uid'] = $uid;
     	    $data['material_id'] = $material_id;
     	    $data['video_url'] = $video_url;
@@ -771,5 +785,103 @@ class WorkController extends HomeController {
     	    
     	    $Qiniu->video2gif($key, $config);
 	    }
+	}
+	
+	/**
+	 * 发布作品创建话题
+	 */
+	private function createTopic($topic, $uid) {
+	    $data['uid'] = $uid;
+	    $data['topic_name'] = $topic;
+	    $data['create_time'] = NOW_TIME;
+	    $Topic = M('topic');
+	    $topic_id = $Topic->add($data);
+	    if($topic_id){
+	        return $topic_id;
+	    }
+	    return false;
+	}
+	
+	/**
+	 * 话题是否存在
+	 */
+	private function isTopicExists($topic) {
+	    $map['topic_name'] = $topic;
+	    $res = M('topic')->field('id')->where($map)->find();
+	    if($res['id']) {
+	        return true;
+	    }
+	    return false;
+	}
+	
+	/**
+	 * 话题id是否存在
+	 */
+	private function isTopicIDExists($topic_id) {
+	    $map['id'] = $topic_id;
+	    $res = M('topic')->field('id')->where($map)->find();
+	    if($res['id']) {
+	        return true;
+	    }
+	    return false;
+	}
+	
+	/**
+	 * 某话题下作品列表
+	 */
+	public function topicWork() {
+	    $topic_id = I('topic_id', '', 'intval');
+	    if(empty($topic_id)) {
+	        $this->renderFailed('没有话题id');
+	    }
+	    if(!$this->isTopicIDExists($topic_id)) {
+	        $this->renderFailed('话题不存在');
+	    }
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	    
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+	    $map['is_delete'] = 0;
+	    $map['topic_id'] = $topic_id;
+	    //发布顺序倒序排列
+	    $Work = M('Work');
+	    $list = $Work->alias('w')
+	    ->page($page, $rows)
+	    ->field('w.id,w.uid,w.topic_id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname')
+	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
+	    ->join('__TOPIC__ t on w.topic_id = t.id')
+	    ->where($map)
+	    ->order('w.id desc')
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	    
+	    //设置默认头像
+	    $Api = new userapi;
+	    $list = $Api->setDefaultAvatar($list);
+	    
+	    //设置素材封面图
+	    foreach ($list as &$row) {
+	        $row['material_cover_url'] = !empty($row['cover_id'])?C('WEBSITE_URL').get_cover($row['cover_id'], 'path'):'';
+	        unset($row['cover_id']);
+	    }
+	    //是否点赞输出
+	    $uid = is_login();
+	    if($uid) {
+	        $list = $Api->getIsLike($list, $uid);
+	    } else {
+	        foreach ($list as &$row) {
+	            $row['is_like'] = 0;
+	        }
+	    }
+	    
+	    $this->renderSuccess('', $list);
 	}
 }
