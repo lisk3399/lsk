@@ -710,7 +710,6 @@ class WorkController extends HomeController {
 	    if(IS_POST) {
     	    $page = I('page', '1', 'intval');
     	    $rows = I('rows', '20', 'intval');
-    	     
     	    //限制单次最大读取数量
     	    if($rows > C('API_MAX_ROWS')) {
     	        $rows = C('API_MAX_ROWS');
@@ -718,29 +717,54 @@ class WorkController extends HomeController {
     	    
     		$material_id = I('mid', '', 'intval');
     		$order = I('order', '', 'trim');
+    		if($order == 'likes') {
+    		    $order = 'w.likes desc';
+    		} else {
+    		    $order = 'w.id desc';
+    		}
+    		
+    		$Api = new UserApi();
+    		//原创视频
     	    if(empty($material_id)) {
-    	        $this->renderFailed('没有素材');
+    	        $topic_id = I('topic_id', '', 'intval');
+    	        if(empty($topic_id)) {
+    	            $this->renderFailed('没有话题id');
+    	        }
+    	        if(!$this->isTopicIDExists($topic_id)) {
+    	            $this->renderFailed('话题不存在');
+    	        }
+    	        
+    	        $map['is_delete'] = 0;
+    	        $map['topic_id'] = $topic_id;
+    	        //发布顺序倒序排列
+    	        $Work = M('Work');
+    	        $list = $Work->alias('w')
+    	        ->page($page, $rows)
+    	        ->field('w.id,w.uid,w.topic_id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname')
+    	        ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+    	        ->join('__MEMBER__ m on m.uid = w.uid', 'left')
+    	        ->join('__TOPIC__ t on w.topic_id = t.id')
+    	        ->where($map)
+    	        ->order('w.likes desc,w.id desc')
+    	        ->select();
     	    }
-    	    //素材是否存在
-            $Api = new UserApi();
-    	    if(!$Api->checkMaterialExists($material_id)) {
-    	        $this->renderFailed('素材不存在');
+    	    //非原创视频
+    	    else {
+    	        //素材是否存在
+    	        if(!$Api->checkMaterialExists($material_id)) {
+    	            $this->renderFailed('素材不存在');
+    	        }
+    	        	
+    	        $Work = M('work');
+    	        $list = $Work->alias('w')
+    	        ->page($page, $rows)
+    	        ->field('w.id,w.uid,w.cover_url,w.description,w.views,w.likes,w.comments,w.create_time,d.title,m.avatar,m.nickname')
+    	        ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+    	        ->join('__MEMBER__ m on m.uid = w.uid', 'left')
+    	        ->where(array('d.id'=>$material_id,'is_delete'=>0))
+    	        ->order($order)
+    	        ->select();
     	    }
-    	    if($order == 'likes') {
-    	        $order = 'w.likes desc';
-    	    } else {
-    	        $order = 'w.id desc';
-    	    }
-    	    
-    	    $Work = M('work');
-    	    $list = $Work->alias('w')
-    	    ->page($page, $rows)
-    	    ->field('w.id,w.uid,w.cover_url,w.description,w.views,w.likes,w.comments,w.create_time,d.title,m.avatar,m.nickname')
-    	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-    	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
-    	    ->where(array('d.id'=>$material_id,'is_delete'=>0))
-    	    ->order($order)
-    	    ->select();
     	    
     	    if(is_array($list) && count($list)>0) {
     	        $list = $Api->setDefaultAvatar($list);
