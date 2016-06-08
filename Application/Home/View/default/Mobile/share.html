@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="viewport"content="width=device-width, initial-scale=1"/>
-<title>逗比孩-<if condition="$info['title']">{$info.title}<else/>原创</if></title>
+<title>比拍-<if condition="$info['title']">{$info.title}<else/>原创</if></title>
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
@@ -81,7 +81,7 @@
 <body>
     <!-- 对嘴 -->
     <div class="top3">
-        <div class="tx1"><img src="{$info.avatar}" alt="{$info.nickname}" /></div>
+        <div class="tx1"><img src="{$info.avatar}" alt="{$info.nickname}"></div>
         <div class="name2">{$info.nickname}<br/><span>{$info.create_time}</span></div>
         <div class="top3_zan"><i class="top3_like1" style="margin-right:5px;"></i><span>{$info.likes}</span></div>
     </div>
@@ -97,14 +97,23 @@
         </div>
         <div class="yanyi"></div>
     </div>
-<!-- 
-    <div class="gd">
-        <a href="javascript:void(0)" title="下载逗比孩">
-        想看我更多作品？快来下载逗比孩吧！
-        <i class="top3_xz"></i></a>
-</div>-->
-
 <div style="clear:both"></div>
+<div class="tit"></div>
+<div style="clear:both"></div>
+<div class="gg">
+	<div class="xkxlogo">
+		<img src="__PUBLIC__/Home/images/dbh_icon.png" width="100%" title="比拍">
+	</div>
+	<div class="xkxwz">
+		<span>比拍</span><br>
+		想看我更多作品？快来下载比拍吧！
+	</div>
+	<div class="download">
+		<a href="javascript:download();" title="下载比拍IOS"><em class="i-down"></em>下载</a>
+	</div>
+
+</div>
+<div style="clear: both"></div>
 <script>
     end_adv_video="";
     if(end_adv_video){
@@ -140,24 +149,5 @@
         $target.show().siblings('.intro-box').hide();
     });
 </script>
-    
-<div class="tit"></div>
-<div style="clear:both"></div>
-<div class="gg">
-	<div class="xkxlogo">
-		<img src="__PUBLIC__/Home/images/dbh_icon.png" width="100%" title="逗比孩">
-	</div>
-	<div class="xkxwz">
-		<span>逗比孩</span><br>
-		想看我更多作品？快来下载逗比孩吧！
-	</div>
-	<div class="download">
-		<a href="javascript:download();" title="下载逗比孩IOS"><em
-			class="i-down"></em>下载</a>
-	</div>
-
-</div>
-
-<div style="clear: both"></div>
 </body>
 </html>
