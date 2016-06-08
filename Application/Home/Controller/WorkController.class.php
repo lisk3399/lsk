@@ -827,7 +827,7 @@ class WorkController extends HomeController {
 	}
 	
 	/**
-	 * 某话题下作品列表
+	 * 某话题下作品列表,按照作品点赞数倒序
 	 */
 	public function topicWork() {
 	    if(IS_POST) {
@@ -857,7 +857,7 @@ class WorkController extends HomeController {
     	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
     	    ->join('__TOPIC__ t on w.topic_id = t.id')
     	    ->where($map)
-    	    ->order('w.id desc')
+    	    ->order('w.likes desc,w.id desc')
     	    ->select();
     	    
     	    if(count($list) == 0) {
