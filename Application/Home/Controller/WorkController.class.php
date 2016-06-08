@@ -177,8 +177,6 @@ class WorkController extends HomeController {
     	    $cover_url = I('cover_url', '', 'trim');
     	    $description = I('description', '', 'trim');
     	    $type = I('type', '', 'trim');
-    	    $topic = I('topic', '', 'trim');
-    	    $topic_id = I('topic_id', '', 'intval');
     	    
     	    //作品类型：原创/对口型/配音秀
     	    $types = array('ORIGINAL', 'LIPSYNC', 'DUBBING');
@@ -198,18 +196,6 @@ class WorkController extends HomeController {
     	        $this->renderFailed('首图为空');
     	    }
     	    
-    	    //发布作品话题
-    	    if(!empty($topic)){
-    	        if(!$this->isTopicExists($topic)){
-    	            $topic_id = $this->createTopic($topic, $uid);
-    	            $data['topic_id'] = $topic_id;
-    	        }
-    	    }
-    	    //比一比视频直接关联topic
-    	    if(!empty($topic_id) && $this->isTopicIDExists($topic_id)) {
-    	        $data['topic_id'] = $topic_id;
-    	    }
-
     	    $data['uid'] = $uid;
     	    $data['material_id'] = $material_id;
     	    $data['video_url'] = $video_url;
@@ -232,6 +218,38 @@ class WorkController extends HomeController {
     	    } else {
     	        $this->renderFailed('发布失败，请重试');
     	    }
+	    }
+	}
+	
+	/**
+	 * 给作品创建话题
+	 */
+	public function createWorkTopic() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if($uid) {
+	            $topic = I('topic', '广场', 'trim');
+	            $work_id = I('work_id', '', 'intval');
+	            if(empty($work_id)) {
+	                $this->renderFailed('没有作品id');
+	            }
+	            if(!$this->checkWorkExists($work_id)) {
+	                $this->renderFailed('作品不存在');
+	            }
+	            
+	            //发布作品话题
+	            if(!empty($topic)){
+	                $topic_id = $this->isTopicExists($topic);
+	                if(!$topic_id){
+	                    $topic_id = $this->createTopic($topic, $uid);
+	                }
+	                $data['topic_id'] = $topic_id;
+	                $data['id'] = $work_id;
+	                if(M('work')->save($data)) {
+	                    $this->renderSuccess('创建成功');
+	                }
+	            }
+	        }
 	    }
 	}
 	
@@ -809,7 +827,7 @@ class WorkController extends HomeController {
 	    $map['topic_name'] = $topic;
 	    $res = M('topic')->field('id')->where($map)->find();
 	    if($res['id']) {
-	        return true;
+	        return $res['id'];
 	    }
 	    return false;
 	}
