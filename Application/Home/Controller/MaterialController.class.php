@@ -84,7 +84,7 @@ class MaterialController extends HomeController {
 	        $Document->join('__CATEGORY__ c on c.id = d.category_id', 'left');
 	    }
 	    else {
-	        $map = '1 = 1';
+	        $map = 'd.status = 1';
 	    }
 	    
 	    $list = $Document->where($map)
