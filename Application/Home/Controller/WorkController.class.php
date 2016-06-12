@@ -727,15 +727,13 @@ class WorkController extends HomeController {
     		//原创视频
     	    if(empty($material_id)) {
     	        $topic_id = I('topic_id', '', 'intval');
-    	        if(empty($topic_id)) {
-    	            $this->renderFailed('没有话题id');
-    	        }
-    	        if(!$this->isTopicIDExists($topic_id)) {
-    	            $this->renderFailed('话题不存在');
-    	        }
-    	        
+
     	        $map['is_delete'] = 0;
     	        $map['topic_id'] = $topic_id;
+    	        if(!$this->isTopicIDExists($topic_id)) {
+    	            $map['topic_id'] = 1;//默认话题分类
+    	        }
+
     	        //发布顺序倒序排列
     	        $Work = M('Work');
     	        $list = $Work->alias('w')
@@ -773,6 +771,7 @@ class WorkController extends HomeController {
     	        }
     	    }
     	    
+    	    //echo $Work->getLastSql();die;
     	    if(count($list) == 0) {
     	        $this->renderFailed('没有更多了');
     	    }
