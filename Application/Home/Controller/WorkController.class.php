@@ -887,7 +887,7 @@ class WorkController extends HomeController {
     	    if($rows > C('API_MAX_ROWS')) {
     	        $rows = C('API_MAX_ROWS');
     	    }
-    	    
+    	    $Api = new userapi;
     	    $map['is_delete'] = 0;
     	    $map['topic_id'] = $topic_id;
     	    //发布顺序倒序排列
@@ -907,7 +907,6 @@ class WorkController extends HomeController {
     	    }
     	    
     	    //设置默认头像
-    	    $Api = new userapi;
     	    $list = $Api->setDefaultAvatar($list);
     	    
     	    //设置素材封面图
