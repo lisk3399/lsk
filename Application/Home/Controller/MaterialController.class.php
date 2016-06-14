@@ -76,15 +76,12 @@ class MaterialController extends HomeController {
 	    
 	    //传分类id
 	    if(!empty($cateid)) {
-	        $map = array('d.category_id'=>$cateid);
+	        $map = array('d.category_id'=>$cateid, 'd.status'=>1);
 	    }
 	    //传父类id
 	    elseif (!empty($pid)) {
-	        $map = array('c.pid'=>$pid);
+	        $map = array('c.pid'=>$pid, 'd.status'=>1);
 	        $Document->join('__CATEGORY__ c on c.id = d.category_id', 'left');
-	    }
-	    else {
-	        $map = 'd.status = 1';
 	    }
 	    
 	    $list = $Document->where($map)
