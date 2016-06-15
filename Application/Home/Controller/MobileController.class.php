@@ -25,7 +25,7 @@ class MobileController extends Controller {
 	    ->where('w.id='.$work_id)
 	    ->find();
 	    
-	    $detail['create_time'] = date('Y-m-d', $detail['create_time']);
+	    $detail['create_time'] = date('Y-m-d H:i:s', $detail['create_time']);
         $detail['avatar'] = !empty($detail['avatar'])?$detail['avatar']:C('USER_INFO_DEFAULT.avatar');
         
         $this->assign('info', $detail);
