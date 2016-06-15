@@ -18,8 +18,8 @@
 	bIsAndroid = sUserAgent.match(/android/i) == "android";
     var weixin = sUserAgent.match(/MicroMessenger/i) == "micromessenger";
     var qq =navigator.userAgent.match(/QQ\//i) == "QQ/";
-	function is_weixin(){  
-	    var ua = navigator.userAgent.toLowerCase();  
+	function is_weixin(){
+	    var ua = navigator.userAgent.toLowerCase();
 	    if(ua.match(/MicroMessenger/i)=="micromessenger") {  
 	        return true;  
 	    } else {  
@@ -28,9 +28,9 @@
 	}
 	function download(){
 	    if(is_weixin()){
-	  		window.location.href = "https://itunes.apple.com/us/app/bi-pai-ren-xiao-gui-da-yi/id1119521508?mt=8";//渠道包是“微信”
+	    	$("#tips").show();
 	    }else{
-	    		if(bIsAndroid){
+	    	if(bIsAndroid){
 	    			window.location.href = ""; //安卓下载
 	  		}else{
 	  			window.location.href = "https://itunes.apple.com/us/app/bi-pai-ren-xiao-gui-da-yi/id1119521508?mt=8"; //苹果下载地址
@@ -79,6 +79,7 @@
 </script>
 </head>
 <body>
+<img src="__PUBLIC__/Home/images/tip.png" width="100%" alt="" id="tips" style="display: none" onclick="this.style.display='none'">
     <!-- 对嘴 -->
     <div class="top3">
         <div class="tx1"><img src="{$info.avatar}" alt="{$info.nickname}"></div>
