@@ -177,6 +177,7 @@ class WorkController extends HomeController {
     	    $cover_url = I('cover_url', '', 'trim');
     	    $description = I('description', '', 'trim');
     	    $type = I('type', '', 'trim');
+    	    $topic_id = I('topic_id', '', 'intval');
     	    
     	    //作品类型：原创/对口型/配音秀
     	    $types = array('ORIGINAL', 'LIPSYNC', 'DUBBING');
@@ -203,6 +204,9 @@ class WorkController extends HomeController {
     	    $data['description'] = $description;
     	    $data['type'] = $type;
     	    $data['create_time'] = NOW_TIME;
+    	    if(!empty($topic_id)) {
+    	        $data['topic_id'] = $topic_id;
+    	    }
     	    
     	    $Work = M('work');
     	    $ret = $Work->add($data);
