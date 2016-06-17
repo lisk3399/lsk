@@ -44,7 +44,7 @@
 				<video id="video_{$data.id}" src='' controls="controls" autoplay="autoplay" height="130px" width="auto" style="display:none"></video>
 				<a href='javascript:preview({$data.id}, "{$data.video_url}")'>预览</a>
 				</td>
-				<td><a href="{:U("Work/setStatus",array("is_delete"=>0, "ids"=>$data["id"]))}" class="ajax-get">还原</td>
+				<td><a href="{:U("Work/setStatus",array("ids"=>$data["id"], "is_delete"=>0, "uid"=>$data["uid"], "material_id"=>$data["material_id"]))}" class="ajax-get">还原</td>
 		    </tr>
 		</volist>
 	</tbody>

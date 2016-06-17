@@ -8,6 +8,7 @@ namespace Home\Controller;
 
 use User\Api\UserApi;
 use Think\Upload\Driver\Qiniu\QiniuStorage;
+use Common\Api\WorkApi;
 /**
  * 作品控制器
  */
@@ -215,12 +216,9 @@ class WorkController extends HomeController {
     	    $Work = M('work');
     	    $ret = $Work->add($data);
     	    if($ret) {
-    	        //更新素材作品数
-    	        $map['id'] = $material_id;
-    	        M('document')->where($map)->setInc('works');
-    	        //更新用户作品数
-    	        $map['uid'] = $uid;
-    	        M('member')->where($map)->setInc('works');
+    	        //作品数增加
+    	        WorkApi::setWorksInc($material_id, $uid);
+    	        
     	        $data['work_id'] = $ret;
     	        $this->renderSuccess('发布成功', $data);
     	    } else {

@@ -5,6 +5,7 @@
 namespace Admin\Controller;
 use Admin\Model\AuthGroupModel;
 use Think\Page;
+use Common\Api\WorkApi;
 
 class WorkController extends AdminController {
     
@@ -37,6 +38,8 @@ class WorkController extends AdminController {
     public function setStatus() {
         $ids    =   I('request.ids', '', 'trim');
         $is_delete =   I('request.is_delete', '', 'intval');
+        $uid = I('uid', '', 'intval');
+        $material_id = I('material_id', 0, 'intval');
         if(empty($ids)){
             $this->error('请选择要操作的数据');
         }
@@ -47,8 +50,17 @@ class WorkController extends AdminController {
         $Work = M('work');
         $map['id'] = array('IN', $ids);
         $data['is_delete'] = $is_delete;
+        
         if($Work->where($map)->save($data)) {
-            $this->success('操作成功');exit;
+            //后台删除则对应用户的作品也需要减少
+            if($is_delete == 1) {
+                WorkApi::setWorkDec($material_id, $uid);
+            }//后台恢复对应用户作品增加
+            elseif ($is_delete == 0) {
+                WorkApi::setWorksInc($material_id, $uid);
+            }
+            $this->success('操作成功');
+            exit;
         }
         $this->error('操作失败');
     }
