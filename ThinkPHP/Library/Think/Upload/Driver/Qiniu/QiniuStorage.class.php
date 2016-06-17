@@ -233,7 +233,7 @@
 		    $bucket = urlencode($config['bucket']);
 		    //TODO 通知url需要更换，通知完去更新gif地址
 		    $notifyURL = urlencode('http://dbh.doushow.com');
-		    $fops = urldecode('avthumb/gif');
+		    $fops = urldecode('avthumb/gif/t/5/s/100x100');
 		    $path = $config['api'].'pfop/?bucket='.$bucket.'&key='.$key.'&fops='.$fops.'&notifyURL='.$notifyURL.'&force=force';
 		    $method = 'POST';
 		    
