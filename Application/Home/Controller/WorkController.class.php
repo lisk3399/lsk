@@ -32,9 +32,10 @@ class WorkController extends HomeController {
 	    //发布顺序倒序排列
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.uid,w.topic_id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname')
+	    ->field('w.id,w.uid,w.topic_id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname,ifnull(t.topic_name, "") as topic_name')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
+	    ->join('__TOPIC__ t on t.id = w.topic_id', 'left')
 	    ->where(array('is_delete'=>0))
 	    ->order('w.id desc')
 	    ->select();
@@ -351,6 +352,39 @@ class WorkController extends HomeController {
 	}
 	
 	/**
+	 * 删除我的作品
+	 */
+	public function deleteMyWork() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('请先登录');
+	        }
+	        
+	        $work_id = I('id', '', 'intval');
+	        if(empty($work_id)) {
+	            $this->renderFailed('作品id为空');
+	        }
+	        if(!$this->checkWorkExists($work_id)) {
+	            $this->renderFailed('作品不存在');
+	        }
+	        if(!$this->isMyWork($uid, $work_id)) {
+	            $this->renderFailed('只能管理自己的作品');
+	        }
+	        
+	        $Work = M('work');
+	        //$map['id'] = array('IN', $ids);//批量
+	        $map['id'] = $work_id;
+	        $data['is_delete'] = 1;
+	        //删除作品进入回收站
+	        if($Work->where($map)->save($data)) {
+	            $this->renderSuccess('删除成功');
+	        }
+	        $this->renderFailed('删除失败，请稍后再试');
+	    }
+	}
+	
+	/**
 	 * 作品点赞/喜欢
 	 */
 	public function like() {
@@ -612,6 +646,20 @@ class WorkController extends HomeController {
 	private function checkWorkExists($work_id) {
 	    $Material = M('work');
 	    $res = $Material->where(array('id'=>$work_id,'is_delete'=>0))->field('id')->find();
+	    if(!$res['id']) {
+	        return false;
+	    }
+	    return true;
+	}
+
+	/**
+	 * 检查是否是自己的作品
+	 * @param int $uid
+	 * @param int $work_id
+	 */
+	private function isMyWork($uid, $work_id) {
+	    $Material = M('work');
+	    $res = $Material->where(array('id'=>$work_id, 'uid'=>$uid, 'is_delete'=>0))->field('id')->find();
 	    if(!$res['id']) {
 	        return false;
 	    }
