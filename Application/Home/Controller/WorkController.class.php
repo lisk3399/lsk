@@ -381,6 +381,8 @@ class WorkController extends HomeController {
 	        $data['is_delete'] = 1;
 	        //删除作品进入回收站
 	        if($Work->where($map)->save($data)) {
+	            $material_id = 0;
+	            WorkApi::setWorkDec($material_id, $uid);
 	            $this->renderSuccess('删除成功');
 	        }
 	        $this->renderFailed('删除失败，请稍后再试');
