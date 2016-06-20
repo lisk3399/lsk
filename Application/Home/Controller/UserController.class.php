@@ -220,25 +220,26 @@ class UserController extends HomeController {
     	    if(!$uid) {
     	        $this->renderFailed('您还未登录');
     	    }
-    	    $data['nickname'] = I('post.nickname', '', 'trim');
-    	    $data['avatar'] = I('post.avatar', '', 'trim');
-    	    $data['signature'] = I('post.signature', '', 'trim');
+    	    $nickname = I('post.nickname', '', 'trim');
+    	    $avatar = I('post.avatar', '', 'trim');
+    	    $signature = I('post.signature', '', 'trim');
     	    $data['sex'] = I('post.sex', '0', 'intval');
     	    $data['birthday'] = I('post.birthday', '', 'trim');
     	    
-    	    if(empty($data['nickname'])) {
-    	        $this->renderFailed('昵称不为空');
+    	    if(!empty($nickname)) {
+    	        if(strlen($nickname)<2 || strlen($nickname)>60) {
+    	            $this->renderFailed(self::STATUS_FAILURE, '昵称由2-20个字符组成');
+    	        }
+    	        $data['nickname'] = $nickname;
     	    }
-    	    if(strlen($data['nickname'])<2 || strlen($data['nickname'])>60) {
-    	        $this->renderFailed(self::STATUS_FAILURE, '昵称由2-20个字符组成');
+    	    if(!empty($avatar)) {
+    	        $data['avatar'] = $avatar;
     	    }
-    	    if(empty($data['avatar'])) {
-    	        $this->renderFailed('头像不为空');
-    	    }
-    	    if(!empty($data['signature'])) {
-    	        if(strlen($data['signature'])<2 || strlen($data['signature'])>75) {
+    	    if(!empty($signature)) {
+    	        if(strlen($signature)<2 || strlen($signature)>75) {
     	            $this->renderFailed(self::STATUS_FAILURE, '昵称由2-25个字符组成');
     	        }
+    	        $data['signature'] = $signature;
     	    }
     	    
     	    //更新用户信息

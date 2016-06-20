@@ -54,6 +54,9 @@ class WorkController extends HomeController {
             if($row['type'] == 'DUBBING') {//配音秀
                 $row['cover_url'] = "http://vod.doushow.com/400-400px.png";
             }
+            if(!empty($row['topic_name'])) {
+                $row['title'] = $row['topic_name'];
+            }
             unset($row['cover_id']);
         }
         
