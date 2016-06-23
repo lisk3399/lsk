@@ -17,6 +17,7 @@ use Think\Upload\Driver\Qiniu\QiniuStorage;
 class IndexController extends HomeController {
 
     public function index(){
+        $this->display();
     }
     
     /**
