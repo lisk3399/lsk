@@ -285,9 +285,7 @@ class WorkController extends HomeController {
 	 */
 	public function workDetail() {
 	    $uid = is_login();
-	    if(!$uid) {
-	        $this->renderFailed('请先登录');
-	    }
+	    
 	    $work_id = I('id', '', 'intval');
 	    if(empty($work_id)) {
 	        $this->renderFailed('作品id为空');
