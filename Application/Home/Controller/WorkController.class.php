@@ -34,7 +34,7 @@ class WorkController extends HomeController {
 	    ->page($page, $rows)
 	    ->field('w.id,w.uid,w.topic_id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname,ifnull(t.topic_name, "") as topic_name')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
-	    ->join('__MEMBER__ m on m.uid = w.uid', 'left')
+	    ->join('__MEMBER__ m on m.uid =    w.uid', 'left')
 	    ->join('__TOPIC__ t on t.id = w.topic_id', 'left')
 	    ->where(array('is_delete'=>0))
 	    ->order('w.id desc')
@@ -48,17 +48,34 @@ class WorkController extends HomeController {
         $Api = new userapi;
         $list = $Api->setDefaultAvatar($list);
         
-        //设置素材封面图
-        foreach ($list as &$row) {
-            $row['material_cover_url'] = !empty($row['cover_id'])?C('WEBSITE_URL').get_cover($row['cover_id'], 'path'):'';
-            if($row['type'] == 'DUBBING') {//配音秀
-                $row['cover_url'] = "http://vod.doushow.com/400-400px.png";
+        //来源
+        $from = I('from', '', 'trim');
+        if(!empty($from) && $from == 'index') {
+            //设置素材封面图
+            foreach ($list as &$row) {
+                $row['material_cover_url'] = !empty($row['cover_id'])?C('WEBSITE_URL').get_cover($row['cover_id'], 'path'):'';
+                if($row['type'] == 'DUBBING') {//配音秀
+                    $row['cover_url'] = "http://vod.doushow.com/400-400px.png";
+                }
+                if(!empty($row['topic_name'])) {
+                    $row['title'] = $row['topic_name'];
+                }
+                unset($row['cover_id']);
             }
-            if(!empty($row['topic_name'])) {
-                $row['title'] = $row['topic_name'];
-            }
-            unset($row['cover_id']);
         }
+        else {
+            //设置素材封面图
+            foreach ($list as &$row) {
+                $row['material_cover_url'] = !empty($row['cover_id'])?C('WEBSITE_URL').get_cover($row['cover_id'], 'path'):'';
+                if($row['type'] == 'DUBBING') {//配音秀
+                    $row['cover_url'] = $row['material_cover_url'];
+                }
+                if(!empty($row['topic_name'])) {
+                    $row['title'] = $row['topic_name'];
+                }
+                unset($row['cover_id']);
+            }
+        }        
         
 	    //是否点赞输出
 	    $uid = is_login();
