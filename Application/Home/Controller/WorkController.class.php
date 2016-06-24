@@ -49,8 +49,8 @@ class WorkController extends HomeController {
         $list = $Api->setDefaultAvatar($list);
         
         //来源
-        $from = I('from', '', 'trim');
-        if(!empty($from) && $from == 'index') {
+        //$from = I('from', '', 'trim');
+        //if(!empty($from) && $from == 'index') {
             //设置素材封面图
             foreach ($list as &$row) {
                 $row['material_cover_url'] = !empty($row['cover_id'])?C('WEBSITE_URL').get_cover($row['cover_id'], 'path'):'';
@@ -62,20 +62,20 @@ class WorkController extends HomeController {
                 }
                 unset($row['cover_id']);
             }
-        }
-        else {
-            //设置素材封面图
-            foreach ($list as &$row) {
-                $row['material_cover_url'] = !empty($row['cover_id'])?C('WEBSITE_URL').get_cover($row['cover_id'], 'path'):'';
-                if($row['type'] == 'DUBBING') {//配音秀
-                    $row['cover_url'] = $row['material_cover_url'];
-                }
-                if(!empty($row['topic_name'])) {
-                    $row['title'] = $row['topic_name'];
-                }
-                unset($row['cover_id']);
-            }
-        }        
+        //}
+//         else {
+//             //设置素材封面图
+//             foreach ($list as &$row) {
+//                 $row['material_cover_url'] = !empty($row['cover_id'])?C('WEBSITE_URL').get_cover($row['cover_id'], 'path'):'';
+//                 if($row['type'] == 'DUBBING') {//配音秀
+//                     $row['cover_url'] = $row['material_cover_url'];
+//                 }
+//                 if(!empty($row['topic_name'])) {
+//                     $row['title'] = $row['topic_name'];
+//                 }
+//                 unset($row['cover_id']);
+//             }
+//         }        
         
 	    //是否点赞输出
 	    $uid = is_login();
