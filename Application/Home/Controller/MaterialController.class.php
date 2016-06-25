@@ -30,22 +30,22 @@ class MaterialController extends HomeController {
 	    if($rows > C('API_MAX_ROWS')) {
 	        $rows = C('API_MAX_ROWS');
 	    }
+        
 	    //读取分类id
 	    if(!empty($cateid)) {
-	        $list = M('Category')
-	        ->page($page, $rows)
-	        ->field('id,name,title')
-	        ->where(array('id'=>$cateid))
-	        ->select();
+	        $map = array('id'=>$cateid);
 	    }
 	    //读取父分类id下所有分类，默认读取顶级分类
 	    else {
-	        $list = M('Category')
-	        ->page($page, $rows)
-	        ->field('id,name,title')
-	        ->where(array('pid'=>$pid))
-	        ->select();
+            $map = array('pid'=>$pid);
 	    }
+	    
+	    $list = M('Category')
+	    ->page($page, $rows)
+	    ->field('id,name,title')
+	    ->where($map)
+	    ->order('sort desc')
+	    ->select();
 	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
