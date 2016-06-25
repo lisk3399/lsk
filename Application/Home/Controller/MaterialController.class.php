@@ -87,7 +87,7 @@ class MaterialController extends HomeController {
 	    $list = $Document->where($map)
 	    ->order('d.id desc')
 	    ->select();
-
+	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了', -1);
 	    }
@@ -97,9 +97,9 @@ class MaterialController extends HomeController {
 	    $Api = new UserApi;
 	    foreach ($list as &$row) {
 	        $row['cover_url'] = !empty($row['cover_id']) ? C('WEBSITE_URL').get_cover($row['cover_id'], 'path') :'';
-	        $row['audio'] = !empty($row['audio']) ? $Api->getFileUrl($row['audio']) :'';
-	        $row['lyrics'] = !empty($row['lyrics']) ? $Api->getFileUrl($row['lyrics']) :'';
-	        $row['video'] = !empty($row['video']) ? $Api->getFileUrl($row['video']) :'';
+	        $row['audio'] = !empty($row['audio']) ? get_attach($row['audio']) :'';
+	        $row['lyrics'] = !empty($row['lyrics']) ? get_attach($row['lyrics']) :'';
+	        $row['video'] = !empty($row['video']) ? get_attach($row['video']) :'';
 	        $row['is_fav'] = 0;
 	        if($uid) {
 	            $row['is_fav'] = $Api->isFav($uid, $row['id']);

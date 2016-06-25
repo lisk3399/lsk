@@ -960,10 +960,14 @@ function get_attach($attach_id){
     }
     $File = M('File')->getById($attach_id);
     if($File['id']) {
-        $websiteUrl = C("WEBSITE_URL");
-        $rootPath = C('DOWNLOAD_UPLOAD.rootPath');
-        $rootPath = str_replace('.', '', $rootPath);
-        $attachUrl = $websiteUrl.$rootPath.$File['savepath'].$File['savename'];
+        if($File['url']) {
+            $attachUrl = $File['url'];
+        } else {
+            $websiteUrl = C("WEBSITE_URL");
+            $rootPath = C('DOWNLOAD_UPLOAD.rootPath');
+            $rootPath = str_replace('.', '', $rootPath);
+            $attachUrl = $websiteUrl.$rootPath.$File['savepath'].$File['savename'];
+        }
     }
     return $attachUrl;
 }
