@@ -312,7 +312,6 @@ class WorkController extends HomeController {
             if($detail['type'] == 'DUBBING') {//配音秀
                 $detail['cover_url'] = "http://vod.doushow.com/400-400px.png";
             }
-            unset($detail['cover_id']);
         }
         
 	    //是否点赞输出
@@ -323,7 +322,11 @@ class WorkController extends HomeController {
 	            $detail['is_like'] = 1;
 	        }
 	    }
-
+	    //标题可能为空
+	    if(empty($title)) {
+	        $detail['title'] = '';
+	    }
+	    
 	    //更新查看数
 	    $map['id'] = $work_id;
 	    $Work->where($map)->setInc('views');
