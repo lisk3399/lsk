@@ -205,8 +205,8 @@ class WorkController extends HomeController {
     	    $type = I('type', '', 'trim');
     	    $topic_id = I('topic_id', '', 'intval');
     	    
-    	    //作品类型：原创/对口型/配音秀
-    	    $types = array('ORIGINAL', 'LIPSYNC', 'DUBBING');
+    	    //作品类型：原创/对口型/配音秀/本地上传
+    	    $types = array('ORIGINAL', 'LIPSYNC', 'DUBBING','LOCAL');
     	    if(!in_array($type, $types)) {
     	        $this->renderFailed('类型不正确');
     	    }
