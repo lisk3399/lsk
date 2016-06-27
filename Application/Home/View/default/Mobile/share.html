@@ -29,6 +29,7 @@
 	function download(){
 	    if(is_weixin()){
 	    	$("#tips").show();
+	    	document.body.scrollTop = 0;
 	    }else{
 	    	if(bIsAndroid){
 	    			//window.location.href = ""; //安卓下载
