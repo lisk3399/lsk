@@ -453,6 +453,8 @@ class UserController extends HomeController {
         $openid = I('post.openid', '', 'trim');
         $nickname = I('post.nickname', '', 'trim');
         $avatar = I('post.avatar', '', 'trim');
+        $platform = I('post.platform', '', 'trim');
+        $device_id = I('post.device_id', '', 'trim');
         
         if(empty($openid)) {
             $this->renderFailed('用户id不存在');
@@ -472,6 +474,12 @@ class UserController extends HomeController {
             $data['reg_ip'] = get_client_ip();
             $data['reg_time'] = NOW_TIME;
             $data['status'] = 1;
+            if(!empty($platform)) {
+                $data['platform'] = $platform;
+            }
+            if(!empty($device_id)) {
+                $data['device_id'] = $device_id;
+            }
             $res = $Api->createOauthUser($data, $reg_source);
             if(!$res['status']){
                 $this->renderFailed($res['info']);
