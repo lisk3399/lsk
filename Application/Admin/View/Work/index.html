@@ -33,6 +33,8 @@
 			<input type="hidden" class="hide-data" name="cate_id" value="{$cate_id}"/>
 			<input type="hidden" class="hide-data" name="pid" value="{$pid}"/>
 			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setStatus",array("is_delete"=>1))}">删 除</button>
+			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setDisplay",array("is_display"=>1))}">设置首页显示</button>
+			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setDisplay",array("is_display"=>0))}">取消首页显示</button>
 		</div>
 
 		<!-- 高级搜索 -->
@@ -83,6 +85,7 @@
 					<th>类型</th>
 					<th>作品封面</th>
 					<th>作品</th>
+					<th>首页显示</th>
 					<th>操作</th>
                 </tr>
             </thead>
@@ -101,6 +104,7 @@
 						<video id="video_{$data.id}" src='' controls="controls" autoplay="autoplay" height="130px" width="auto" style="display:none"></video>
 						<a href='javascript:preview({$data.id}, "{$data.video_url}")'>预览</a>
 						</td>
+						<td><if condition="$data.is_display eq 1">是<else/>否</if></td>
 						<td><a href='{:U("Work/setStatus",array("ids"=>$data["id"], "is_delete"=>1, "uid"=>$data["uid"], "material_id"=>$data["material_id"]))}'>删除</a></td>
                     </tr>
                 </volist>

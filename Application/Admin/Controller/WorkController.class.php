@@ -65,6 +65,28 @@ class WorkController extends AdminController {
         $this->error('操作失败');
     }
     
+    //设置是否在首页显示
+    public function setDisplay() {
+        $ids    =   I('request.ids', '', 'trim');
+        $is_display =   I('request.is_display', '', 'intval');
+        if(empty($ids)){
+            $this->error('请选择要操作的数据');
+        }
+        if(empty($ids)){
+            $this->error('id为空');
+        }
+    
+        $Work = M('work');
+        $map['id'] = array('IN', $ids);
+        $data['is_display'] = $is_display;
+    
+        if($Work->where($map)->save($data)) {
+            $this->success('操作成功');
+            exit;
+        }
+        $this->error('操作失败');
+    }
+    
     public function recycle() {
         $map['is_delete'] = 1;
         $list = $this->getWorkList($map);
@@ -89,7 +111,7 @@ class WorkController extends AdminController {
         $Work = M('work');
         $select = $Work->alias('w')
         ->page($page, $listRows)
-        ->field('w.id,w.uid,w.material_id,w.type,w.video_url,w.cover_url,w.description,d.title,m.nickname')
+        ->field('w.id,w.uid,w.material_id,w.type,w.video_url,w.cover_url,w.description,w.is_display,d.title,m.nickname')
         ->join('__DOCUMENT__ d on w.material_id = d.id', 'left')
         ->join('__MEMBER__ m on m.uid = w.uid', 'left')
         ->where($map)
