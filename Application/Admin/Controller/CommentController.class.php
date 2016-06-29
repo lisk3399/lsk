@@ -70,7 +70,7 @@ class CommentController extends AdminController {
         $Comment = M('Comment');
         $select = $Comment->alias('c')
         ->page($page, $listRows)
-        ->field('c.id,c.to_uid,c.create_time,m.nickname,d.title,w.description')
+        ->field('c.id,c.to_uid,c.content,c.create_time,m.nickname,d.title,w.description')
         ->join('__WORK__ w on w.id = c.work_id', 'left')
         ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
@@ -78,6 +78,10 @@ class CommentController extends AdminController {
         ->order('c.id desc');
     
         $list = $select->select();
+        foreach ($list as &$row) {
+            $row['content'] = rawurldecode($row['content']);
+        }
+        
         $total = $Comment->alias('c')->where($map)->count();
     
         $page = new \Think\Page($total, $listRows, $REQUEST);
