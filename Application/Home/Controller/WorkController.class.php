@@ -54,11 +54,14 @@ class WorkController extends HomeController {
             //设置素材封面图
             foreach ($list as &$row) {
                 $row['material_cover_url'] = !empty($row['cover_id'])?C('WEBSITE_URL').get_cover($row['cover_id'], 'path'):'';
-                if($row['type'] == 'DUBBING' || $row['type']=="LOCAL") {//配音秀
+                if($row['type'] == 'DUBBING' || $row['type']=="LOCAL") {//配音秀及本地视频
                     $row['cover_url'] = "http://vod.doushow.com/400-400px.png";
-                }
+                } 
                 if(!empty($row['topic_name'])) {
                     $row['title'] = $row['topic_name'];
+                }
+                if($row['type']=="ORIGINAL") {
+                    $row['title'] = "原创";
                 }
                 unset($row['cover_id']);
             }
