@@ -29,14 +29,14 @@ class WorkController extends HomeController {
 	        $rows = C('API_MAX_ROWS');
 	    }
 	    
-	    //发布顺序倒序排列
+	    //发布顺序倒序排列，未删除且设置在首页发现显示的
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
 	    ->field('w.id,w.uid,w.topic_id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname,ifnull(t.topic_name, "") as topic_name')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid =    w.uid', 'left')
 	    ->join('__TOPIC__ t on t.id = w.topic_id', 'left')
-	    ->where(array('is_delete'=>0))
+	    ->where(array('is_delete'=>0,'is_display'=>1))
 	    ->order('w.id desc')
 	    ->select();
 	    
