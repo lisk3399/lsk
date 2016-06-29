@@ -60,7 +60,7 @@ class WorkController extends HomeController {
                 if(!empty($row['topic_name'])) {
                     $row['title'] = $row['topic_name'];
                 }
-                if($row['type']=="ORIGINAL") {
+                if($row['type']=="ORIGINAL" || $row['type']=="LOCAL") {
                     $row['title'] = "原创";
                 }
                 unset($row['cover_id']);
@@ -326,8 +326,10 @@ class WorkController extends HomeController {
 	        }
 	    }
 	    //标题可能为空
-	    if(empty($title)) {
-	        $detail['title'] = '';
+	    if(empty($detail['title'])) {
+	        if($detail['type'] == 'ORIGINAL' || $detail['type'] == 'LOCAL') {
+	            $detail['title'] = '原创';
+	        }
 	    }
 	    
 	    //更新查看数
