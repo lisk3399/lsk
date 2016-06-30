@@ -42,7 +42,7 @@ class UserController extends HomeController {
 		    if($Api->checkMobileExist($mobile)) {
 		        $this->renderFailed('该手机号已经注册');
 		    }
-		    if(!preg_match('/^1(3[0-9]|5[0-35-9]|8[025-9])\d{8}$/', $mobile)) {
+		    if(!preg_match('/^1(3[0-9]|5[0-35-9]|7[0-9]|8[025-9])\d{8}$/', $mobile)) {
 		        $this->renderFailed('手机号码格式不正确');
 		    }
 		    if(empty($password)) {
@@ -474,18 +474,23 @@ class UserController extends HomeController {
             $data['reg_ip'] = get_client_ip();
             $data['reg_time'] = NOW_TIME;
             $data['status'] = 1;
-            if(!empty($platform)) {
-                $data['platform'] = $platform;
-            }
-            if(!empty($device_id)) {
-                $data['device_id'] = $device_id;
-            }
             $res = $Api->createOauthUser($data, $reg_source);
             if(!$res['status']){
                 $this->renderFailed($res['info']);
             }
             $user = $Api->getOauthUser($openid, $reg_source);
         }
+        
+        //更新ucenter平台和设备id
+        $info = array();
+        if(!empty($platform)) {
+            $info['platform'] = $platform;
+        }
+        if(!empty($device_id)) {
+            $info['device_id'] = $device_id;
+        }        
+        $model = M('ucenter_member');
+        $model->where(array('id'=>$user['uid']))->save($info);
         
         if(!$user['status']) {
             $this->renderFailed('用户被禁用');
