@@ -28,13 +28,24 @@ class ActivityController extends HomeController {
             $this->renderFailed('id为空');
         }
         
+        $map['is_delete'] = 0;
+        $map['activity_id'] = $activity_id;
         $Activity = M('activity');
-        $list = $Activity->page(page, rows)
-        ->where()
+        $list = $Activity->alias('a')->page($page, $rows)
+        ->field('w.id,w.uid,w.activity_id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname')
+        ->join('__WORK__ w on w.activity_id = a.id', 'left')
+    	->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
+    	->join('__MEMBER__ m on m.uid = w.uid', 'left')
+        ->where($map)
         ->order('id desc')
         ->select();
         
-        print_r($list);
+        //echo $Activity->getLastSql();die;
+        if(count($list) == 0) {
+            $this->renderFailed('没有更多了');
+        }
+        
+        $this->renderSuccess('', $list);
     }
     
     /**
