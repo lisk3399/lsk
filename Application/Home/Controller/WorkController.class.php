@@ -83,7 +83,7 @@ class WorkController extends HomeController {
             }
             //追加活动信息在列表前
             $activities = $this->getActivities();
-            if(!empty($activities)) {
+            if(!empty($activities) && $page == 1) {
                 foreach ($activities as &$row) {
                     $row['cover_url'] = C('WEBSITE_URL').get_cover($row['cover_id'], 'path');
                     $row['act_name'] = '#'.$row['act_name'].'#';
