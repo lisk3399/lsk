@@ -86,6 +86,7 @@ class WorkController extends HomeController {
             if(!empty($activities)) {
                 foreach ($activities as &$row) {
                     $row['cover_url'] = C('WEBSITE_URL').get_cover($row['cover_id'], 'path');
+                    $row['act_name'] = '#'.$row['act_name'].'#';
                     array_unshift($list, $row);
                 }
             }
