@@ -32,7 +32,7 @@ class WorkController extends HomeController {
 	    //发布顺序倒序排列，未删除且设置在首页发现显示的
 	    $list = M('Work')->alias('w')
 	    ->page($page, $rows)
-	    ->field('w.id,w.uid,w.topic_id,w.material_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname,ifnull(t.topic_name, "") as topic_name')
+	    ->field('w.id,w.uid,w.topic_id,w.material_id,w.activity_id,w.cover_url,w.video_url,w.views,w.likes,w.comments,w.type,d.title,d.cover_id,m.avatar,m.nickname,ifnull(t.topic_name, "") as topic_name')
 	    ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
 	    ->join('__MEMBER__ m on m.uid =    w.uid', 'left')
 	    ->join('__TOPIC__ t on t.id = w.topic_id', 'left')
@@ -48,7 +48,7 @@ class WorkController extends HomeController {
         $Api = new userapi;
         $list = $Api->setDefaultAvatar($list);
         
-        //来源
+        //来源：from=index为从发现请求接口
         $from = I('from', '', 'trim');
         if(!empty($from) && $from == 'index') {
             //设置素材封面图
@@ -81,6 +81,14 @@ class WorkController extends HomeController {
                 }
                 unset($row['cover_id']);
             }
+            //追加活动信息在列表前
+            $activities = $this->getActivities();
+            if(!empty($activities)) {
+                foreach ($activities as &$row) {
+                    $row['cover_url'] = C('WEBSITE_URL').get_cover($row['cover_id'], 'path');
+                    array_unshift($list, $row);
+                }
+            }
         }        
         
 	    //是否点赞输出
@@ -92,8 +100,20 @@ class WorkController extends HomeController {
 	            $row['is_like'] = 0;
 	        }
 	    }
-        
+	    
 	    $this->renderSuccess('', $list);
+	}
+	
+	/**
+	 * 获取最新活动
+	 */
+	public function getActivities() {
+	    $Activity = M('activity');
+	    $list = $Activity->limit(2)
+	    ->order('id desc')
+	    ->select();
+	    
+	    return $list;
 	}
 	
 	/**
@@ -210,6 +230,7 @@ class WorkController extends HomeController {
     	    $description = I('description', '', 'trim');
     	    $type = I('type', '', 'trim');
     	    $topic_id = I('topic_id', '', 'intval');
+    	    $activity_id = I('activity_id', '', 'intval');
     	    
     	    //作品类型：原创/对口型/配音秀/本地上传
     	    $types = array('ORIGINAL', 'LIPSYNC', 'DUBBING','LOCAL');
@@ -236,14 +257,19 @@ class WorkController extends HomeController {
     	    $data['description'] = $description;
     	    $data['type'] = $type;
     	    $data['create_time'] = NOW_TIME;
+    	    //发布话题/标签视频
     	    if(!empty($topic_id)) {
     	        $data['topic_id'] = $topic_id;
+    	    }
+    	    //发布活动视频
+    	    if(!empty($activity_id)) {
+    	        $data['activity_id'] = $activity_id;
     	    }
     	    
     	    $Work = M('work');
     	    $ret = $Work->add($data);
     	    if($ret) {
-    	        //作品数增加
+    	        //作品数增加：用户作品数和素材作品数(比一比)
     	        WorkApi::setWorksInc($material_id, $uid);
     	        
     	        $data['work_id'] = $ret;
