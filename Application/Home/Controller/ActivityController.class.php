@@ -62,7 +62,7 @@ class ActivityController extends HomeController {
             unset($row['cover_id']);
         }
         if(count($list) == 0) {
-            $this->renderFailed('没有更多了');
+            $this->renderFailed('没有更多了', -1);
         }
         
         $this->renderSuccess('', $list);
