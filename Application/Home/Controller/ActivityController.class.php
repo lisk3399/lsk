@@ -25,7 +25,11 @@ class ActivityController extends HomeController {
         
         $activity_id = I('activity_id', '', 'intval');
         if(empty($activity_id)) {
-            $this->renderFailed('id为空');
+            $this->renderFailed('活动id为空');
+        }
+        //活动是否存在
+        if(!$this->checkActivityExist($activity_id)) {
+            $this->renderFailed('活动不存在');
         }
         
         $map['is_delete'] = 0;
@@ -46,6 +50,30 @@ class ActivityController extends HomeController {
         }
         
         $this->renderSuccess('', $list);
+    }
+    
+    /**
+     * 获取某个活动的详细信息
+     */
+    public function getActivityInfo() {
+        $activity_id = I('activity_id', '', 'intval');
+        if(empty($activity_id)) {
+            $this->renderFailed('活动id为空');
+        }
+        //活动是否存在
+        if(!$this->checkActivityExist($activity_id)) {
+            $this->renderFailed('活动不存在');
+        }
+        
+        $Activity = M('activity');
+        $map['id'] = $activity_id;
+        $data = $Activity->where($map)->find();
+        
+        if($data['id']) {
+            $data['cover_url'] = !empty($data['picture_id'])?C('WEBSITE_URL').get_cover($data['picture_id'], 'path'):'';
+            $this->renderSuccess('活动详情', $data);
+        }
+        $this->renderFailed('暂无数据');
     }
     
     /**
