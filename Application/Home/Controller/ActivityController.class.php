@@ -6,6 +6,7 @@
 
 namespace Home\Controller;
 
+use User\Api\UserApi;
 class ActivityController extends HomeController {
 
 	public function index(){
@@ -44,7 +45,15 @@ class ActivityController extends HomeController {
         ->order('id desc')
         ->select();
         
-        //echo $Activity->getLastSql();die;
+        //设置默认头像
+        $Api = new UserApi;
+        $list = $Api->setDefaultAvatar($list);
+        
+        //设置素材封面图
+        foreach ($list as &$row) {
+            $row['title'] = !empty($row['title'])?$row['title']:'原创';
+            unset($row['cover_id']);
+        }
         if(count($list) == 0) {
             $this->renderFailed('没有更多了');
         }
