@@ -33,6 +33,13 @@ class ActivityController extends HomeController {
             $this->renderFailed('活动不存在');
         }
         
+        $order = I('order', '', 'trim');
+        if($order == 'like') {
+            $order = 'w.likes desc';
+        } else {
+            $order = 'w.id desc';
+        }
+        
         $map['is_delete'] = 0;
         $map['activity_id'] = $activity_id;
         $Activity = M('activity');
@@ -42,7 +49,7 @@ class ActivityController extends HomeController {
     	->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
     	->join('__MEMBER__ m on m.uid = w.uid', 'left')
         ->where($map)
-        ->order('id desc')
+        ->order($order)
         ->select();
         
         //设置默认头像
