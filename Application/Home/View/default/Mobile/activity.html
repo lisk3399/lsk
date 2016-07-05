@@ -10,6 +10,20 @@
     <script type="text/javascript" src="http://xkx.static.xiaoka.tv/js/activity/zepto.min.js"></script>
     <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <style>
+    .tipPop {
+        position: fixed !important;
+        left: 50% !important;
+        right: auto !important;
+        top: 50% !important;
+        margin-left: -7em !important;
+        margin-top: -2em !important;
+        padding: 1em 0 !important;
+        width: 14em !important;
+        color: #fff !important;
+        background: rgba(0, 0, 0, 0.8) !important;
+        border-radius: 2.5px !important;
+</style>
 </head>
 <img src="__PUBLIC__/Home/images/tip.png" width="100%" alt="" id="tips" style="display: none" onclick="this.style.display='none'">
 <body>
@@ -21,7 +35,6 @@
 </div>
 <ul class="list_tit cf">
     <li>最赞</li>
-    <li>最新</li>
 </ul>
 <div class="list_content">
     <ul class="list_love cf">
@@ -35,8 +48,6 @@
 	            <img src="http://xkx.static.xiaoka.tv/img/activity/img_mode.png" class="shadow">
 	        </li>
         </volist>
-        </ul>
-   		<ul class="list_new cf" style="display:none">
         </ul>
             
 <div class="gg">
@@ -106,20 +117,6 @@
     }
 </script>
 <figure class="tipPop" style="text-align: center;display: none;"></figure>
-<style>
-    .tipPop {
-        position: fixed !important;
-        left: 50% !important;
-        right: auto !important;
-        top: 50% !important;
-        margin-left: -7em !important;
-        margin-top: -2em !important;
-        padding: 1em 0 !important;
-        width: 14em !important;
-        color: #fff !important;
-        background: rgba(0, 0, 0, 0.8) !important;
-        border-radius: 2.5px !important;
-</style>
 <script type="text/javascript">
 	var agent = "ios";
 	var is_ios = "1";
