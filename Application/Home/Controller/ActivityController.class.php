@@ -119,10 +119,9 @@ class ActivityController extends HomeController {
                 $this->renderFailed('请填写姓名');
             }
             $gender = I('gender', '', 'trim');
-            if($gender!='0' || $gender!='1') {
+            if(empty($gender)) {
                 $this->renderFailed('请选择性别');
             }
-            $gender = ($gender=='0')?'男':'女';
             
             $age = I('age', '', 'trim');
             if(empty($age)) {
