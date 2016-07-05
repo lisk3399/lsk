@@ -29,7 +29,7 @@
 <body>
 <img src="{$info.cover_url}" class="header_img">
 
-<div class="act_info">{$info.act_name}  
+<div class="act_info">  
 {$info.description}
     <div class="act_add" onclick="javascript:download();">立即参与</div>
 </div>
@@ -135,7 +135,7 @@
 	    }  
 	}
 	function download(){
-		alert_msg('请在APP里登录参与此活动', 5000);		
+		alert_msg('请下载比拍APP登录参与此活动', 5000);		
 	    if(is_weixin()){
 	    	$("#tips").show();
 	    	document.body.scrollTop = 0;
