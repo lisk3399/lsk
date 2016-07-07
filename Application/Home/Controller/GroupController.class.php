@@ -201,20 +201,133 @@ class GroupController extends HomeController {
 	 * 搜索群组
 	 */
 	public function searchGroup() {
-	    
+	    if(IS_POST) {
+	        $page = I('page', '1', 'intval');
+	        $rows = I('rows', '20', 'intval');
+	        
+	        //限制单次最大读取数量
+	        if($rows > C('API_MAX_ROWS')) {
+	            $rows = C('API_MAX_ROWS');
+	        }
+	        
+	        $group_name = I('post.group_name', '', 'trim');
+	        if(empty($group_name)) {
+	            $this->renderFailed('班级名为空');
+	        }
+	        $Group = M('group');
+	        $map['is_delete'] = 0;
+	        $map['group_name'] = array('LIKE', '%'.$group_name.'%');
+	        $list = $Group->page($page, $rows)
+	        ->field('id,group_name')
+	        ->where($map)
+	        ->select();
+	        
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	        
+	        $this->renderSuccess('查询结果', $list);
+	    }
 	}
 	
 	/**
 	 * 某群组下的作品列表
 	 */
-	public function groupWorks($group_id) {
+	public function groupWorks() {
+	    if(IS_POST) {
+	        $page = I('page', '1', 'intval');
+	        $rows = I('rows', '20', 'intval');
+	         
+	        //限制单次最大读取数量
+	        if($rows > C('API_MAX_ROWS')) {
+	            $rows = C('API_MAX_ROWS');
+	        }
+	        
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }
+	        
+	        $list = $this->getGroupWorks($group_id, $page, $rows);
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	        
+	        $this->renderSuccess($list);
+	    }
+	}
+	
+	/**
+	 * 获取某群组下的作品列表
+	 */
+	private function getGroupWorks($group_id, $page, $rows) {
+	    $Group = M('group');
+	    $map['g.id'] = $group_id;
+	    $list = $Group->alias('g')
+	    ->page($page, $rows)
+	    ->field('g.id,g.uid,g.group_name,w.id as work_id,ifnull(w.cover_url, "") as cover_url')
+	    ->join('__WORK__ w on g.id = w.group_id', 'right')
+	    ->where($map)->select();
 	    
+	    return $list;
 	}
 	
 	/**
 	 * 某群组下的成员
 	 */
-	public function groupMembers($group_id) {
+	public function groupMembers() {
+	    if(IS_POST) {
+	        $page = I('page', '1', 'intval');
+	        $rows = I('rows', '20', 'intval');
+	        
+	        //限制单次最大读取数量
+	        if($rows > C('API_MAX_ROWS')) {
+	            $rows = C('API_MAX_ROWS');
+	        }
+	        
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }
+	         
+	        $list = $this->getGroupMembers($group_id, $page, $rows);
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	        
+	        $Api = new UserApi;
+	        $list = $Api->setDefaultAvatar($list);
+	        
+	        $this->renderSuccess($list);
+	    }
+	}
+	
+	/**
+	 * 获取群组下的成员 
+	 */
+	private function getGroupMembers($group_id, $page, $rows) {
+	    $Group = M('member_group');
+	    $map['mg.group_id'] = $group_id;
+	    $list = $Group->alias('mg')
+	    ->page($page, $rows)
+	    ->field('mg.id,mg.uid,m.nickname,m.avatar')
+	    ->join('__MEMBER__ m on mg.uid = m.uid', 'left')
+	    ->order('mg.id desc')
+	    ->where($map)->select();
+	    
+	    return $list;
+	}
+	
+	/**
+	 * 添加群组成员
+	 */
+	public function addGroupMembers() {
 	    
 	}
 	

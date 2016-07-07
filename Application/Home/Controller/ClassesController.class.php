@@ -1,7 +1,7 @@
 <?php
 /**
  * Class ClassesController
- * @name 班级相关接口
+ * @name 班级相关接口(弃用，改为GroupController)
  */
 
 namespace Home\Controller;
