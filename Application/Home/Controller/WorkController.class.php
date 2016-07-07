@@ -239,7 +239,7 @@ class WorkController extends HomeController {
     	        $this->renderFailed('类型不正确');
     	    }
     	    //非原创素材id不为空
-    	    if($type != 'ORIGINAL'){
+    	    if($type != 'ORIGINAL' && $type!='LOCAL'){
     	        if(empty($material_id)) {
     	            $this->renderFailed('素材为空');
     	        }
