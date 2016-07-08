@@ -557,7 +557,36 @@ class UserController extends HomeController {
             if(empty($info)) {
                 $this->renderFailed('缺少信息');
             }
-            print_r($info);
+            
+            $info = json_decode($info, true);
+            //返回用户信息
+            foreach ($info as $key=>&$row) {
+                $user = $this->getByPhone($row['phoneNumber']);
+                if($user['uid']) {
+                    $row['uid'] = $user['uid'];
+                    $row['nickname'] = $user['nickname'];
+                } else {
+                    unset($info[$key]);
+                }
+            }
+            if(count($info) == 0) {
+                $this->renderFailed('没有更多信息');
+            }
+            $this->renderSuccess('用户列表', $info);
         }
+    }
+    
+    /**
+     * 根据电话获取用户
+     */
+    private function getByPhone($phone) {
+        $Member = M('ucenter_member');
+        $map['mobile'] = $phone;
+        $ret = $Member->field('id')->where($map)->find();
+        if($ret['id']) {
+            $data['uid'] = $ret['id']; 
+            return M('member')->field('uid,nickname')->where($data)->find();
+        }
+        return false;
     }
 }
