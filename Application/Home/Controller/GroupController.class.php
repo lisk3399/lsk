@@ -19,28 +19,26 @@ class GroupController extends HomeController {
 	            $this->renderFailed('需要登录', -1);
 	        }
 	        
-	        $page = I('page', '1', 'intval');
-	        $rows = I('rows', '20', 'intval');
-	        
-	        //限制单次最大读取数量
-	        if($rows > C('API_MAX_ROWS')) {
-	            $rows = C('API_MAX_ROWS');
-	        }
-	        
+            $limit = 2;
+            
 	        $Group = M('group');
-	        $map['g.uid'] = $uid;
-	        $list = $Group->alias('g')
-	        ->page($page, $rows)
-	        ->field('g.id,g.uid,g.group_name,ifnull(w.cover_url, "") as cover_url')
-	        ->join('__WORK__ w on g.id = w.group_id', 'left')
-	        ->where($map)->select();
+	        $map['uid'] = $uid;
+	        $map['is_delete'] = 0;
+	        $list = $Group->field('id,uid,group_name,cover_url')
+	        ->where($map)->order('id desc')->select();
 	        
 	        if(count($list) == 0) {
 	            $this->renderFailed('没有更多了');
 	        }
 	        
-	        $Api = new UserApi;
-	        $list = $Api->setDefaultAvatar($list);
+	        //追加作品信息至班级
+	        foreach ($list as &$row) {
+	            $works = $this->getLimitGroupWorks($row['id'], $limit);
+	            $row['works'] = '';
+	            if(count($works) > 0) {
+	                $row['works'] = $works;
+	            }
+	        }
 	        
 	        $this->renderSuccess($list);
 	    }
@@ -55,30 +53,29 @@ class GroupController extends HomeController {
 	        if(empty($uid)) {
 	            $this->renderFailed('需要登录', -1);
 	        }
-	         
-	        $page = I('page', '1', 'intval');
-	        $rows = I('rows', '20', 'intval');
-	         
-	        //限制单次最大读取数量
-	        if($rows > C('API_MAX_ROWS')) {
-	            $rows = C('API_MAX_ROWS');
-	        }
+	        
+            $limit = 2;
 	         
 	        $Group = M('member_group');
 	        $map['mg.uid'] = $uid;
 	        $list = $Group->alias('mg')
-	        ->page($page, $rows)
-	        ->field('g.id,g.uid,g.group_name,ifnull(w.cover_url, "") as cover_url')
+	        ->field('g.id,g.uid,g.group_name')
 	        ->join('__GROUP__ g on g.id = mg.group_id', 'left')
-	        ->join('__WORK__ w on mg.id = w.group_id', 'left')
+	        ->order('g.id desc')
 	        ->where($map)->select();
 	         
 	        if(count($list) == 0) {
 	            $this->renderFailed('没有更多了');
 	        }
-	         
-	        $Api = new UserApi;
-	        $list = $Api->setDefaultAvatar($list);
+	        
+	        //追加作品信息至班级
+	        foreach ($list as &$row) {
+	            $works = $this->getLimitGroupWorks($row['id'], $limit);
+	            $row['works'] = '';
+	            if(count($works) > 0) {
+	                $row['works'] = $works;
+	            }
+	        }
 	         
 	        $this->renderSuccess($list);
 	    }
@@ -129,6 +126,10 @@ class GroupController extends HomeController {
 	        if(empty($group_name)) {
 	            $this->renderFailed('班级名为空');
 	        }
+	        $cover_url = I('post.cover_url', '', 'trim');
+	        if(empty($cover_url)) {
+	            $this->renderFailed('班级图片为空');
+	        }
 	        //创建班级字符限制
 	        if(!preg_match('/^[0-9a-zA-Z\x{4e00}-\x{9fa5}]{2,30}$/u', $group_name)) {
 	            $this->renderFailed('班级名只能输入长度为2-30');
@@ -144,6 +145,7 @@ class GroupController extends HomeController {
 	        $data['uid'] = $uid;
 	        $data['group_name'] = $group_name;
 	        $data['is_delete'] = 0;
+	        $data['cover_url'] = $cover_url;
 	        $data['create_time'] = NOW_TIME;
 	        
 	        $Group = M('group');
@@ -159,6 +161,27 @@ class GroupController extends HomeController {
 	 */
 	public function editGroup() {
 	    
+	}
+	
+	/**
+	 * 班级信息
+	 */
+	public function groupInfo() {
+	    if(IS_POST) {
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }
+	        
+	        $Group = M('group');
+	        $map['id'] = $group_id;
+	        $info = $Group->where($map)->find();
+	        
+	        $this->renderSuccess($info);
+	    }
 	}
 	
 	/**
@@ -256,8 +279,26 @@ class GroupController extends HomeController {
 	            $this->renderFailed('没有更多了');
 	        }
 	        
+	        $Api = new UserApi;
+	        $list = $Api->setDefaultAvatar($list);
+	        
 	        $this->renderSuccess($list);
 	    }
+	}
+	
+	/**
+	 * 获取有限个数班级作品图
+	 */
+	private function getLimitGroupWorks($group_id, $limit) {
+	    $Work = M('work');
+	    $map['group_id'] = $group_id;
+	    $list = $Work
+	    ->field('id,ifnull(cover_url, "") as cover_url')
+	    ->order('id desc')
+	    ->limit($limit)
+	    ->where($map)->select();
+	         
+	    return $list;
 	}
 	
 	/**
@@ -268,8 +309,10 @@ class GroupController extends HomeController {
 	    $map['g.id'] = $group_id;
 	    $list = $Group->alias('g')
 	    ->page($page, $rows)
-	    ->field('g.id,g.uid,g.group_name,w.id as work_id,ifnull(w.cover_url, "") as cover_url')
+	    ->field('g.group_name,w.id,ifnull(w.cover_url, "") as cover_url,m.nickname,m.avatar')
 	    ->join('__WORK__ w on g.id = w.group_id', 'right')
+	    ->join('__MEMBER__ m on m.uid = w.uid', 'right')
+	    ->order('w.id desc')
 	    ->where($map)->select();
 	    
 	    return $list;
@@ -316,7 +359,7 @@ class GroupController extends HomeController {
 	    $map['mg.group_id'] = $group_id;
 	    $list = $Group->alias('mg')
 	    ->page($page, $rows)
-	    ->field('mg.id,mg.uid,m.nickname,m.avatar')
+	    ->field('mg.uid,m.nickname,m.avatar')
 	    ->join('__MEMBER__ m on mg.uid = m.uid', 'left')
 	    ->order('mg.id desc')
 	    ->where($map)->select();
