@@ -542,4 +542,22 @@ class UserController extends HomeController {
             }
         }
     }
+    
+    /**
+     * 获取电话号码对应的注册用户
+     */
+    public function getUserByPhone() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('您需要登录');
+            }
+            
+            $info = I('post.info', '', 'trim');
+            if(empty($info)) {
+                $this->renderFailed('缺少信息');
+            }
+            print_r($info);
+        }
+    }
 }
