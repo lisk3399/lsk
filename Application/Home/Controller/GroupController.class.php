@@ -40,7 +40,32 @@ class GroupController extends HomeController {
 	            }
 	        }
 	        
-	        $this->renderSuccess($list);
+	        $this->renderSuccess('我创建的班级', $list);
+	    }
+	}
+	
+	/**
+	 * 我创建的班级文字列表
+	 */
+	public function myGroupList() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(empty($uid)) {
+	            $this->renderFailed('需要登录', -1);
+	        }
+	         
+	        $limit = 10;
+	        $Group = M('group');
+	        $map['uid'] = $uid;
+	        $map['is_delete'] = 0;
+	        $list = $Group->field('id,uid,group_name')->limit($limit)
+	        ->where($map)->order('id desc')->select();
+	         
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	         
+	        $this->renderSuccess('班级文字列表', $list);
 	    }
 	}
 	
@@ -77,7 +102,7 @@ class GroupController extends HomeController {
 	            }
 	        }
 	         
-	        $this->renderSuccess($list);
+	        $this->renderSuccess('我加入的群组', $list);
 	    }
 	}
 	
@@ -180,7 +205,7 @@ class GroupController extends HomeController {
 	        $map['id'] = $group_id;
 	        $info = $Group->where($map)->find();
 	        
-	        $this->renderSuccess($info);
+	        $this->renderSuccess('班级信息', $info);
 	    }
 	}
 	
@@ -282,7 +307,7 @@ class GroupController extends HomeController {
 	        $Api = new UserApi;
 	        $list = $Api->setDefaultAvatar($list);
 	        
-	        $this->renderSuccess($list);
+	        $this->renderSuccess('班级作品列表', $list);
 	    }
 	}
 	
@@ -347,7 +372,7 @@ class GroupController extends HomeController {
 	        $Api = new UserApi;
 	        $list = $Api->setDefaultAvatar($list);
 	        
-	        $this->renderSuccess($list);
+	        $this->renderSuccess('班级成员列表', $list);
 	    }
 	}
 	

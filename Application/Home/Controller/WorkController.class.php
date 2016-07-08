@@ -228,6 +228,7 @@ class WorkController extends HomeController {
     	    $material_id = I('mid', '', 'intval');
     	    $video_url = I('video_url', '', 'trim');
     	    $cover_url = I('cover_url', '', 'trim');
+    	    $title = I('title', '', 'trim');
     	    $description = I('description', '', 'trim');
     	    $type = I('type', '', 'trim');
     	    $topic_id = I('topic_id', '', 'intval');
@@ -255,7 +256,12 @@ class WorkController extends HomeController {
     	    $data['material_id'] = $material_id;
     	    $data['video_url'] = $video_url;
     	    $data['cover_url'] = $cover_url;
-    	    $data['description'] = $description;
+    	    if(!empty($title)) {
+    	        $data['title'] = $title;
+    	    }
+    	    if(!empty($description)) {
+    	        $data['description'] = $description;
+    	    }
     	    $data['type'] = $type;
     	    $data['create_time'] = NOW_TIME;
     	    //发布话题/标签视频
