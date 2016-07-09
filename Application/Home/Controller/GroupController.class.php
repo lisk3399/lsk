@@ -461,5 +461,65 @@ class GroupController extends HomeController {
 	    }
 	    return false;
 	}
+
+	/**
+	 * 获取电话号码对应的注册用户
+	 */
+	public function getUserByPhone() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('您需要登录', -1);
+	        }
 	
+	        $info = I('post.info', '', 'trim');
+	        if(empty($info)) {
+	            $this->renderFailed('缺少信息');
+	        }
+	        $info = json_decode($info, true);
+	        
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级id为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }
+	        
+	        //返回用户信息
+	        foreach ($info as $key=>&$row) {
+	            $user = $this->getByPhone($row['phoneNumber']);
+	            if($user['uid']) {
+	                //如果用户已经加入该班级则不显示
+	                if($this->checkJoin($user['uid'], $group_id)) {
+	                    unset($info[$key]);
+	                    continue;
+	                }
+	                $row['uid'] = $user['uid'];
+	                $row['nickname'] = $user['nickname'];
+	            } else {
+	                unset($info[$key]);
+	            }
+	        }
+
+	        if(count($info) == 0) {
+	            $this->renderFailed('没有更多信息');
+	        }
+	        $this->renderSuccess('用户列表', $info);
+	    }
+	}
+	
+	/**
+	 * 根据电话获取用户
+	 */
+	private function getByPhone($phone) {
+	    $Member = M('ucenter_member');
+	    $map['mobile'] = $phone;
+	    $ret = $Member->field('id')->where($map)->find();
+	    if($ret['id']) {
+	        $data['uid'] = $ret['id'];
+	        return M('member')->field('uid,nickname')->where($data)->find();
+	    }
+	    return false;
+	}
 }
