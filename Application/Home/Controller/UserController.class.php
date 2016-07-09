@@ -550,7 +550,7 @@ class UserController extends HomeController {
         if(IS_POST) {
             $uid = is_login();
             if(!$uid) {
-                $this->renderFailed('您需要登录');
+                $this->renderFailed('您需要登录', -1);
             }
             
             $info = I('post.info', '', 'trim');

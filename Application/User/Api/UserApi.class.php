@@ -207,6 +207,7 @@ class UserApi extends Api{
     public function checkUidExists($uid) {
         $Member = M('member');
         $map['uid'] = $uid;
+        $map['status'] = 1;
         $ret = $Member->field('uid')->where($map)->find();
         if(!$ret['uid']) {
             return false;

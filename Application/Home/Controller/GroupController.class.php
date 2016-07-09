@@ -174,8 +174,18 @@ class GroupController extends HomeController {
 	        $data['create_time'] = NOW_TIME;
 	        
 	        $Group = M('group');
-	        if($Group->add($data)) {
-	            $this->renderSuccess('创建成功');
+	        $group_id = $Group->add($data);
+	        
+	        //@todo 保证数据一致性，使用try catch
+	        if($group_id) {
+	            //创建班级后自己也加入班级
+	            $map['uid'] = $uid;
+	            $map['group_id'] = $group_id;
+	            $map['create_time'] = NOW_TIME;
+	            if(M('member_group')->add($map)) {
+	                $this->renderSuccess('创建成功');
+	            }
+	            $this->renderFailed('创建失败');
 	        }
 	        $this->renderFailed('创建失败');
 	    }
@@ -396,7 +406,60 @@ class GroupController extends HomeController {
 	 * 添加群组成员
 	 */
 	public function addGroupMembers() {
-	    
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('需要登录', -1);
+	        }
+	        
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }
+	        $user_id = I('post.user_id', '', 'intval');
+	        if(empty($user_id)) {
+	            $this->renderFailed('未指定要添加的用户');
+	        }
+	        $Api = new UserApi;
+	        if(!$Api->checkUidExists($user_id)) {
+	            $this->renderFailed('指定的用户不存在或被禁用');
+	        }
+	        //当前登录用户不是班级创建者不能添加成员
+	        if(!$this->isGroupOwner($uid, $group_id)) {
+	            $this->renderFailed('您不是该班级创建者，不能添加成员');
+	        }
+	        //用户是否加入过班级
+	        if($this->checkJoin($user_id, $group_id)) {
+	            $this->renderFailed('您添加的用户已经加入了该班级');
+	        }
+	        
+	        //将用户加入班级
+	        $Group = M('member_group');
+	        $data['uid'] = $user_id;
+	        $data['group_id'] = $group_id;
+	        $data['create_time'] = NOW_TIME;
+	        if($Group->add($data)) {
+	            $this->renderSuccess('添加成功');
+	        }
+	        $this->renderFailed('添加失败请稍候再试');
+	    }
+	}
+	
+	/**
+	 * 是否班级创建者
+	 */
+	private function isGroupOwner($uid, $group_id) {
+	    $Group = M('group');
+	    $map['id'] = $group_id;
+	    $map['uid'] = $uid;
+	    $ret = $Group->where($map)->find();
+	    if($ret['id']) {
+	        return true;
+	    }
+	    return false;
 	}
 	
 }
