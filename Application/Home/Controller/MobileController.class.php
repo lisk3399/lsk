@@ -56,6 +56,41 @@ class MobileController extends Controller {
         $this->display();
     }
     
+    //H5班级加好友分享
+    public function cshare() {
+        $group_id = I('group_id', '', 'intval');
+        $uid = I('uid', '', 'intval');
+        
+        if(empty($group_id)) {
+            $this->renderFailed('班级id为空');
+        }
+        if(empty($uid)) {
+            $this->renderFailed('用户为空');
+        }
+        
+        $groupInfo = $this->getGroupInfo($group_id);
+        $userInfo = $this->getUserInfo($uid);
+        
+        $info['group_name'] = $groupInfo['group_name'];
+        $info['nickname'] = $userInfo['nickname'];
+        $info['avatar'] = $userInfo['avatar']?$userInfo['avatar']:C('USER_INFO_DEFAULT.avatar');
+        
+        $this->assign('info', $info);
+        $this->display();
+    }
+    
+    private function getUserInfo($uid) {
+        $Member = M('member');
+        $map['uid'] = $uid;
+        return $Member->field('nickname,avatar')->where($map)->find();
+    }
+    
+    private function getGroupInfo($group_id) {
+        $Group = M('group');
+        $map['id'] = $group_id;
+        return $Group->field('group_name')->where($map)->find();
+    }
+    
     /**
      * 获取单个活动信息
      * @param int $activity_id 活动id
