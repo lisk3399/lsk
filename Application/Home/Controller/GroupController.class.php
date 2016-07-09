@@ -84,7 +84,7 @@ class GroupController extends HomeController {
 	        $Group = M('member_group');
 	        $map['mg.uid'] = $uid;
 	        $list = $Group->alias('mg')
-	        ->field('g.id,g.uid,g.group_name')
+	        ->field('g.id,g.uid,g.group_name,cover_url')
 	        ->join('__GROUP__ g on g.id = mg.group_id', 'left')
 	        ->order('g.id desc')
 	        ->where($map)->select();
