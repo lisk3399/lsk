@@ -204,6 +204,10 @@ class UserController extends HomeController {
 	    if(empty($uid)) {
 	        $this->renderFailed('id为空');
 	    }
+	    //管理员
+	    if($uid==1) {
+	        $this->renderFailed('用户不存在');
+	    }
 	    $User = new UserApi;
 	    if(!$User->checkUidExists($uid)) {
 	        $this->renderFailed('用户不存在');

@@ -83,6 +83,7 @@ class GroupController extends HomeController {
 	         
 	        $Group = M('member_group');
 	        $map['mg.uid'] = $uid;
+	        $map['g.is_delete'] = 0;
 	        $list = $Group->alias('mg')
 	        ->field('g.id,g.uid,g.group_name,cover_url')
 	        ->join('__GROUP__ g on g.id = mg.group_id', 'left')
@@ -521,5 +522,38 @@ class GroupController extends HomeController {
 	        return M('member')->field('uid,nickname')->where($data)->find();
 	    }
 	    return false;
+	}
+	
+	/**
+	 * 解散班级
+	 */
+	public function deleteGroup() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('您需要登录', -1);
+	        }
+	        
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级id为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }
+	        
+	        //当前登录用户不是班级创建者不能解散
+	        if(!$this->isGroupOwner($uid, $group_id)) {
+	            $this->renderFailed('您不是该班级创建者，不能解散班级');
+	        }
+	        
+	        $Group = M('group');
+	        $map['id'] = $group_id;
+	        $map['is_delete'] = 1;
+	        if($Group->save($map)) {
+	            $this->renderSuccess('解散成功');
+	        }
+	        $this->renderFailed('解散失败');
+	    }
 	}
 }
