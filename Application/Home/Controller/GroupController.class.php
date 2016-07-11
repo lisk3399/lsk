@@ -356,6 +356,7 @@ class GroupController extends HomeController {
 	private function getLimitGroupWorks($group_id, $limit) {
 	    $Work = M('work');
 	    $map['group_id'] = $group_id;
+	    $map['is_delete'] = 0;
 	    $list = $Work
 	    ->field('id,ifnull(cover_url, "") as cover_url')
 	    ->order('id desc')
@@ -371,6 +372,7 @@ class GroupController extends HomeController {
 	private function getGroupWorks($group_id, $page, $rows) {
 	    $Group = M('group');
 	    $map['g.id'] = $group_id;
+	    $map['w.is_delete'] = 0;
 	    $list = $Group->alias('g')
 	    ->page($page, $rows)
 	    ->field('g.group_name,w.id,ifnull(w.cover_url, "") as cover_url,m.nickname,m.avatar')
