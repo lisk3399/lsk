@@ -233,6 +233,7 @@ class WorkController extends HomeController {
     	    $type = I('type', '', 'trim');
     	    $topic_id = I('topic_id', '', 'intval');
     	    $activity_id = I('activity_id', '', 'intval');
+    	    $group_id = I('group_id', '', 'intval');
     	    
     	    //作品类型：原创/对口型/配音秀/本地上传
     	    $types = array('ORIGINAL', 'LIPSYNC', 'DUBBING','LOCAL');
@@ -271,6 +272,10 @@ class WorkController extends HomeController {
     	    //发布活动视频
     	    if(!empty($activity_id)) {
     	        $data['activity_id'] = $activity_id;
+    	    }
+    	    //班级视频
+    	    if(!empty($group_id)) {
+    	        $data['group_id'] = $group_id;
     	    }
     	    
     	    $Work = M('work');
