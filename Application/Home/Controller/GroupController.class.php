@@ -70,6 +70,34 @@ class GroupController extends HomeController {
 	}
 	
 	/**
+	 * 我加入的班级文字列表
+	 */
+	public function groupJoinedList() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(empty($uid)) {
+	            $this->renderFailed('需要登录', -1);
+	        }
+	
+	        $limit = 20;
+	        $Group = M('member_group');
+	        $map['mg.uid'] = $uid;
+	        $map['g.is_delete'] = 0;
+	        $list = $Group->alias('mg')
+	        ->field('g.id,g.group_name')
+	        ->join('__GROUP__ g on g.id = mg.group_id', 'left')
+	        ->order('g.id desc')
+	        ->where($map)->select();
+	        
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	
+	        $this->renderSuccess('我加入的班级文字列表', $list);
+	    }
+	}
+	
+	/**
 	 * 我加入的群组
 	 */
 	public function groupJoined(){
