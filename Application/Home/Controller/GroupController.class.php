@@ -35,8 +35,11 @@ class GroupController extends HomeController {
 	        foreach ($list as &$row) {
 	            $works = $this->getLimitGroupWorks($row['id'], $limit);
 	            $row['works'] = '';
-	            if(count($works) > 0) {
+	            $row['work_count'] = 0;
+	            $work_count = count($works);
+	            if($work_count > 0) {
 	                $row['works'] = $works;
+	                $row['work_count'] = $work_count; 
 	            }
 	        }
 	        
@@ -126,8 +129,11 @@ class GroupController extends HomeController {
 	        foreach ($list as &$row) {
 	            $works = $this->getLimitGroupWorks($row['id'], $limit);
 	            $row['works'] = '';
-	            if(count($works) > 0) {
+	            $row['work_count'] = 0;
+	            $work_count = count($works);
+	            if($work_count > 0) {
 	                $row['works'] = $works;
+	                $row['work_count'] = $work_count;
 	            }
 	        }
 	         
