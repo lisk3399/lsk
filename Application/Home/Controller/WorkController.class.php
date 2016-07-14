@@ -353,7 +353,7 @@ class WorkController extends HomeController {
         //设置素材封面图
         if(!empty($detail['cover_id'])) {
             $detail['material_cover_url'] = C('WEBSITE_URL').get_cover($detail['cover_id'], 'path');
-            if($detail['type'] == 'DUBBING') {//配音秀
+            if($detail['type'] == 'DUBBING' || $detail['type'] == 'LOCAL') {//配音秀或本地
                 $detail['cover_url'] = "http://vod.doushow.com/400-400px.png";
             }
         }
