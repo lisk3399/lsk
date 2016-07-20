@@ -80,4 +80,27 @@ class CategoryApi {
         }
         return $res;
     }
+    
+    /**
+     * 获取分类下所有子分类id
+     * @param $cateid 分类id
+     * @return 分类id字符串:1,2,3,4
+     */
+    public static function get_child_cateid($cateid) {
+        $map['status'] = 1;
+        $map['pid'] = $cateid;
+        $cates = M('Category')
+        ->where(array($map))
+        ->field('id')
+        ->select();
+        
+        static $cate_arr = array();
+        if(count($cates) > 0) {
+            foreach ($cates as $row) {
+                $cate_arr[] = $row['id'];
+                self::get_child_cateid($row['id']);
+            }
+        }
+        return $cate_arr;
+    }
 }

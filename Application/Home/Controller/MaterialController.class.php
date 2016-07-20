@@ -9,6 +9,7 @@ namespace Home\Controller;
 use User\Api\UserApi;
 use Think\Model;
 use Common\Api\ModelApi;
+use Common\Api\CategoryApi;
 
 /**
  * 素材控制器
@@ -111,7 +112,50 @@ class MaterialController extends HomeController {
 // 	        }
 	    }
 	    
-	    $this->renderSuccess('', $list);
+	    $this->renderSuccess('素材列表', $list);
+	}
+	
+	/**
+	 * 获取子分类下的素材列表
+	 */
+	public function getChildMaterial() {
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '20', 'intval');
+	    $cateid = I('cateid', '', 'intval');
+	     
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+	    if(empty($cateid)) {
+	        $this->renderFailed('分类id为空');
+	    }
+	    
+	    //获取分类下所有子分类id
+	    $cates = CategoryApi::get_child_cateid($cateid);
+	    if(is_array($cates) && count($cates) > 0) {
+	        
+	        $Document = M('Document');
+	        $Document = $Document->alias('d')
+	        ->page($page, $rows)
+	        ->field('d.id,d.title,d.description,d.cover_id,m.*')
+	        ->join('__DOCUMENT_MATERIAL__ m on d.id = m.id', 'left');
+	        
+	        $map['d.category_id'] = $cateid;
+	        $map['d.status'] = 1;
+	        $map['d.category_id'] = array('in', $cates);
+	        
+	        $list = $Document->where($map)
+	        ->order('d.id desc')
+	        ->select();
+	         
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了', -1);
+	        }
+	        
+	        $this->renderSuccess('子分类下素材列表', $list);
+	    }
 	}
 	
 	/**
