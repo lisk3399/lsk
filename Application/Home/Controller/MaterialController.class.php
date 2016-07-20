@@ -154,6 +154,20 @@ class MaterialController extends HomeController {
 	            $this->renderFailed('没有更多了', -1);
 	        }
 	        
+	        $uid = is_login();
+	        //附件id转附件链接
+	        $Api = new UserApi;
+	        foreach ($list as &$row) {
+	            $row['cover_url'] = !empty($row['cover_id']) ? C('WEBSITE_URL').get_cover($row['cover_id'], 'path') :'';
+	            $row['audio'] = !empty($row['audio']) ? get_attach($row['audio']) :'';
+	            $row['lyrics'] = !empty($row['lyrics']) ? get_attach($row['lyrics']) :'';
+	            $row['video'] = !empty($row['video']) ? get_attach($row['video']) :'';
+	            $row['is_fav'] = 0;
+	            if($uid) {
+	                $row['is_fav'] = $Api->isFav($uid, $row['id']);
+	            }
+	        }
+	        
 	        $this->renderSuccess('子分类下素材列表', $list);
 	    }
 	}
