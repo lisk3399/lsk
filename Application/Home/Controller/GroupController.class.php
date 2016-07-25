@@ -255,7 +255,7 @@ class GroupController extends HomeController {
 	}
 	
 	/**
-	 * 检查是否加入某班级
+	 * 检查某用户是否加入某班级
 	 */
 	private function checkJoin($uid, $group_id) {
 	    $Group = M('member_group');
@@ -353,6 +353,49 @@ class GroupController extends HomeController {
 	        $list = $Api->setDefaultAvatar($list);
 	        
 	        $this->renderSuccess('班级作品列表', $list);
+	    }
+	}
+	
+	/**
+	 * 删除群组下的作品
+	 */
+	public function delGroupWork() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('您需要登录', -1);
+	        }
+	        
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级id为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }  
+	        $work_id = I('post.work_id', '', 'intval');
+	        if(empty($work_id)) {
+	            $this->renderFailed('作品id为空');
+	        }
+	        if(!$this->isGroupOwner($uid, $group_id)) {
+	            $this->renderFailed('您不是该班级创建者，不能操作');
+	        }
+	        
+	        $Work = M('work');
+	        $data['id'] = $work_id;
+	        $data['is_delete'] = 1;
+	        
+	        //判断作品是否属于某群组
+	        $map['id']= $work_id;
+	        $map['group_id'] = $group_id;
+	        if(!$Work->where($map)->find()) {
+	            $this->renderFailed('该作品不属于当前班级');
+	        }
+	        
+	        if($Work->save($data)) {
+	            $this->renderSuccess('删除成功');
+	        }
+	        $this->renderFailed('删除失败');
 	    }
 	}
 	
@@ -590,6 +633,40 @@ class GroupController extends HomeController {
 	            $this->renderSuccess('解散成功');
 	        }
 	        $this->renderFailed('解散失败');
+	    }
+	}
+	
+	/**
+	 * 退出班级
+	 */
+	public function quitGroup() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('您需要登录', -1);
+	        }
+	        
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级id为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }
+	        
+	        //是否加入班级判断
+	        if(!$this->checkJoin($uid, $group_id)) {
+	            $this->renderFailed('您未加入该班级');
+	        }
+	        
+	        $Group = M('member_group');
+	        $map['uid'] = $uid;
+	        $map['group_id'] = $group_id;
+	        
+	        if($Group->where($map)->delete()) {
+	            $this->renderSuccess('退出成功');
+	        }
+	        $this->renderFailed('退出失败，请重试');
 	    }
 	}
 }
