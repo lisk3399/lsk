@@ -435,7 +435,7 @@ class WorkController extends HomeController {
 	            $this->renderFailed('作品不存在');
 	        }
 	        if(!$this->isMyWork($uid, $work_id)) {
-	            $this->renderFailed('只能管理自己的作品');
+	            $this->renderFailed('只能删除自己的作品');
 	        }
 	        
 	        $Work = M('work');

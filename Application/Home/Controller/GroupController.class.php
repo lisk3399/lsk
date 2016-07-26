@@ -357,6 +357,43 @@ class GroupController extends HomeController {
 	}
 	
 	/**
+	 * 我的班级作品
+	 */
+	public function myGroupWork() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('请先登录');
+	        }
+	        $page = I('page', '1', 'intval');
+	        $rows = I('rows', '20', 'intval');
+	    
+	        //限制单次最大读取数量
+	        if($rows > C('API_MAX_ROWS')) {
+	            $rows = C('API_MAX_ROWS');
+	        }
+	         
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }
+	         
+	        $list = $this->getMyGroupWorks($group_id, $uid, $page, $rows);
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	         
+	        $Api = new UserApi;
+	        $list = $Api->setDefaultAvatar($list);
+	         
+	        $this->renderSuccess('班级作品列表', $list);
+	    }
+	}
+	
+	/**
 	 * 删除群组下的作品
 	 */
 	public function delGroupWork() {
@@ -430,6 +467,30 @@ class GroupController extends HomeController {
 	    ->order('w.id desc')
 	    ->where($map)->select();
 
+	    if(is_array($list) && count($list) > 0) {
+	        foreach ($list as &$row) {
+	            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+	        }
+	    }
+	    return $list;
+	}
+	
+	/**
+	 * 获取我的班级下的作品列表
+	 */
+	private function getMyGroupWorks($group_id, $uid, $page, $rows) {
+	    $Group = M('group');
+	    $map['g.id'] = $group_id;
+	    $map['w.is_delete'] = 0;
+	    $map['m.uid'] = $uid;
+	    $list = $Group->alias('g')
+	    ->page($page, $rows)
+	    ->field('g.group_name,w.id,ifnull(w.cover_url, "") as cover_url,w.create_time,m.nickname,m.avatar')
+	    ->join('__WORK__ w on g.id = w.group_id', 'right')
+	    ->join('__MEMBER__ m on m.uid = w.uid', 'right')
+	    ->order('w.id desc')
+	    ->where($map)->select();
+	
 	    if(is_array($list) && count($list) > 0) {
 	        foreach ($list as &$row) {
 	            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
