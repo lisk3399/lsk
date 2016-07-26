@@ -424,12 +424,17 @@ class GroupController extends HomeController {
 	    $map['w.is_delete'] = 0;
 	    $list = $Group->alias('g')
 	    ->page($page, $rows)
-	    ->field('g.group_name,w.id,ifnull(w.cover_url, "") as cover_url,m.nickname,m.avatar')
+	    ->field('g.group_name,w.id,ifnull(w.cover_url, "") as cover_url,w.create_time,m.nickname,m.avatar')
 	    ->join('__WORK__ w on g.id = w.group_id', 'right')
 	    ->join('__MEMBER__ m on m.uid = w.uid', 'right')
 	    ->order('w.id desc')
 	    ->where($map)->select();
-	    
+
+	    if(is_array($list) && count($list) > 0) {
+	        foreach ($list as &$row) {
+	            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+	        }
+	    }
 	    return $list;
 	}
 	
@@ -566,6 +571,10 @@ class GroupController extends HomeController {
 	            $this->renderFailed('班级不存在');
 	        }
 	        
+// 	        $info = '[{"phoneNumber" : "135-7546-3971","firstName" : "\U5927\U8205\U5a46( \U00b4\U2022\U0f1d\U2022 ` )(null)"}]';
+// 	        $info = str_replace("-", "", $info);
+// 	        print_r($info);die;
+
 	        //返回用户信息
 	        foreach ($info as $key=>&$row) {
 	            $user = $this->getByPhone($row['phoneNumber']);
