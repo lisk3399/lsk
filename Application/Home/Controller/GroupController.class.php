@@ -659,6 +659,11 @@ class GroupController extends HomeController {
 	            $this->renderFailed('您未加入该班级');
 	        }
 	        
+	        //创建者不能退出
+	        if($this->isGroupOwner($uid, $group_id)){
+	            $this->renderFailed('您是创建者不能退出班级');
+	        }
+	        
 	        $Group = M('member_group');
 	        $map['uid'] = $uid;
 	        $map['group_id'] = $group_id;
