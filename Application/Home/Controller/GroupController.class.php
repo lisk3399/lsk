@@ -192,7 +192,7 @@ class GroupController extends HomeController {
 	        }
 	        //创建班级字符限制
 	        if(!preg_match('/^[0-9a-zA-Z\x{4e00}-\x{9fa5}]{2,30}$/u', $group_name)) {
-	            $this->renderFailed('班级名只能输入长度为2-30');
+	            $this->renderFailed('班级名长度为2-30个字符');
 	        }
 	        //群组名是否存在
 	        if($this->checkGroupExists($group_name)) {
@@ -211,7 +211,7 @@ class GroupController extends HomeController {
 	        $Group = M('group');
 	        $group_id = $Group->add($data);
 	        
-	        //@todo 保证数据一致性，使用try catch
+	        //@todo 保证数据一致性，使用事务
 	        if($group_id) {
 	            //创建班级后自己也加入班级
 	            $map['uid'] = $uid;
@@ -744,4 +744,6 @@ class GroupController extends HomeController {
 	        $this->renderFailed('退出失败，请重试');
 	    }
 	}
+	
+	public function 
 }
