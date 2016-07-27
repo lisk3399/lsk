@@ -288,6 +288,7 @@ class GroupController extends HomeController {
 	private function checkGroupNum($uid) {
 	    $Group = M('group');
 	    $map['uid'] = $uid;
+	    $map['is_delete'] = 0;
 	    return $Group->where($map)->count();
 	}
 	/**
