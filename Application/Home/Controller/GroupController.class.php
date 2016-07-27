@@ -746,5 +746,5 @@ class GroupController extends HomeController {
 	    }
 	}
 	
-	public function 
+	
 }
