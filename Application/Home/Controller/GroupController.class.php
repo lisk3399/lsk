@@ -745,6 +745,42 @@ class GroupController extends HomeController {
 	        $this->renderFailed('退出失败，请重试');
 	    }
 	}
-	
-	
+
+	/**
+	 * 删除班级成员
+	 */
+	public function delGroupMember() {
+	    if(IS_POST) {
+	        $uid = I('post.uid', '', 'intval');
+	        if(empty($uid)) {
+	            $this->renderFailed('用户id为空');
+	        }
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级id为空');
+	        }
+	        if(!$this->checkGroupidExists($group_id)) {
+	            $this->renderFailed('班级不存在');
+	        }
+	         
+	        //是否加入班级判断
+	        if(!$this->checkJoin($uid, $group_id)) {
+	            $this->renderFailed('该用户不是该班级成员');
+	        }
+	         
+	        //不能删除创建者
+	        if($this->isGroupOwner($uid, $group_id)){
+	            $this->renderFailed('不能删除创建者');
+	        }
+	         
+	        $Group = M('member_group');
+	        $map['uid'] = $uid;
+	        $map['group_id'] = $group_id;
+	         
+	        if($Group->where($map)->delete()) {
+	            $this->renderSuccess('删除成功');
+	        }
+	        $this->renderFailed('删除失败，请重试');
+	    }
+	}
 }
