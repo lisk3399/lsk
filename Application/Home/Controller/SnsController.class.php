@@ -339,7 +339,7 @@ class SnsController extends HomeController {
 	        
 	        $Member = M('member');
 	        $result = $Member->page($page, $rows)
-	        ->field('uid,nickname,avatar')
+	        ->field('uid,nickname,avatar,sex')
 	        ->where('nickname like "%'.$keywords.'%"')
 	        ->select();
 	        
