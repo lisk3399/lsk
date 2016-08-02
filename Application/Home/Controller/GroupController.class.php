@@ -270,6 +270,7 @@ class GroupController extends HomeController {
 	private function checkGroupidExists($group_id) {
 	    $Group = M('group');
 	    $map['id'] = $group_id;
+	    $map['is_delete'] = 0;
 	    return $Group->where($map)->find();
 	}
 	
