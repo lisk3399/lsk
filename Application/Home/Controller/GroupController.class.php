@@ -192,7 +192,7 @@ class GroupController extends HomeController {
 	        }
 	        //创建班级字符限制
 	        if(!preg_match('/^[0-9a-zA-Z\x{4e00}-\x{9fa5}]{2,30}$/u', $group_name)) {
-	            $this->renderFailed('班级名长度为2-30个字符');
+	            $this->renderFailed('班级名为2-30个中文字母或数字');
 	        }
 	        //群组名是否存在
 	        if($this->checkGroupExists($group_name)) {
