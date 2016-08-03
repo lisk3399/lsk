@@ -642,7 +642,7 @@ class GroupController extends HomeController {
 	        }
 	        $phone_str = implode(',', $phone);
 	        $user = $this->getByPhone($phone_str);
-	        echo $phone_str;die;
+	        echo $info;die;
 	        if(!$user) {
 	            $this->renderFailed('未获取到注册用户信息');
 	        }
