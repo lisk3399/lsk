@@ -624,7 +624,7 @@ class GroupController extends HomeController {
 	        if(empty($info)) {
 	            $this->renderFailed('缺少信息');
 	        }
-	        $info = json_decode($info, true);
+	        $info = str_replace("-", "", $info);
 	        
 	        $group_id = I('post.group_id', '', 'intval');
 	        if(empty($group_id)) {
@@ -633,8 +633,9 @@ class GroupController extends HomeController {
 	        if(!$this->checkGroupidExists($group_id)) {
 	            $this->renderFailed('班级不存在');
 	        }
-	        $info = str_replace("-", "", $info);
 
+	        $info = json_decode($info, true);
+	        print_r($info);die;
 	        //通过电话号码获取用户列表
 	        $phone = array();
 	        foreach ($info as $key=>&$row) {
@@ -642,7 +643,7 @@ class GroupController extends HomeController {
 	        }
 	        $phone_str = implode(',', $phone);
 	        $user = $this->getByPhone($phone_str);
-	        echo $info;die;
+	        
 	        if(!$user) {
 	            $this->renderFailed('未获取到注册用户信息');
 	        }
