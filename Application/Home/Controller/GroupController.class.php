@@ -686,6 +686,10 @@ class GroupController extends HomeController {
 	    ->join('__MEMBER__ m on u.id = m.uid', 'left')
 	    ->where($map)->select();
 	    
+	    echo $Member->getlastsql();
+	    echo 123;
+	    echo is_array($ret);
+	    
 	    if(is_array($ret)) {
 	        return $ret;
 	    }
