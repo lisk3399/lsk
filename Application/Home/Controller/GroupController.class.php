@@ -667,6 +667,11 @@ class GroupController extends HomeController {
 	        if(count($info) == 0) {
 	            $this->renderFailed('没有更多信息');
 	        }
+	        
+	        //设置默认头像
+	        $Api = new UserApi;
+	        $info = $Api->setDefaultAvatar($info);
+	        
 	        $this->renderSuccess('用户列表', $info);
 	    }
 	}
