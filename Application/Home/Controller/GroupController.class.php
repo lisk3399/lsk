@@ -633,27 +633,37 @@ class GroupController extends HomeController {
 	        if(!$this->checkGroupidExists($group_id)) {
 	            $this->renderFailed('班级不存在');
 	        }
-	        
-// 	        $info = '[{"phoneNumber" : "135-7546-3971","firstName" : "\U5927\U8205\U5a46( \U00b4\U2022\U0f1d\U2022 ` )(null)"}]';
-// 	        $info = str_replace("-", "", $info);
-// 	        print_r($info);die;
+	        $info = str_replace("-", "", $info);
 
-	        //返回用户信息
+	        //通过电话号码获取用户列表
+	        $phone = array();
 	        foreach ($info as $key=>&$row) {
-	            $user = $this->getByPhone($row['phoneNumber']);
-	            if($user['uid']) {
+	            array_push($phone,  $row['phoneNumber']);
+	        }
+	        $phone_str = implode(',', $phone);
+	        $user = $this->getByPhone($phone_str);
+	        
+	        if(!$user) {
+	            $this->renderFailed('没有更多信息');
+	        }
+	        
+	        foreach ($user as $key=>&$row) {
+	            if($row['uid']) {
 	                //如果用户已经加入该班级则不显示
-	                if($this->checkJoin($user['uid'], $group_id)) {
-	                    unset($info[$key]);
-	                    continue;
-	                }
-	                $row['uid'] = $user['uid'];
-	                $row['nickname'] = $user['nickname'];
-	            } else {
+    	            if($this->checkJoin($row['uid'], $group_id)) {
+    	                unset($user[$key]);
+    	                unset($info[$key]);
+    	                continue;
+    	            }
+    	            $info[$key]['uid'] = $row['uid'];
+    	            $info[$key]['nickname'] = $row['nickname'];
+	            }
+	            else {
+	                unset($user[$key]);
 	                unset($info[$key]);
 	            }
 	        }
-
+	        
 	        if(count($info) == 0) {
 	            $this->renderFailed('没有更多信息');
 	        }
@@ -664,13 +674,15 @@ class GroupController extends HomeController {
 	/**
 	 * 根据电话获取用户
 	 */
-	private function getByPhone($phone) {
-	    $Member = M('ucenter_member');
-	    $map['mobile'] = $phone;
-	    $ret = $Member->field('id')->where($map)->find();
-	    if($ret['id']) {
-	        $data['uid'] = $ret['id'];
-	        return M('member')->field('uid,nickname')->where($data)->find();
+	private function getByPhone($phone_str) {
+	    $Member = M('ucenter_member')->alias('u');
+	    $map['u.mobile'] = array('IN', $phone_str);
+	    $ret = $Member->field('m.uid,m.nickname,m.avatar,u.mobile')
+	    ->join('__MEMBER__ m on u.id = m.uid', 'left')
+	    ->where($map)->select();
+	    
+	    if(is_array($ret) && count($ret) > 0) {
+	        return $ret;
 	    }
 	    return false;
 	}
