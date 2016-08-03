@@ -36,7 +36,7 @@ return array(
     'URL_PATHINFO_DEPR'    => '/', //PATHINFO URL分割符
 
     /* 全局过滤配置 */
-    'DEFAULT_FILTER' => '', //全局过滤函数
+    'DEFAULT_FILTER' => 'strip_tags,htmlspecialchars', //全局过滤函数
 
     /* 数据库配置 */
     'DB_TYPE'   => 'mysql', // 数据库类型
