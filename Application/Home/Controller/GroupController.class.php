@@ -633,9 +633,10 @@ class GroupController extends HomeController {
 	        if(!$this->checkGroupidExists($group_id)) {
 	            $this->renderFailed('班级不存在');
 	        }
-
-	        $info = json_decode($info, true);
+            
 	        print_r($info);die;
+	        $info = json_decode($info, true);
+	        
 	        //通过电话号码获取用户列表
 	        $phone = array();
 	        foreach ($info as $key=>&$row) {
