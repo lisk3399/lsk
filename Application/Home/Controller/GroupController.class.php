@@ -642,7 +642,7 @@ class GroupController extends HomeController {
 	        }
 	        $phone_str = implode(',', $phone);
 	        $user = $this->getByPhone($phone_str);
-	        
+	        echo $phone_str;die;
 	        if(!$user) {
 	            $this->renderFailed('未获取到注册用户信息');
 	        }
@@ -685,10 +685,6 @@ class GroupController extends HomeController {
 	    $ret = $Member->field('m.uid,m.nickname,m.avatar,u.mobile')
 	    ->join('__MEMBER__ m on u.id = m.uid', 'left')
 	    ->where($map)->select();
-	    
-	    echo $Member->getlastsql();
-	    echo 123;
-	    echo is_array($ret);die;
 	    
 	    if(is_array($ret)) {
 	        return $ret;
