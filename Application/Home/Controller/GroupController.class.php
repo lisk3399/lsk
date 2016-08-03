@@ -644,7 +644,7 @@ class GroupController extends HomeController {
 	        $user = $this->getByPhone($phone_str);
 	        
 	        if(!$user) {
-	            $this->renderFailed('没有更多信息');
+	            $this->renderFailed('未获取到注册用户信息');
 	        }
 	        
 	        foreach ($user as $key=>&$row) {
@@ -652,27 +652,27 @@ class GroupController extends HomeController {
 	                //如果用户已经加入该班级则不显示
     	            if($this->checkJoin($row['uid'], $group_id)) {
     	                unset($user[$key]);
-    	                unset($info[$key]);
     	                continue;
     	            }
-    	            $info[$key]['uid'] = $row['uid'];
-    	            $info[$key]['nickname'] = $row['nickname'];
+    	            $user[$key]['uid'] = $row['uid'];
+    	            $user[$key]['nickname'] = $row['nickname'];
+    	            $user[$key]['firstname'] = $info[$key]['firstName'];
 	            }
 	            else {
 	                unset($user[$key]);
-	                unset($info[$key]);
 	            }
 	        }
-	        
-	        if(count($info) == 0) {
+
+	        if(count($user) == 0) {
 	            $this->renderFailed('没有更多信息');
 	        }
 	        
+	        
 	        //设置默认头像
 	        $Api = new UserApi;
-	        $info = $Api->setDefaultAvatar($info);
-	        
-	        $this->renderSuccess('用户列表', $info);
+	        $user = $Api->setDefaultAvatar($user);
+
+	        $this->renderSuccess('用户列表', $user);
 	    }
 	}
 	
