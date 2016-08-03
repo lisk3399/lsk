@@ -686,7 +686,7 @@ class GroupController extends HomeController {
 	    ->join('__MEMBER__ m on u.id = m.uid', 'left')
 	    ->where($map)->select();
 	    
-	    if(is_array($ret) && count($ret) > 0) {
+	    if(is_array($ret)) {
 	        return $ret;
 	    }
 	    return false;
