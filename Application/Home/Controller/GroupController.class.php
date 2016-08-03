@@ -321,6 +321,17 @@ class GroupController extends HomeController {
 	            $this->renderFailed('没有更多了');
 	        }
 	        
+	        //追加作品信息至班级
+	        $limit = 2;
+	        foreach ($list as &$row) {
+	            $works = $this->getLimitGroupWorks($row['id'], $limit);
+	            $row['works'] = '';
+	            $work_count = count($works);
+	            if($work_count > 0) {
+	                $row['works'] = $works;
+	            }
+	        }
+	        
 	        $this->renderSuccess('查询结果', $list);
 	    }
 	}
