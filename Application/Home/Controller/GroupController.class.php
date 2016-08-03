@@ -688,7 +688,7 @@ class GroupController extends HomeController {
 	    
 	    echo $Member->getlastsql();
 	    echo 123;
-	    echo is_array($ret);
+	    echo is_array($ret);die;
 	    
 	    if(is_array($ret)) {
 	        return $ret;
