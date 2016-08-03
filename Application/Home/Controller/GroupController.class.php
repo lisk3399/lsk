@@ -313,7 +313,7 @@ class GroupController extends HomeController {
 	        $map['is_delete'] = 0;
 	        $map['group_name'] = array('LIKE', '%'.$group_name.'%');
 	        $list = $Group->page($page, $rows)
-	        ->field('id,group_name')
+	        ->field('id,group_name,cover_url')
 	        ->where($map)
 	        ->select();
 	        
