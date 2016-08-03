@@ -620,10 +620,14 @@ class GroupController extends HomeController {
 	            $this->renderFailed('您需要登录', -1);
 	        }
 	
-	        $info = I('post.info', '', 'trim');
+	        $info = I('info', '', 'trim');
 	        if(empty($info)) {
 	            $this->renderFailed('缺少信息');
 	        }
+	        if(ini_get('magic_quotes_gpc')) {
+	            $info = stripslashes($info);
+	        }
+	        
 	        $info = str_replace("-", "", $info);
 	        
 	        $group_id = I('post.group_id', '', 'intval');
@@ -634,7 +638,6 @@ class GroupController extends HomeController {
 	            $this->renderFailed('班级不存在');
 	        }
             
-	        print_r($info);die;
 	        $info = json_decode($info, true);
 	        
 	        //通过电话号码获取用户列表
