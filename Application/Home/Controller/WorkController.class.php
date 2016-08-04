@@ -240,8 +240,8 @@ class WorkController extends HomeController {
     	    if(!in_array($type, $types)) {
     	        $this->renderFailed('类型不正确');
     	    }
-    	    //非原创素材id不为空
-    	    if($type != 'ORIGINAL' && $type!='LOCAL'){
+    	    //配音对嘴需要有素材id
+    	    if($type =='LIPSYNC' || $type=='DUBBING'){
     	        if(empty($material_id)) {
     	            $this->renderFailed('素材为空');
     	        }
