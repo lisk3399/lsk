@@ -26,6 +26,7 @@ class TestController extends HomeController {
 	    array('url'=>'http://img0.bdstatic.com/img/image/%E5%A4%B4%E5%83%8F820.jpg', 'type'=>'audio'));
 	    $info[0]['comments'] = 33;
 	    $info[0]['likes'] = 12;
+	    $info[0]['is_like'] = 1;
 	    
 	    $info[1]['uid'] = '2';
 	    $info[1]['username'] = '两树两花';
@@ -35,6 +36,7 @@ class TestController extends HomeController {
 	    $info[1]['pic'] = array(array('url'=>'http://img0.bdstatic.com/img/image/%E6%91%84%E5%BD%B1820.jpg', 'type'=>'pic'));
 	    $info[1]['comments'] = 22;
 	    $info[1]['likes'] = 123;
+	    $info[1]['is_like'] = 0;
 	    
 	    $info[2]['uid'] = '3';
 	    $info[2]['username'] = '三树三花';
@@ -45,6 +47,7 @@ class TestController extends HomeController {
 	    array('url'=>'http://img0.bdstatic.com/img/image/%E9%B9%BF%E6%99%97820.jpg', 'type'=>'video'));
 	    $info[2]['comments'] = 44;
 	    $info[2]['likes'] = 121;
+	    $info[2]['is_like'] = 1;
 	    
 	    $info[3]['uid'] = '4';
 	    $info[3]['username'] = '无树无花';
@@ -53,6 +56,7 @@ class TestController extends HomeController {
 	    $info[3]['text'] = '推荐大家一款琴谱软件，这个软件非常好，大家自己可以在家查看琴谱，还有一看调弦app，大家没事在家可以多试试，很给力的，我就经常用来调弦，这样准确度就高多了，也不用担心不准了';
 	    $info[3]['comments'] = 331;
 	    $info[3]['likes'] = 333;
+	    $info[3]['is_like'] = 0;
 	    
 	    $this->renderSuccess('数据加载', $info);
 	}
