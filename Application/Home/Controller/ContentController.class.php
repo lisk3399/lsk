@@ -21,29 +21,38 @@ class ContentController extends HomeController {
 	        if($title_len>30 || $title_len<4) {
 	            $this->renderFailed('标题字数在4-30个字');
 	        }
+	        $description = I('description', '', 'trim');
 	        $content = I('content', '', 'trim');
-	        if(empty($content)) {
-	            $this->renderFailed('发布内容不能为空');
+	        
+	        //描述和详细内容不能同时为空
+	        if(empty($description) && empty($Content)) {
+	            $this->renderFailed('内容不能为空');
 	        }
-	        if(ini_get('magic_quotes_gpc')) {
-	            $content = stripslashes($content);
+	        $is_hav_content = 0;
+	        if(!empty($content)) {
+    	        if(ini_get('magic_quotes_gpc')) {
+    	            $content = stripslashes($content);
+    	        }
+    	        if(!$this->is_valid_json($content)) {
+    	            $this->renderFailed('json格式不对');
+    	        }
+    	        $is_hav_content = 1;
 	        }
-	        if(!$this->is_valid_json($content)) {
-	            $this->renderFailed('json格式不对');
-	        }
-
-	        $content_arr = json_decode($content, TRUE);
 	        //创建内容content表插入数据，返回content_id
 	        $Content = M("Content");
 	        $data = array();
 	        $data['uid'] = $uid;
 	        $data['title'] = $title;
+	        $data['description'] = $description;
 	        $data['create_time'] = NOW_TIME;
 	        $content_id = $Content->data($data)->add();
-	        //内容素材表插入数据
-	        if($content_id) {
+	        
+	        //插入详细内容
+	        if($content_id && $is_hav_content) {
 	            $ContentMaterial = M("Content_material");
 	            $create_time = NOW_TIME;
+	            $dataList = array();
+	            $content_arr = json_decode($content, TRUE);
 	            foreach ($content_arr as $row) {
 	                $dataList[] = array(
 	                    'content_id'=>$content_id,
@@ -58,6 +67,12 @@ class ContentController extends HomeController {
 	            }
 	            $this->renderSuccess('添加成功');
 	        }
+	        elseif($content_id) {
+	            $this->renderSuccess('添加成功');
+	        }
+	        else {
+	            $this->renderFailed('添加失败');
+	        }
 	    }
 	}
 
@@ -67,11 +82,52 @@ class ContentController extends HomeController {
     }
     
     public function viewContent() {
-        
-    }    
     
+    }
+    
+    //发布动态列表
     public function contentList() {
+        $page = I('page', '1', 'intval');
+        $rows = I('rows', '10', 'intval');
         
+        //限制单次最大读取数量
+        if($rows > C('API_MAX_ROWS')) {
+            $rows = C('API_MAX_ROWS');
+        }
+        
+        $list = M('Content')
+        ->page($page, $rows)
+        ->field('id,uid,title,description,comments,likes,create_time')
+        ->where('status = 1')
+        ->order('id desc')
+        ->select();
+        
+        if(count($list) == 0) {
+            $this->renderFailed('没有更多了');
+        }
+        
+        foreach ($list as $row) {
+            
+        }
+//         //获取所有动态资源
+//         $content_ids = $this->getContentIds($list);
+//         $map['content_id'] = array('IN', $content_ids);
+//         $material_list = M('Content_material')
+//         ->field('content_id,type,value,cover_url')
+//         ->where($map)->select();
+        
+        print_r($list);die;
+        
+    }
+
+    //获取作品ids,如：1,2,3,4,5
+    private function getContentIds($list) {
+        //获取所有id
+        $ids = array();
+        foreach ($list as $row) {
+            $ids[] = $row['id'];
+        }
+        return implode(',', $ids);
     }
     
     public function editContent() {
