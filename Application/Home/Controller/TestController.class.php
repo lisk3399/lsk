@@ -2,9 +2,6 @@
 
 namespace Home\Controller;
 
-use User\Api\UserApi;
-use Think\Upload\Driver\Qiniu\QiniuStorage;
-use Common\Api\WorkApi;
 /**
  * 测试
  */
@@ -16,6 +13,7 @@ class TestController extends HomeController {
 	public function classwork() {
 	    $info = array();
 	    
+	    $info[0]['id'] = 1;
 	    $info[0]['uid'] = '1';
 	    $info[0]['username'] = '一树一花';
 	    $info[0]['create_time'] = '2016-08-22';
@@ -28,6 +26,7 @@ class TestController extends HomeController {
 	    $info[0]['likes'] = 12;
 	    $info[0]['is_like'] = 1;
 	    
+	    $info[1]['id'] = 2;
 	    $info[1]['uid'] = '2';
 	    $info[1]['username'] = '两树两花';
 	    $info[1]['create_time'] = '刚刚';
@@ -38,6 +37,7 @@ class TestController extends HomeController {
 	    $info[1]['likes'] = 123;
 	    $info[1]['is_like'] = 0;
 	    
+	    $info[2]['id'] = 3;
 	    $info[2]['uid'] = '3';
 	    $info[2]['username'] = '三树三花';
 	    $info[2]['create_time'] = '3分钟前';
@@ -49,6 +49,7 @@ class TestController extends HomeController {
 	    $info[2]['likes'] = 121;
 	    $info[2]['is_like'] = 1;
 	    
+	    $info[3]['id'] = 4;
 	    $info[3]['uid'] = '4';
 	    $info[3]['username'] = '无树无花';
 	    $info[3]['create_time'] = '1小时前';
