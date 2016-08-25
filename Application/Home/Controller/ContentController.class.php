@@ -25,6 +25,9 @@ class ContentController extends HomeController {
 	        if(empty($content)) {
 	            $this->renderFailed('发布内容不能为空');
 	        }
+	        if(ini_get('magic_quotes_gpc')) {
+	            $content = stripslashes($content);
+	        }
 	        if(!$this->is_valid_json($content)) {
 	            $this->renderFailed('json格式不对');
 	        }
