@@ -81,8 +81,51 @@ class ContentController extends HomeController {
         return (json_last_error() == JSON_ERROR_NONE);
     }
     
+    //动态详情
     public function viewContent() {
-    
+        $uid = is_login();
+        
+        $work_id = I('id', '', 'intval');
+        if(empty($work_id)) {
+            $this->renderFailed('作品id为空');
+        }
+        if(!$this->checkWorkExists($work_id)) {
+            $this->renderFailed('作品不存在');
+        }
+        
+        $map['c.status'] = 1;
+        $map['c.id'] = $work_id;
+        $detail = M('Content')->alias('c')
+        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
+        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+        ->where($map)
+        ->find();
+        
+        if(count($detail) == 0) {
+            $this->renderFailed('内容不存在');
+        }
+        
+        $content_id = $detail['id'];
+        $CM = M('Content_material');
+        $result = $CM->field('type,value,cover_url')
+        ->where(array('content_id'=>$content_id))
+        ->select();
+        
+        $Api = new UserApi;
+        $detail['is_like'] = 0;
+        $detail['create_time'] = date('Y-m-d H:i', $detail['create_time']);
+        if($uid) {
+            $is_like = $Api->isLike($uid, $detail['id']);
+            $detail['is_like'] = (!empty($is_like))?1:0;
+        }
+        foreach ($result as $key=>$content) {
+            $detail['content'][$key]['cover_url'] = $content['cover_url'];
+            $detail['content'][$key]['type'] = $content['type'];
+            $detail['content'][$key]['value'] = $content['value'];
+        }
+        $detail['avatar'] = !empty($detail['avatar'])?$detail['avatar']:C('USER_INFO_DEFAULT.avatar');
+        
+        $this->renderSuccess('详情', $detail);
     }
     
     //动态列表
@@ -107,14 +150,16 @@ class ContentController extends HomeController {
             $this->renderFailed('没有更多了');
         }
         
+        $Api = new UserApi;
         $Content = M('Content_material');
         foreach ($list as &$row) {
             $row['is_like'] = 0;
+            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
             $result = $Content->field('type,cover_url')
             ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
             ->limit(3)->select();
             if($uid) {
-                $is_like = $this->checkLike($uid, $row['id']);
+                $is_like = $Api->isLike($uid, $row['id']);
                 $row['is_like'] = (!empty($is_like))?1:0;
             }
             
