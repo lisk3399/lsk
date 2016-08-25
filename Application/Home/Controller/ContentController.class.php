@@ -85,7 +85,7 @@ class ContentController extends HomeController {
     
     }
     
-    //发布动态列表
+    //动态列表
     public function contentList() {
         $page = I('page', '1', 'intval');
         $rows = I('rows', '10', 'intval');
@@ -94,30 +94,40 @@ class ContentController extends HomeController {
         if($rows > C('API_MAX_ROWS')) {
             $rows = C('API_MAX_ROWS');
         }
-        
-        $list = M('Content')
+        $uid = is_login();
+        $list = M('Content')->alias('c')
         ->page($page, $rows)
-        ->field('id,uid,title,description,comments,likes,create_time')
-        ->where('status = 1')
-        ->order('id desc')
+        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
+        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+        ->where('c.status = 1')
+        ->order('c.id desc')
         ->select();
         
         if(count($list) == 0) {
             $this->renderFailed('没有更多了');
         }
         
-        foreach ($list as $row) {
+        $Content = M('Content_material');
+        foreach ($list as &$row) {
+            $row['is_like'] = 0;
+            $result = $Content->field('type,cover_url')
+            ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
+            ->limit(3)->select();
+            if($uid) {
+                $is_like = $this->checkLike($uid, $row['id']);
+                $row['is_like'] = (!empty($is_like))?1:0;
+            }
             
+            foreach ($result as $key=>$content) {
+                $row['pic'][$key]['cover_url'] = $content['cover_url'];
+                $row['pic'][$key]['type'] = $content['type'];
+            }
         }
-//         //获取所有动态资源
-//         $content_ids = $this->getContentIds($list);
-//         $map['content_id'] = array('IN', $content_ids);
-//         $material_list = M('Content_material')
-//         ->field('content_id,type,value,cover_url')
-//         ->where($map)->select();
         
-        print_r($list);die;
+        $Api = new UserApi();
+        $list =  $Api->setDefaultAvatar($list);
         
+        $this->renderSuccess('动态列表', $list);        
     }
 
     //获取作品ids,如：1,2,3,4,5
