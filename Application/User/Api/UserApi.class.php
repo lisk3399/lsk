@@ -298,12 +298,15 @@ class UserApi extends Api{
     /**
      * 给用户发消息
      */
-    public function sendMessage($uid, $type) {
+    public function sendMessage($uid, $type, $extra_info) {
         $data['uid'] = $uid;
         $data['type'] = $type;
-        
         $data['content'] = '';
         switch ($type) {
+            case C('MESSAGE_TYPE.ADD_GROUP'):
+                $username = $this->getUsername($extra_info['uid']);
+                $data['content'] = $username.'申请加入班级:'.$extra_info['group_name'];
+                break;
             case C('MESSAGE_TYPE.LIKE'):
                 $data['content'] = '有人给你点赞，快去看看';
                 break;
@@ -421,5 +424,10 @@ class UserApi extends Api{
             return false;
         }
         return true;
+    }
+    
+    //根据uid获取用户名
+    public function getUsername($uid) {
+        return M('member')->where(array('uid'=>$uid))->getField('nickname');
     }
 }

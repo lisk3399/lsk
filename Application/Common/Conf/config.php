@@ -66,6 +66,7 @@ return array(
     
     /* 发送消息类型 */
     'MESSAGE_TYPE' => array(
+        'ADD_GROUP' => 'ADD_GROUP',
         'LIKE' => 'LIKE',
         'AT' => 'AT',
         'COMMENT' => 'COMMENT',

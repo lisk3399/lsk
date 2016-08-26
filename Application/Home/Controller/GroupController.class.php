@@ -111,7 +111,6 @@ class GroupController extends HomeController {
 	        }
 	        
             $limit = 2;
-	         
 	        $Group = M('member_group');
 	        $map['mg.uid'] = $uid;
 	        $map['g.is_delete'] = 0;
@@ -161,16 +160,34 @@ class GroupController extends HomeController {
 	        }
 	        //是否已经加入
 	        if($this->checkJoin($uid, $group_id)){
-	            $this->renderFailed('您已经加入该班级');
+	            $this->renderFailed('您已经申请过加入或已经加入该班级');
 	        }
+	        
 	        $data['uid'] = $uid;
 	        $data['group_id'] = $group_id;
 	        $data['create_time'] = NOW_TIME;
+	        $data['status'] = 0;//待审核
 	        if(M('member_group')->add($data)) {
-	            $this->renderSuccess('加入成功');
+	            //给班级管理员发送消息通知
+	            $group_info = $this->getGroupInfo($group_id);
+	            $Api = new UserApi;
+	            $group_ownerid = $group_info['uid'];
+	            $extra_info['group_name'] = $group_info['group_name'];
+	            $extra_info['uid'] = $uid;
+	            $Api->sendMessage($group_ownerid, C('MESSAGE_TYPE.ADD_GROUP'), $extra_info);
+
+	            $this->renderSuccess('您的加入班级申请已经发送给管理员');
 	        }
 	        $this->renderFailed('加入失败，请稍后再试');
 	    }
+	}
+	
+	
+	//获取班级信息
+	private function getGroupInfo($group_id) {
+	    $Group = M('group');
+	    $map['id'] = $group_id;
+	    return $info = $Group->where($map)->find();
 	}
 	
 	/**
