@@ -128,9 +128,9 @@ class ContentController extends HomeController {
             $detail['is_like'] = (!empty($is_like))?1:0;
         }
         foreach ($result as $key=>$content) {
-            $detail['content'][$key]['cover_url'] = $content['cover_url'];
-            $detail['content'][$key]['type'] = $content['type'];
-            $detail['content'][$key]['value'] = $content['value'];
+            $detail['pic'][$key]['cover_url'] = $content['cover_url'];
+            $detail['pic'][$key]['type'] = $content['type'];
+            $detail['pic'][$key]['value'] = $content['value'];
         }
         $detail['avatar'] = !empty($detail['avatar'])?$detail['avatar']:C('USER_INFO_DEFAULT.avatar');
         
