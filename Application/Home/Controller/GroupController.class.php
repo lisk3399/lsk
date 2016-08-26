@@ -317,6 +317,10 @@ class GroupController extends HomeController {
 	    $info['member_num'] = M('member_group')->where(array('group_id'=>$group_id))->count();
 	    $info['content_num'] = M('content')->where(array('group_id'=>$group_id))->count();
 	    
+	    $back_arr = array('/Public/static/web/group_cover_url1.jpg', '/Public/static/web/group_cover_url2.jpg', '/Public/static/web/group_cover_url3.jpg');
+	    $i = rand(0,2);
+	    $info['background_url'] = $back_arr[$i];
+	    
 	    $this->renderSuccess('班级信息', $info);
 	}
 	
