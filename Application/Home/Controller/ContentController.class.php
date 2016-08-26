@@ -23,6 +23,14 @@ class ContentController extends HomeController {
 	        }
 	        $description = I('description', '', 'trim');
 	        $content = I('content', '', 'trim');
+	        //发布必须指定班级
+	        $group_id = I('group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('未指定要发到的班级');
+	        }
+	        if(!$this->isGroupidExists($group_id)) {
+	            $this->renderFailed('该班级id不存在');
+	        }
 	        
 	        //描述和详细内容不能同时为空
 	        if(empty($description) && empty($Content)) {
@@ -45,6 +53,7 @@ class ContentController extends HomeController {
 	        $data['title'] = $title;
 	        $data['description'] = $description;
 	        $data['create_time'] = NOW_TIME;
+	        $data['group_id'] = $group_id;
 	        $content_id = $Content->data($data)->add();
 	        
 	        //插入详细内容
@@ -434,6 +443,14 @@ class ContentController extends HomeController {
         }
         return true;
     }
-    
+    /**
+     * 检查群组是否存在
+     */
+    private function isGroupidExists($group_id) {
+        $Group = M('group');
+        $map['id'] = $group_id;
+        $map['is_delete'] = 0;
+        return $Group->where($map)->find();
+    }
 }
  
