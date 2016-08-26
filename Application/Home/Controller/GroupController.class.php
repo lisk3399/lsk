@@ -600,6 +600,7 @@ class GroupController extends HomeController {
 	private function getGroupMembers($group_id, $page, $rows) {
 	    $Group = M('member_group');
 	    $map['mg.group_id'] = $group_id;
+	    $map['mg.status'] = 1;
 	    $list = $Group->alias('mg')
 	    ->page($page, $rows)
 	    ->field('mg.uid,m.nickname,m.avatar')

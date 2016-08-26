@@ -6,6 +6,7 @@
 
 namespace Home\Controller;
 
+use User\Api\UserApi;
 class MessageController extends HomeController {
 
     //某用户消息列表
@@ -36,6 +37,9 @@ class MessageController extends HomeController {
 	            $row['member_groupid'] = $extra[1];
 	        }
 	    }
+	    
+	    $Api = new UserApi;
+	    $list = $Api->setDefaultAvatar($list);
 	    
 	    $this->renderSuccess('消息列表', $list);        
 	}
