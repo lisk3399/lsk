@@ -31,7 +31,13 @@ class MessageController extends HomeController {
 	        
 	        foreach ($list as &$row) {
 	            $row['create_time'] = date('Y-m-d H:i:s', $row['create_time']);
+	            //添加班级消息
+	            if($row['type'] == C('MESSAGE_TYPE.ADD_GROUP') && !empty($row['extra'])) {
+	                $extra = explode('#', $row['extra']);
+	                $row['member_groupid'] = $extra[1];
+	            }
 	        }
+	        
             $this->renderSuccess('消息列表', $list);	        
 	    }
 	}

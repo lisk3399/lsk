@@ -306,6 +306,7 @@ class UserApi extends Api{
             case C('MESSAGE_TYPE.ADD_GROUP'):
                 $username = $this->getUsername($extra_info['uid']);
                 $data['content'] = $username.'申请加入班级:'.$extra_info['group_name'];
+                $data['extra'] = 'member_groupid#'.$extra_info['member_groupid'];
                 break;
             case C('MESSAGE_TYPE.LIKE'):
                 $data['content'] = '有人给你点赞，快去看看';
@@ -320,7 +321,11 @@ class UserApi extends Api{
                 $data['content'] = '有新的好友加你，快去看看';
                 break;
                 default:
-                    $data['content'] = '有新的系统消息';
+                    if(!empty($extra_info['content'])) {
+                        $data['content'] = $extra_info['content'];
+                    } else {
+                        $data['content'] = '有新的系统消息';
+                    }
         }
         $data['create_time'] = NOW_TIME;
         M('message')->add($data);

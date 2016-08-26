@@ -167,13 +167,15 @@ class GroupController extends HomeController {
 	        $data['group_id'] = $group_id;
 	        $data['create_time'] = NOW_TIME;
 	        $data['status'] = 0;//待审核
-	        if(M('member_group')->add($data)) {
+	        $member_groupid = M('member_group')->add($data);
+	        if($member_groupid) {
 	            //给班级管理员发送消息通知
 	            $group_info = $this->getGroupInfo($group_id);
-	            $Api = new UserApi;
 	            $group_ownerid = $group_info['uid'];
 	            $extra_info['group_name'] = $group_info['group_name'];
 	            $extra_info['uid'] = $uid;
+	            $extra_info['member_groupid'] = $member_groupid;
+	            $Api = new UserApi;
 	            $Api->sendMessage($group_ownerid, C('MESSAGE_TYPE.ADD_GROUP'), $extra_info);
 
 	            $this->renderSuccess('您的加入班级申请已经发送给管理员');
@@ -182,6 +184,34 @@ class GroupController extends HomeController {
 	    }
 	}
 	
+	/**
+	 * 管理员确认审核加入班级
+	 */
+	public function confirmJoinGroup() {
+	    if(IS_POST) {
+	        $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录');
+            }
+            
+            $member_groupid = I('post.member_groupid', '', 'intval');
+            if(empty($member_groupid)) {
+                $this->renderFailed('申请id不存在');
+            }
+            //获取申请人uid
+            $apply_uid = M('member_group')->where(array('id'=>$member_groupid))->getField('uid');
+            
+            //通过用户申请
+            $map['id'] = $member_groupid;
+            if(M('member_group')->data(array('status'=>1))->where($map)->save()) {
+                $extra_info['content'] = '管理员同意了您加入班级申请';
+                $Api = new UserApi;
+                $Api->sendMessage($apply_uid, C('MESSAGE_TYPE.SYSTEM'), $extra_info);
+                $this->renderSuccess('审核通过');
+            }
+            $this->renderFailed('审核失败');
+	    }
+	}
 	
 	//获取班级信息
 	private function getGroupInfo($group_id) {
