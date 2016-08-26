@@ -164,7 +164,7 @@ class ContentController extends HomeController {
         foreach ($list as &$row) {
             $row['is_like'] = 0;
             $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
-            $result = $Content->field('type,cover_url')
+            $result = $Content->field('type,value,cover_url')
             ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
             ->limit(3)->select();
             if($uid) {
@@ -175,6 +175,7 @@ class ContentController extends HomeController {
             foreach ($result as $key=>$content) {
                 $row['pic'][$key]['cover_url'] = $content['cover_url'];
                 $row['pic'][$key]['type'] = $content['type'];
+                $row['pic'][$key]['value'] = $content['value'];
             }
         }
         
