@@ -147,6 +147,10 @@ class ContentController extends HomeController {
             $rows = C('API_MAX_ROWS');
         }
         $uid = is_login();
+        
+//         $uid_arr = M('auth_group_access')->field('uid')->where(array('group_id'=>3))->select();
+//         print_r($uid_arr);
+//         die;
         $list = M('Content')->alias('c')
         ->page($page, $rows)
         ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
@@ -260,8 +264,30 @@ class ContentController extends HomeController {
         
     }
     
+    //删除作品
     public function deleteContent() {
-        
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录', -1);
+            }
+            $work_id = I('id', '', 'intval');
+            if(empty($work_id)) {
+                $this->renderFailed('作品id为空');
+            }
+            if(!$this->checkWorkExists($work_id)) {
+                $this->renderFailed('作品不存在');
+            }
+            if(!$this->isMyWork($uid, $work_id)) {
+                $this->renderFailed('没有权限删除该作品');
+            }
+            
+            $map['id'] = $work_id;
+            if(M('Content')->data(array('status'=>'-1'))->where($map)->save()) {
+                $this->renderSuccess('删除成功');
+            }
+            $this->renderFailed('删除失败');
+        }
     }
     
     public function addToDrafts() {
