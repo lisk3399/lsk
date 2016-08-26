@@ -212,7 +212,7 @@ class ContentController extends HomeController {
         }
         $uid = is_login();
         
-        $group_id = I('post.group_id', '', 'intval');
+        $group_id = I('group_id', '', 'intval');
         if(empty($group_id)) {
             $this->renderFailed('班级为空');
         }
