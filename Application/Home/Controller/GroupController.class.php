@@ -198,6 +198,10 @@ class GroupController extends HomeController {
             if(empty($member_groupid)) {
                 $this->renderFailed('申请id不存在');
             }
+            $message_id = I('post.message_id', '', 'intval');
+            if(empty($message_id)) {
+                $this->renderFailed('消息id不存在');
+            }
             //获取申请人uid
             $apply_uid = M('member_group')->where(array('id'=>$member_groupid))->getField('uid');
             
@@ -207,6 +211,10 @@ class GroupController extends HomeController {
                 $extra_info['content'] = '管理员同意了您加入班级申请';
                 $Api = new UserApi;
                 $Api->sendMessage($apply_uid, C('MESSAGE_TYPE.SYSTEM'), $extra_info);
+                
+                //设置已读
+                M('Message')->data(array('is_read'=>1))->where(array('id'=>$message_id))->save();
+                
                 $this->renderSuccess('审核通过');
             }
             $this->renderFailed('审核失败');

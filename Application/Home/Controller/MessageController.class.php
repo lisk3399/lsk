@@ -43,4 +43,34 @@ class MessageController extends HomeController {
 	    
 	    $this->renderSuccess('消息列表', $list);        
 	}
+
+	//删除消息
+	public function deleteMessage() {
+	    if(IS_POST) {
+    	    $uid = is_login();
+    	    if(!$uid) {
+    	        $this->renderFailed('请先登录', -1);
+    	    }
+    	    
+    	    $message_id = I('post.message_id', '', 'trim');
+    	    if(empty($message_id)) {
+    	        $this->renderFailed('消息id为空');
+    	    }
+    	    if(!$this->isMyMessage($uid ,$message_id)) {
+    	        $this->renderFailed('没有权限删除该消息');
+    	    }
+    	    
+    	    if(M('Message')->where(array('id'=>$message_id))->delete()) {
+    	        $this->renderSuccess('删除成功');
+    	    } 
+    	    $this->renderFailed('删除失败，请稍后重试');
+	    }
+	}
+	
+	//是否自己的消息
+	private function isMyMessage($uid, $message_id) {
+	    $map['uid'] = $uid;
+	    $map['id'] = $message_id;
+	    return M('Message')->where($map)->find();
+	}
 }
