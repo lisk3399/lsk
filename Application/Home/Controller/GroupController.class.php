@@ -9,8 +9,18 @@ namespace Home\Controller;
 use User\Api\UserApi;
 class GroupController extends HomeController {
     
+    //我创建的群组
+    public function createdGroup() {
+        
+    } 
+    
+    //我加入的班级
+    public function joinedGroup() {
+        
+    }
+    
 	/**
-	 * 我创建的群组
+	 * 我创建的群组(弃用)
 	 */
 	public function myGroup() {
 	    if(IS_POST) {
@@ -288,8 +298,30 @@ class GroupController extends HomeController {
 	    
 	}
 	
+	//班级信息
+	public function groupIndexInfo() {
+	    $group_id = I('group_id', '', 'intval');
+	    if(empty($group_id)) {
+	        $this->renderFailed('班级为空');
+	    }
+	    if(!$this->checkGroupidExists($group_id)) {
+	        $this->renderFailed('班级不存在');
+	    }
+	    
+	    $member_num = '';
+	    
+	    $Group = M('group');
+	    $map['id'] = $group_id;
+	    $info = $Group->field('id,group_name,cover_url')->where($map)->find();
+	    
+	    $info['member_num'] = M('member_group')->where(array('group_id'=>$group_id))->count();
+	    $info['content_num'] = M('content')->where(array('group_id'=>$group_id))->count();
+	    
+	    $this->renderSuccess('班级信息', $info);
+	}
+	
 	/**
-	 * 班级信息
+	 * 班级信息(弃用)
 	 */
 	public function groupInfo() {
 	    if(IS_POST) {
