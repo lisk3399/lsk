@@ -779,6 +779,7 @@ class WorkController extends HomeController {
 	    $list = $Api->setDefaultAvatar($list);
         foreach ($list as &$row) {
             $row['content'] = rawurldecode($row['content']);
+            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
         }
 	    
         $extra['count'] = $count;

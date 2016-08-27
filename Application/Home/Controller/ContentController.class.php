@@ -272,17 +272,12 @@ class ContentController extends HomeController {
             $rows = C('API_MAX_ROWS');
         }
         $uid = is_login();
-    
-        $group_id = I('group_id', '', 'intval');
-        if(empty($group_id)) {
-            $this->renderFailed('班级为空');
+        if(!$uid) {
+            $this->renderFailed('请先登录', -1);
         }
-        if(!$this->isGroupidExists($group_id)) {
-            $this->renderFailed('班级不存在');
-        }
-    
+        
         $map['c.status'] = 1;
-        $map['c.uid'] = $group_id;
+        $map['c.uid'] = $uid;
         $list = M('Content')->alias('c')
         ->page($page, $rows)
         ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
