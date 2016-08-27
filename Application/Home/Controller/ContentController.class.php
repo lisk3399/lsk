@@ -260,6 +260,67 @@ class ContentController extends HomeController {
         $this->renderSuccess('班级动态列表', $list);
     }
     
+    /**
+     * 我的动态列表
+     */
+    public function myContentList() {
+        $page = I('page', '1', 'intval');
+        $rows = I('rows', '10', 'intval');
+    
+        //限制单次最大读取数量
+        if($rows > C('API_MAX_ROWS')) {
+            $rows = C('API_MAX_ROWS');
+        }
+        $uid = is_login();
+    
+        $group_id = I('group_id', '', 'intval');
+        if(empty($group_id)) {
+            $this->renderFailed('班级为空');
+        }
+        if(!$this->isGroupidExists($group_id)) {
+            $this->renderFailed('班级不存在');
+        }
+    
+        $map['c.status'] = 1;
+        $map['c.uid'] = $group_id;
+        $list = M('Content')->alias('c')
+        ->page($page, $rows)
+        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
+        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+        ->where($map)
+        ->order('c.id desc')
+        ->select();
+    
+        if(count($list) == 0) {
+            $this->renderFailed('没有更多了');
+        }
+    
+        $Api = new UserApi;
+        $Content = M('Content_material');
+        foreach ($list as &$row) {
+            $row['is_like'] = 0;
+            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+            $result = $Content->field('type,value,cover_url')
+            ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
+            ->limit(3)->select();
+            if($uid) {
+                $is_like = $Api->isLike($uid, $row['id']);
+                $row['is_like'] = (!empty($is_like))?1:0;
+            }
+    
+            foreach ($result as $key=>$content) {
+                $row['pic'][$key]['cover_url'] = $content['cover_url'];
+                $row['pic'][$key]['type'] = $content['type'];
+                $row['pic'][$key]['value'] = $content['value'];
+            }
+        }
+    
+        $Api = new UserApi();
+        $list =  $Api->setDefaultAvatar($list);
+    
+        $this->renderSuccess('班级动态列表', $list);
+    }
+    
     public function editContent() {
         
     }
@@ -278,8 +339,12 @@ class ContentController extends HomeController {
             if(!$this->checkWorkExists($work_id)) {
                 $this->renderFailed('作品不存在');
             }
-            if(!$this->isMyWork($uid, $work_id)) {
-                $this->renderFailed('没有权限删除该作品');
+            //判断用户是否管理员，是管理员则不用判断是否我的作品
+            $group_id = M('Content')->where(array('id'=>$work_id))->getField('group_id');
+            if(!$this->isGroupOwner($uid, $group_id)) {
+                if(!$this->isMyWork($uid, $work_id)) {
+                    $this->renderFailed('没有权限删除该作品');
+                }
             }
             
             $map['id'] = $work_id;
@@ -539,6 +604,20 @@ class ContentController extends HomeController {
         $map['id'] = $group_id;
         $map['is_delete'] = 0;
         return $Group->where($map)->find();
+    }
+    
+    /**
+     * 是否班级创建者
+     */
+    private function isGroupOwner($uid, $group_id) {
+        $Group = M('group');
+        $map['id'] = $group_id;
+        $map['uid'] = $uid;
+        $ret = $Group->where($map)->find();
+        if($ret['id']) {
+            return true;
+        }
+        return false;
     }
 }
  
