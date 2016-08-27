@@ -148,14 +148,27 @@ class ContentController extends HomeController {
         }
         $uid = is_login();
         
+        $map = array();
+        //官方用户组发的动态展示
         $uid_rs = M('auth_group_access')->field('uid')->where(array('group_id'=>3))->select();
         foreach ($uid_rs as $row) {
             $uid_arr[] = $row['uid'];
         }
+        $where['c.uid'] = array('IN', $uid_arr);
+        
+        //用户登录后展示用户所有在班级发布的动态
+        if($uid) {
+            $group_rs = M('member_group')->field('group_id')->where(array('uid'=>$uid))->select();
+            foreach ($group_rs as $row) {
+                $group_arr[] = $row['group_id'];
+            }
+            $where['c.group_id'] = array('IN', $group_arr);
+        }
+        
+        $where['_logic'] = 'or';
+        $map['_complex'] = $where;
         
         $map['c.status'] = 1;
-        $map['c.uid'] = array('IN', $uid_arr);
-        
         $m = M('Content');
         $list = $m->alias('c')
         ->page($page, $rows)
