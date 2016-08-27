@@ -33,7 +33,7 @@ class ContentController extends HomeController {
 	        }
 	        
 	        //描述和详细内容不能同时为空
-	        if(empty($description) && empty($Content)) {
+	        if(empty($description) && empty($content)) {
 	            $this->renderFailed('内容不能为空');
 	        }
 	        $is_hav_content = 0;
@@ -313,7 +313,7 @@ class ContentController extends HomeController {
         $Api = new UserApi();
         $list =  $Api->setDefaultAvatar($list);
     
-        $this->renderSuccess('班级动态列表', $list);
+        $this->renderSuccess('我的动态列表', $list);
     }
     
     public function editContent() {
