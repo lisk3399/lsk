@@ -148,14 +148,20 @@ class ContentController extends HomeController {
         }
         $uid = is_login();
         
-//         $uid_arr = M('auth_group_access')->field('uid')->where(array('group_id'=>3))->select();
-//         print_r($uid_arr);
-//         die;
-        $list = M('Content')->alias('c')
+        $uid_rs = M('auth_group_access')->field('uid')->where(array('group_id'=>3))->select();
+        foreach ($uid_rs as $row) {
+            $uid_arr[] = $row['uid'];
+        }
+        
+        $map['c.status'] = 1;
+        $map['c.uid'] = array('IN', $uid_arr);
+        
+        $m = M('Content');
+        $list = $m->alias('c')
         ->page($page, $rows)
         ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
-        ->where('c.status = 1')
+        ->where($map)
         ->order('c.id desc')
         ->select();
         
