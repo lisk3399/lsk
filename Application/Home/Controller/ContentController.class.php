@@ -159,15 +159,16 @@ class ContentController extends HomeController {
         //用户登录后展示用户所有在班级发布的动态
         if($uid) {
             $group_rs = M('member_group')->field('group_id')->where(array('uid'=>$uid))->select();
-            foreach ($group_rs as $row) {
-                $group_arr[] = $row['group_id'];
+            //用户没有加入或创建任何班级
+            if(empty($group_rs[0]['group_id'])) {
+                foreach ($group_rs as $row) {
+                    $group_arr[] = $row['group_id'];
+                }
+                $where['c.group_id'] = array('IN', $group_arr);
+                $where['_logic'] = 'or';
             }
-            $where['c.group_id'] = array('IN', $group_arr);
         }
-        
-        $where['_logic'] = 'or';
         $map['_complex'] = $where;
-        
         $map['c.status'] = 1;
         $m = M('Content');
         $list = $m->alias('c')
