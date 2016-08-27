@@ -256,8 +256,9 @@ class GroupController extends HomeController {
 	            $this->renderFailed('班级图片为空');
 	        }
 	        //创建班级字符限制
-	        if(!preg_match('/^[0-9a-zA-Z\x{4e00}-\x{9fa5}]{2,30}$/u', $group_name)) {
-	            $this->renderFailed('班级名为2-30个中文字母或数字');
+	        $title_len = mb_strlen($group_name, 'utf-8');
+	        if($title_len>30 || $title_len<=2) {
+	            $this->renderFailed('班级名为2-30个字');
 	        }
 	        //群组名是否存在
 	        if($this->checkGroupExists($group_name)) {
