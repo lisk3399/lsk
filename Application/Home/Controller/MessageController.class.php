@@ -62,7 +62,7 @@ class MessageController extends HomeController {
     	    
     	    if(M('Message')->where(array('id'=>$message_id))->delete()) {
     	        $this->renderSuccess('删除成功');
-    	    } 
+    	    }
     	    $this->renderFailed('删除失败，请稍后重试');
 	    }
 	}
