@@ -124,6 +124,7 @@ class GroupController extends HomeController {
 	        $Group = M('member_group');
 	        $map['mg.uid'] = $uid;
 	        $map['g.is_delete'] = 0;
+	        $map['g.uid'] = array('NEQ', $uid);
 	        $list = $Group->alias('mg')
 	        ->field('g.id,g.uid,g.group_name,cover_url')
 	        ->join('__GROUP__ g on g.id = mg.group_id', 'left')
