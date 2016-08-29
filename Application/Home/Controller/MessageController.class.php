@@ -38,12 +38,11 @@ class MessageController extends HomeController {
 	        }
 	    }
 	    
-	    $extra['count'] = M('Message')->where(array('type'=>'ADD_GROUP','is_read'=>'0'))->count();
-	    
+	    $extra_info['count'] = M('Message')->where(array('type'=>'ADD_GROUP','is_read'=>'0'))->count();
 	    $Api = new UserApi;
 	    $list = $Api->setDefaultAvatar($list);
 	    
-	    $this->renderSuccess('消息列表', $list, $extra);        
+	    $this->renderSuccess('消息列表', $list, $extra_info);        
 	}
 
 	//删除消息
