@@ -38,7 +38,7 @@ class MessageController extends HomeController {
 	        }
 	    }
 	    
-	    $extra_info['count'] = M('Message')->where(array('type'=>'ADD_GROUP','is_read'=>'0'))->count();
+	    $extra_info['count'] = M('Message')->where(array('type'=>'ADD_GROUP','is_read'=>'0','uid'=>$uid))->count();
 	    $Api = new UserApi;
 	    $list = $Api->setDefaultAvatar($list);
 	    
