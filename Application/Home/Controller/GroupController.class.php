@@ -289,6 +289,7 @@ class GroupController extends HomeController {
 	            $map['uid'] = $uid;
 	            $map['group_id'] = $group_id;
 	            $map['create_time'] = NOW_TIME;
+	            $map['status'] = 1;
 	            if(M('member_group')->add($map)) {
 	                $this->renderSuccess('创建成功');
 	            }
