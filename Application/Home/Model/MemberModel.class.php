@@ -98,7 +98,7 @@ class MemberModel extends Model{
         session('user_auth_sign', data_auth_sign($auth));
 
         $cookie_name = C('AUTH_COOKIE');
-        setcookie($cookie_name, $auth['uid'], time()+86400*30, '/', '', false, true);
+        setcookie($cookie_name, $auth['uid'], time()+86400*60, '/', '', false, true);
         $_COOKIE[$cookie_name] = $auth['uid'];
     }
 
