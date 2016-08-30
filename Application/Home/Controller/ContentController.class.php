@@ -134,6 +134,11 @@ class ContentController extends HomeController {
         }
         $detail['avatar'] = !empty($detail['avatar'])?$detail['avatar']:C('USER_INFO_DEFAULT.avatar');
         
+        $detail['is_mywork'] = 0;
+        if($uid == $detail['uid']) {
+            $detail['is_mywork'] = 1;
+        } 
+        
         $this->renderSuccess('详情', $detail);
     }
     
