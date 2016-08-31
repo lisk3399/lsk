@@ -9,14 +9,43 @@ namespace Home\Controller;
 use User\Api\UserApi;
 class GroupController extends HomeController {
     
-    //我创建的群组
-    public function createdGroup() {
-        
-    } 
-    
     //我加入的班级
-    public function joinedGroup() {
+    public function myJoinedGroup() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(empty($uid)) {
+                $this->renderFailed('需要登录', -1);
+            }
+             
+            $page = I('page', '1', 'intval');
+            $rows = I('rows', '20', 'intval');
+             
+            //限制单次最大读取数量
+            if($rows > C('API_MAX_ROWS')) {
+                $rows = C('API_MAX_ROWS');
+            }
+            
+            $Mg = M('member_group');
+            $mg_arr = $Mg->field('group_id')->where(array('uid'=>$uid, 'status'=>1))->select();
+            $group_ids = array();
+            foreach ($mg_arr as $row) {
+                $group_ids[] = $row['group_id'];
+            }
+
+            $map['is_delete'] = 0;
+            $map['id'] = array('IN', $group_ids);
+            $Group = M('group');
+            $list = $Group->field('id,uid,group_name,cover_url')
+            ->where($map)
+            ->order('id desc')
+            ->select();
+            
+            if(count($list) == 0) {
+                $this->renderFailed('没有更多了');
+            }
         
+            $this->renderSuccess('我加入的班级', $list);
+        }
     }
     
 	/**
@@ -111,7 +140,7 @@ class GroupController extends HomeController {
 	}
 	
 	/**
-	 * 我加入的群组
+	 * 我加入的群组（弃用）
 	 */
 	public function groupJoined(){
 	    if(IS_POST) {
@@ -121,16 +150,35 @@ class GroupController extends HomeController {
 	        }
 	        
             $limit = 2;
-	        $Group = M('member_group');
-	        $map['mg.uid'] = $uid;
-	        $map['g.is_delete'] = 0;
-	        $map['g.uid'] = array('NEQ', $uid);
-	        $list = $Group->alias('mg')
-	        ->field('g.id,g.uid,g.group_name,cover_url')
-	        ->join('__GROUP__ g on g.id = mg.group_id', 'left')
-	        ->order('g.id desc')
-	        ->where($map)->select();
-	         
+            
+            
+            $Mg = M('member_group');
+            $mg_arr = $Mg->field('group_id')->where(array('uid'=>$uid, 'status'=>1))->select();
+            $group_ids = array();
+            foreach ($mg_arr as $row) {
+                $group_ids[] = $row['group_id'];
+            }
+            
+            $map['is_delete'] = 0;
+            $map['id'] = array('IN', $group_ids);
+            $Group = M('group');
+            $list = $Group->field('id,uid,group_name,cover_url')
+            ->where($map)
+            ->order('id desc')
+            ->select();
+            
+// 	        $Group = M('member_group');
+// 	        $map['mg.uid'] = $uid;
+// 	        $map['g.is_delete'] = 0;
+// 	        $map['g.uid'] = array('NEQ', $uid);
+// 	        $map['mg.status'] = 1;
+// 	        $list = $Group->alias('mg')
+// 	        ->field('g.id,g.uid,g.group_name,cover_url')
+// 	        ->join('__GROUP__ g on g.id = mg.group_id', 'left')
+// 	        ->order('g.id desc')
+// 	        ->where($map)->select();
+	        
+//             echo $Group->getLastSql();die;
 	        if(count($list) == 0) {
 	            $this->renderFailed('没有更多了');
 	        }
