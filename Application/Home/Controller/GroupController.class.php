@@ -36,6 +36,7 @@ class GroupController extends HomeController {
             $map['id'] = array('IN', $group_ids);
             $Group = M('group');
             $list = $Group->field('id,uid,group_name,cover_url')
+            ->page($page, $rows)
             ->where($map)
             ->order('id desc')
             ->select();
@@ -151,6 +152,13 @@ class GroupController extends HomeController {
 	        
             $limit = 2;
             
+            $page = I('page', '1', 'intval');
+            $rows = I('rows', '20', 'intval');
+             
+            //限制单次最大读取数量
+            if($rows > C('API_MAX_ROWS')) {
+                $rows = C('API_MAX_ROWS');
+            }
             
             $Mg = M('member_group');
             $mg_arr = $Mg->field('group_id')->where(array('uid'=>$uid, 'status'=>1))->select();
@@ -161,8 +169,10 @@ class GroupController extends HomeController {
             
             $map['is_delete'] = 0;
             $map['id'] = array('IN', $group_ids);
+            $map['uid'] = array('NEQ', $uid);
             $Group = M('group');
             $list = $Group->field('id,uid,group_name,cover_url')
+            ->page($page, $rows)
             ->where($map)
             ->order('id desc')
             ->select();
