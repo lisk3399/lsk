@@ -34,6 +34,7 @@ class GroupController extends HomeController {
 
             $map['is_delete'] = 0;
             $map['id'] = array('IN', $group_ids);
+            $map['uid'] = array('NEQ', $uid);
             $Group = M('group');
             $list = $Group->field('id,uid,group_name,cover_url')
             ->page($page, $rows)
