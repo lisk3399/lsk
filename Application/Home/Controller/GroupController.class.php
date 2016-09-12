@@ -386,7 +386,40 @@ class GroupController extends HomeController {
 	 * 编辑群组信息
 	 */
 	public function editGroup() {
-	    
+	    if(IS_POST) {
+	    	$uid = is_login();
+	        if(empty($uid)) {
+	            $this->renderFailed('需要登录', -1);
+	        }
+	        
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级id为空');
+	        }
+	        if(!$this->isGroupOwner($uid, $group_id)) {
+	            $this->renderFailed('不是自己的群组不能编辑');
+	        }
+	        
+	        $map['id'] = $group_id;
+	        $group_name = I('post.group_name', '', 'trim');
+	        if(!empty($group_name)) {
+	            $data['group_name'] = $group_name;
+	        }
+	        
+	        $description = I('post.description', '', 'trim');
+	        if(!empty($description)) {
+	            $data['description'] = $description;
+	        }
+	        $cover_url = I('post.cover_url', '', 'trim');
+	        if(!empty($cover_url)) {
+	            $data['cover_url'] = $cover_url;
+	        }
+	        
+	        if(M('group')->where($map)->save($data)) {
+	            $this->renderSuccess('更新成功');
+	        }
+	        $this->renderFailed('没有更新');
+	    }
 	}
 	
 	//班级信息
