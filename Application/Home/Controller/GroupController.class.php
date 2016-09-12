@@ -480,7 +480,7 @@ class GroupController extends HomeController {
 	public function searchGroup() {
 	    if(IS_POST) {
 	        $page = I('page', '1', 'intval');
-	        $rows = I('rows', '20', 'intval');
+	        $rows = I('rows', '10', 'intval');
 	        
 	        //限制单次最大读取数量
 	        if($rows > C('API_MAX_ROWS')) {
@@ -494,8 +494,9 @@ class GroupController extends HomeController {
 	        $Group = M('group');
 	        $map['is_delete'] = 0;
 	        $map['group_name'] = array('LIKE', '%'.$group_name.'%');
-	        $list = $Group->page($page, $rows)
-	        ->field('id,group_name,cover_url')
+	        $list = $Group->alias('g')->page($page, $rows)
+	        ->join('__MEMBER__ m on m.uid = g.uid', 'left')
+	        ->field('g.id,g.group_name,g.cover_url,m.nickname')
 	        ->where($map)
 	        ->select();
 	        
@@ -503,18 +504,24 @@ class GroupController extends HomeController {
 	            $this->renderFailed('没有更多了');
 	        }
 	        
-	        //追加作品信息至班级
-	        $limit = 2;
 	        foreach ($list as &$row) {
-	            $works = $this->getLimitGroupWorks($row['id'], $limit);
-	            $row['works'] = '';
-	            $work_count = count($works);
-	            if($work_count > 0) {
-	                $row['works'] = $works;
-	            } else {
-	                unset($row['works']);
-	            }
+                $group_stat = $this->groupStat($row['id']);
+                $row['work_num'] = intval($group_stat['work_num']);
+                $row['member_num'] = intval($group_stat['member_num']);
 	        }
+	        
+// 	        //追加作品信息至班级
+// 	        $limit = 2;
+// 	        foreach ($list as &$row) {
+// 	            $works = $this->getLimitGroupWorks($row['id'], $limit);
+// 	            $row['works'] = '';
+// 	            $work_count = count($works);
+// 	            if($work_count > 0) {
+// 	                $row['works'] = $works;
+// 	            } else {
+// 	                unset($row['works']);
+// 	            }
+// 	        }
 	        
 	        $this->renderSuccess('查询结果', $list);
 	    }
@@ -1002,4 +1009,16 @@ class GroupController extends HomeController {
 	        $this->renderFailed('删除失败，请重试');
 	    }
 	}
-}
+	
+	//获取班级作品及成员数
+	private function groupStat($group_id) {
+	    $map['group_id'] = $group_id;
+	    $work_num = M('content')->where($map)->count();
+	    $member_num = M('member_group')->where($map)->count();
+	    
+	    $group_stat['work_num'] = !empty($work_num) ? $work_num : 0;
+	    $group_stat['member_num'] = !empty($member_num) ? $member_num : 0;
+
+	    return $group_stat;
+	}
+}	
