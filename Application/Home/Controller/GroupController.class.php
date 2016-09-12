@@ -440,7 +440,7 @@ class GroupController extends HomeController {
 	    
 	    $Group = M('group');
 	    $map['id'] = $group_id;
-	    $info = $Group->field('id,group_name,cover_url,background_url')->where($map)->find();
+	    $info = $Group->field('id,group_name,description,cover_url,background_url')->where($map)->find();
 	    
 	    $info['member_num'] = M('member_group')->where(array('group_id'=>$group_id, 'status'=>'1'))->count();
 	    $info['content_num'] = M('content')->where(array('group_id'=>$group_id, 'status'=>1))->count();
