@@ -440,14 +440,13 @@ class GroupController extends HomeController {
 	    
 	    $Group = M('group');
 	    $map['id'] = $group_id;
-	    $info = $Group->field('id,group_name,cover_url')->where($map)->find();
+	    $info = $Group->field('id,group_name,cover_url,background_url')->where($map)->find();
 	    
 	    $info['member_num'] = M('member_group')->where(array('group_id'=>$group_id, 'status'=>'1'))->count();
-	    $info['content_num'] = M('content')->where(array('group_id'=>$group_id))->count();
-	    
+	    $info['content_num'] = M('content')->where(array('group_id'=>$group_id, 'status'=>1))->count();
 	    $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
 	    $i = rand(0,2);
-	    $info['background_url'] = C('WEBSITE_URL').$back_arr[$i];
+	    $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
 	    
 	    $this->renderSuccess('班级信息', $info);
 	}
@@ -1050,6 +1049,7 @@ class GroupController extends HomeController {
 	//获取班级作品及成员数
 	private function groupStat($group_id) {
 	    $map['group_id'] = $group_id;
+	    $map['status'] = 1;
 	    $work_num = M('content')->where($map)->count();
 	    $member_num = M('member_group')->where($map)->count();
 	    
