@@ -9,7 +9,30 @@ namespace Home\Controller;
 use User\Api\UserApi;
 class GroupController extends HomeController {
     
-    //我加入的班级
+    //热门群组(固定的几个群组)
+    public function hotGroup() {
+        $page = I('page', '1', 'intval');
+        $rows = I('rows', '20', 'intval');
+         
+        //限制单次最大读取数量
+        if($rows > C('API_MAX_ROWS')) {
+            $rows = C('API_MAX_ROWS');
+        }
+        
+        $Group = M('group');
+        $map['is_delete'] = 0;
+        $map['id'] = array('IN', '171,172,173,174');
+        $list = $Group->field('id,uid,group_name,cover_url')
+        ->where($map)->order('id desc')->select();
+         
+        if(count($list) == 0) {
+            $this->renderFailed('没有更多了');
+        }
+        
+        $this->renderSuccess('我加入的班级', $list);
+    }
+    
+    //我加入的群组
     public function myJoinedGroup() {
         if(IS_POST) {
             $uid = is_login();
@@ -51,7 +74,7 @@ class GroupController extends HomeController {
     }
     
 	/**
-	 * 我创建的群组(弃用)
+	 * 我创建的群组
 	 */
 	public function myGroup() {
 	    if(IS_POST) {
@@ -72,24 +95,24 @@ class GroupController extends HomeController {
 	            $this->renderFailed('没有更多了');
 	        }
 	        
-	        //追加作品信息至班级
-	        foreach ($list as &$row) {
-	            $works = $this->getLimitGroupWorks($row['id'], $limit);
-	            $row['works'] = '';
-	            $row['work_count'] = 0;
-	            $work_count = count($works);
-	            if($work_count > 0) {
-	                $row['works'] = $works;
-	                $row['work_count'] = $work_count; 
-	            }
-	        }
+// 	        //追加作品信息至班级
+// 	        foreach ($list as &$row) {
+// 	            $works = $this->getLimitGroupWorks($row['id'], $limit);
+// 	            $row['works'] = '';
+// 	            $row['work_count'] = 0;
+// 	            $work_count = count($works);
+// 	            if($work_count > 0) {
+// 	                $row['works'] = $works;
+// 	                $row['work_count'] = $work_count; 
+// 	            }
+// 	        }
 	        
 	        $this->renderSuccess('我创建的班级', $list);
 	    }
 	}
 	
 	/**
-	 * 我创建的班级文字列表
+	 * 我创建的班级文字列表（弃用）
 	 */
 	public function myGroupList() {
 	    if(IS_POST) {
