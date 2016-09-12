@@ -414,6 +414,10 @@ class GroupController extends HomeController {
 	        if(!empty($cover_url)) {
 	            $data['cover_url'] = $cover_url;
 	        }
+	        $background_url = I('post.background_url', '', 'trim');
+	        if(!empty($background_url)) {
+	            $data['background_url'] = $background_url;
+	        }
 	        
 	        if(M('group')->where($map)->save($data)) {
 	            $this->renderSuccess('更新成功');
