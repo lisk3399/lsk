@@ -448,6 +448,11 @@ class GroupController extends HomeController {
 	    $i = rand(0,2);
 	    $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
 	    
+	    if($group_id == 178) {
+	        $info['member_num'] = $info['member_num'] + 80;
+	        $info['content_num'] = $info['content_num'] + 660;
+	    }
+	    
 	    $this->renderSuccess('班级信息', $info);
 	}
 	
