@@ -564,6 +564,51 @@ class GroupController extends HomeController {
 	}
 	
 	/**
+	 * 搜索班级成员
+	 */
+	public function searchGroupMember() {
+	    if(IS_POST) {
+	        $page = I('page', '1', 'intval');
+	        $rows = I('rows', '20', 'intval');
+	         
+	        //限制单次最大读取数量
+	        if($rows > C('API_MAX_ROWS')) {
+	            $rows = C('API_MAX_ROWS');
+	        }
+	        
+	        $group_id = I('post.group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('班级id为空');
+	        }
+	        $keywords = I('post.keywords', '', 'trim');
+	        if(empty($keywords)) {
+	            $this->renderFailed('搜索名为空');
+	        }
+	        
+	        $Group = M('member_group');
+	        $map['mg.group_id'] = $group_id;
+	        $map['mg.status'] = 1;
+	        $map['m.nickname'] = array('LIKE', "%$keywords%");
+	        
+	        $list = $Group->alias('mg')
+	        ->page($page, $rows)
+	        ->field('mg.uid,m.nickname,m.avatar')
+	        ->join('__MEMBER__ m on mg.uid = m.uid', 'left')
+	        ->order('mg.id desc')
+	        ->where($map)->select();
+	        
+	        if(count($list) == 0) {
+	            $this->renderFailed('没有更多了');
+	        }
+	         
+	        $Api = new UserApi;
+	        $list = $Api->setDefaultAvatar($list);
+	         
+	        $this->renderSuccess('搜索成员列表', $list);
+	    }
+	}
+	
+	/**
 	 * 某群组下的作品列表
 	 */
 	public function groupWorks() {
