@@ -456,6 +456,15 @@ class GroupController extends HomeController {
 	        $info['content_num'] = $info['content_num'] + 660;
 	    }
 	    
+	    //是否管理员
+	    $uid = is_login();
+	    $info['is_admin'] = 0;
+	    if($uid) {
+    	    if($this->isGroupOwner($uid, $group_id)) {
+    	        $info['is_admin'] = 1;
+    	    }
+	    }
+	    
 	    $this->renderSuccess('班级信息', $info);
 	}
 	
