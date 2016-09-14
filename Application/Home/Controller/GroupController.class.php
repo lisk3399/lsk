@@ -55,16 +55,19 @@ class GroupController extends HomeController {
                 $group_ids[] = $row['group_id'];
             }
 
-            $map['is_delete'] = 0;
-            $map['id'] = array('IN', $group_ids);
-            $map['uid'] = array('NEQ', $uid);
-            $Group = M('group');
-            $list = $Group->field('id,uid,group_name,cover_url')
-            ->page($page, $rows)
-            ->where($map)
-            ->order('id desc')
-            ->select();
-            
+            $list = array();
+            if(!empty($group_ids)) {
+                $map['is_delete'] = 0;
+                $map['id'] = array('IN', $group_ids);
+                $map['uid'] = array('NEQ', $uid);
+                $Group = M('group');
+                $list = $Group->field('id,uid,group_name,cover_url')
+                ->page($page, $rows)
+                ->where($map)
+                ->order('id desc')
+                ->select();
+            }
+
             if(count($list) == 0) {
                 $this->renderFailed('没有更多了');
             }
@@ -1084,7 +1087,10 @@ class GroupController extends HomeController {
 	        if($this->isGroupOwner($uid, $group_id)){
 	            $this->renderFailed('不能删除创建者');
 	        }
-	         
+	        //不是管理员不能删除
+	        if(!$this->isGroupOwner($uid, $group_id)){
+	            $this->renderFailed('不是管理员不能删除');
+	        }
 	        $Group = M('member_group');
 	        $map['uid'] = $uid;
 	        $map['group_id'] = $group_id;
