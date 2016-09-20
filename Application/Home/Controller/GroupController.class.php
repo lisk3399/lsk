@@ -1,5 +1,6 @@
 <?php
 /**
+ * @todo 上线时间短来不及，重复函数，需要统一整合调用
  * Class GroupController
  * @name 群组管理/班级管理
  */
@@ -347,6 +348,7 @@ class GroupController extends HomeController {
 	        if(empty($cover_url)) {
 	            $this->renderFailed('班级图片为空');
 	        }
+	        
 	        //创建班级字符限制
 	        $title_len = mb_strlen($group_name, 'utf-8');
 	        if($title_len>30 || $title_len<=2) {
@@ -360,6 +362,18 @@ class GroupController extends HomeController {
 	        if($this->checkGroupNum($uid) >= 10) {
 	            $this->renderFailed('您最多只能创建10个班级');
 	        }
+	        
+	        //@todo 10.1上线后需要修改为必须提交机构id
+	        $org_id = I('post.org_id', '', 'intval');
+	        if(!empty($org_id)) {
+	            $data['org_id'] = $org_id;
+	            
+	            $org_con = new OrgnizationController();
+	            if(!$org_con->checkOrgIdExists($org_id)) {
+	                $this->renderFailed('该机构不存在');
+	            }
+	        }
+	        
 	        $data['uid'] = $uid;
 	        $data['group_name'] = $group_name;
 	        $data['is_delete'] = 0;

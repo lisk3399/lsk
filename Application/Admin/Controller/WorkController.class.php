@@ -1,6 +1,6 @@
 <?php
 /**
- * 后台作品管理
+ * 后台作品管理(弃用)
  */
 namespace Admin\Controller;
 use Admin\Model\AuthGroupModel;
