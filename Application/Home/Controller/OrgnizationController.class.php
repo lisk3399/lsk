@@ -8,6 +8,34 @@ namespace Home\Controller;
 
 use User\Api\UserApi;
 class OrgnizationController extends HomeController {
+    
+    //某个机构首页信息
+    public function orgIndexInfo() {
+        $org_id = I('org_id', '', 'intval');
+        if(!empty($org_id)) {
+            $info = M('orgnization')->where(array('id'=>$org_id))->find();
+            if(!$info['id']) {
+                $this->renderFailed('暂无信息');
+            }
+            
+            $group_rs = M('group')->field('id')->where(array('org_id'=>$org_id))->select();
+            //机构下有班级信息
+            if(count($group_rs) != 0){
+                foreach ($group_rs as $row) {
+                    $group_ids[] = $row['id'];
+                }
+                
+                $info['member_num'] = M('member_org')->where(array('org_id'=>$org_id))->count();
+                $info['content_num'] = M('content')->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
+                $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
+                $i = rand(0,2);
+                $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
+                $this->renderSuccess('机构信息', $info);
+            }
+        }
+        $this->renderFailed('暂无信息1');
+    }
+    
     //我创建的机构
     public function myOrg() {
         $uid = is_login();
@@ -68,7 +96,7 @@ class OrgnizationController extends HomeController {
             if(count($list) == 0) {
                 $this->renderFailed('没有更多了');
             }
-            $this->renderSuccess('我创建的机构', $list);
+            $this->renderSuccess('我关注的机构', $list);
         }
         //未登录不显示
         $this->renderFailed('没有更多了');
@@ -100,8 +128,8 @@ class OrgnizationController extends HomeController {
                 $this->renderFailed('已存在该机构');
             }
             //创建群组数量限制
-            if($this->checkOrgNum($uid) >= 1) {
-                $this->renderFailed('您最多只能创建1个机构');
+            if($this->checkOrgNum($uid) >= 5) {
+                $this->renderFailed('您最多只能创建5个机构');
             }
             $data['uid'] = $uid;
             $data['name'] = $name;
@@ -120,7 +148,6 @@ class OrgnizationController extends HomeController {
                 if(M('member_org')->add($map)) {
                     $this->renderSuccess('创建成功');
                 }
-                $this->renderFailed('创建失败');
             }
             $this->renderFailed('创建失败');
         }
@@ -128,7 +155,21 @@ class OrgnizationController extends HomeController {
     
     //搜索机构
     public function searchOrg() {
-        
+        if(IS_POST) {
+            $name = I('post.name', '', 'trim');
+            if(empty($name)) {
+                $this->renderFailed('机构名为空');
+            }
+            $map['name'] = array('like', "%$name%");
+            $Org = M('orgnization');
+            $list = $Org->where($map)->select();
+            
+            if(count($list) == 0) {
+                $this->renderFailed('未找到该机构');
+            }
+            
+            $this->renderSuccess('搜索结果', $list);
+        }
     }
     
     //加入/关注机构
