@@ -20,20 +20,20 @@ class OrgnizationController extends HomeController {
             
             $group_rs = M('group')->field('id')->where(array('org_id'=>$org_id))->select();
             //机构下有班级信息
+            $info['content_num'] = '0';
             if(count($group_rs) != 0){
                 foreach ($group_rs as $row) {
                     $group_ids[] = $row['id'];
                 }
-                
-                $info['member_num'] = M('member_org')->where(array('org_id'=>$org_id))->count();
                 $info['content_num'] = M('content')->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
-                $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
-                $i = rand(0,2);
-                $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
-                $this->renderSuccess('机构信息', $info);
             }
+            $info['member_num'] = M('member_org')->where(array('org_id'=>$org_id))->count();
+            $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
+            $i = rand(0,2);
+            $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
+            $this->renderSuccess('机构信息', $info);
         }
-        $this->renderFailed('暂无信息1');
+        $this->renderFailed('暂无信息');
     }
     
     //我创建的机构
