@@ -87,8 +87,6 @@ class GroupController extends HomeController {
 	            $this->renderFailed('需要登录', -1);
 	        }
 	        
-            $limit = 2;
-            
 	        $Group = M('group');
 	        $map['uid'] = $uid;
 	        $map['is_delete'] = 0;

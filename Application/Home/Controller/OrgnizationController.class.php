@@ -10,12 +10,68 @@ use User\Api\UserApi;
 class OrgnizationController extends HomeController {
     //我创建的机构
     public function myOrg() {
-        
+        $uid = is_login();
+        if(!empty($uid)) {
+            $Org = M('orgnization');
+            $map['uid'] = $uid;
+            $map['is_delete'] = 0;
+            $list = $Org->field('id,uid,name,cover_url')
+            ->where($map)->order('id desc')->select();
+             
+            if(count($list) == 0) {
+                $this->renderFailed('没有更多了');
+            }
+            
+            $this->renderSuccess('我创建的机构', $list);
+        }
+        //未登录不显示
+        $this->renderFailed('没有更多了');
     }
     
     //我加入的机构列表
     public function orgJoined() {
+        $uid = is_login();
+        if(!empty($uid)) {
+            $page = I('page', '1', 'intval');
+            $rows = I('rows', '20', 'intval');
+             
+            //限制单次最大读取数量
+            if($rows > C('API_MAX_ROWS')) {
+                $rows = C('API_MAX_ROWS');
+            }
+            
+            $member_org = M('member_org');
+            $map['uid'] = $uid;
+            $mo_list = $member_org->field('org_id')
+            ->where($map)->order('id desc')->select();
+            
+            if(count($mo_list) == 0) {
+                $this->renderFailed('没有更多了');
+            }
+            
+            $org_ids = array();
+            foreach ($mo_list as $row) {
+                $org_ids[] = $row['org_id'];
+            }
         
+            $map['is_delete'] = 0;
+            $map['uid'] = array('NEQ', $uid);
+            $map['id'] = array('IN', $org_ids);
+            
+            $Org = M('orgnization');
+            $list = $Org->field('id,uid,name,cover_url')
+            ->page($page, $rows)
+            ->where($map)
+            ->order('id desc')
+            ->select();
+            
+            if(count($list) == 0) {
+                $this->renderFailed('没有更多了');
+            }
+            $this->renderSuccess('我创建的机构', $list);
+        }
+        //未登录不显示
+        $this->renderFailed('没有更多了');
     }
     
     //创建机构
@@ -55,12 +111,29 @@ class OrgnizationController extends HomeController {
              
             $Group = M('orgnization');
             $group_id = $Group->add($data);
-             
+            
             if($group_id) {
-                $this->renderSuccess('创建成功');
+                //创建机构后自己也关注
+                $map['uid'] = $uid;
+                $map['org_id'] = $group_id;
+                $map['create_time'] = NOW_TIME;
+                if(M('member_org')->add($map)) {
+                    $this->renderSuccess('创建成功');
+                }
+                $this->renderFailed('创建失败');
             }
             $this->renderFailed('创建失败');
         }
+    }
+    
+    //搜索机构
+    public function searchOrg() {
+        
+    }
+    
+    //加入/关注机构
+    public function joinOrg() {
+        
     }
     
     //检查机构id是否存在
