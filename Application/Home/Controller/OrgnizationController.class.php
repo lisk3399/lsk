@@ -238,6 +238,66 @@ class OrgnizationController extends HomeController {
         }
     }
     
+    //活跃班级
+    public function activeGroup() {
+        
+    }
+    
+    //机构明星学员列表
+    public function starMember() {
+        if(IS_POST) {
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            $org_star = M('org_star');
+            //获取用户id
+            $uid_arr = $org_star->field('uid')->where(array('org_id'=>$org_id))->select();
+            if(count($uid_arr) > 0) {
+                foreach ($uid_arr as $row) {
+                    $uids[] = $row['uid'];
+                }
+                $uids = implode(',', $uids);
+                
+                $api = new UserApi;
+                $list = $api->batchMemberInfo($uids);
+                $this->renderSuccess('机构明星学员列表', $list);
+            }
+            $this->renderFailed('暂无明星学员');
+        }
+    }
+    
+    //添加明星学员
+    public function addStarMember() {
+        if(IS_POST) {
+            $uid = I('post.uid', '', 'intval');
+            if(empty($uid)) {
+                $this->renderFailed('用户为空');
+            }
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            $data['uid'] = $uid;
+            $data['org_id'] = $org_id;
+            $data['create_time'] = NOW_TIME;
+            
+            $org_star = M('org_star');
+            $map['uid'] = $uid;
+            $map['org_id'] = $org_id;
+            if($org_star->where($map)->find()) {
+                $this->renderFailed('该学员已经是明星学员');
+            }
+            
+            if($org_star->add($data)) {
+                $this->renderSuccess('添加成功');
+            }
+            $this->renderFailed('添加失败');
+        }
+    }
+    
     /**
      * 根据班级id获取用户列表
      * @param $group_ids 批量班级id，如:1,2,3,4
