@@ -174,7 +174,42 @@ class OrgnizationController extends HomeController {
     
     //加入/关注机构
     public function joinOrg() {
-        
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请登录', -1);
+            }
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            if(!$this->checkOrgIdExists($org_id)) {
+                $this->renderFailed('机构不存在');
+            }
+            //是否已经加入
+            if($this->isJoinOrg($uid, $org_id)) {
+                $this->renderFailed('您已关注该机构');
+            }
+            $map['uid'] = $uid;
+            $map['org_id'] = $org_id;
+            $map['create_time'] = NOW_TIME;
+            if(M('member_org')->add($map)) {
+                $this->renderSuccess('加入成功');
+            }
+            $this->renderFailed('加入失败');
+        }
+    }
+    
+    //是否已经加入机构
+    private function isJoinOrg($uid, $org_id) {
+        $mo = M('member_org');
+        $map['uid'] = $uid;
+        $map['org_id'] = $org_id;
+        $res = $mo->where($map)->find();
+        if($res['id']) {
+            return TRUE;
+        }
+        return FALSE;
     }
     
     //检查机构id是否存在
