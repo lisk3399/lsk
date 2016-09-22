@@ -200,6 +200,62 @@ class OrgnizationController extends HomeController {
         }
     }
     
+    //机构成员
+    public function orgMember() {
+        if(IS_POST) {
+            $page = I('page', '1', 'intval');
+            $rows = I('rows', '20', 'intval');
+             
+            //限制单次最大读取数量
+            if($rows > C('API_MAX_ROWS')) {
+                $rows = C('API_MAX_ROWS');
+            }
+            
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+
+            //获取机构下班级id
+            $map['org_id'] = $org_id;
+            $group_rs = M('group')->field('id')->where($map)->page($page, $rows)->order('id desc')->select();
+            if(count($group_rs) == 0) {
+                $this->renderFailed('没有更多成员');
+            }
+            
+            foreach ($group_rs as $row) {
+                $group_ids[] = $row['id'];
+            }
+            //获取班级成员id
+            $member_list = $this->getMemberByGroupIds($group_ids);
+            $api = new UserApi;
+            $list = $api->setDefaultAvatar($member_list);
+            
+            if(count($list) == 0) {
+                $this->renderFailed('没有更多成员');
+            }
+            $this->renderSuccess('机构成员列表', $list);
+        }
+    }
+    
+    /**
+     * 根据班级id获取用户列表
+     * @param $group_ids 批量班级id，如:1,2,3,4
+     */
+    private function getMemberByGroupIds($group_ids, $page, $rows) {
+        $Group = M('member_group');
+        $map['mg.group_id'] = array("in", $group_ids);
+        $map['mg.status'] = 1;
+        $list = $Group->alias('mg')
+        ->page($page, $rows)
+        ->field('mg.uid,m.nickname,m.avatar')
+        ->join('__MEMBER__ m on mg.uid = m.uid', 'left')
+        ->order('mg.id desc')
+        ->where($map)->select();
+         
+        return $list;
+    }
+    
     //是否已经加入机构
     private function isJoinOrg($uid, $org_id) {
         $mo = M('member_org');
