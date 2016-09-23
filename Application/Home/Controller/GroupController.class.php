@@ -278,7 +278,7 @@ class GroupController extends HomeController {
 // 	            if($from != 'qrcode') {
 // 	                $this->renderFailed('您的加入班级申请已经发送给管理员');
 // 	            }
-	            $this->renderFailed('您的加入班级申请已经发送给管理员');
+	            $this->renderFailed('加入申请已经发给管理员');
 	        }
 	        $this->renderFailed('加入失败，请稍后再试');
 	    }
