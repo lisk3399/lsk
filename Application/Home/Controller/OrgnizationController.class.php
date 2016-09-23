@@ -433,14 +433,15 @@ class OrgnizationController extends HomeController {
         }
         
         //查找加入机构的用户id
-        $mo = M('member_org');
-        $uid_arr = $mo->field('uid')->where(array('org_id'=>$org_id))->select();
+        $Admin = M('admin');
+        $uid_arr = $Admin->field('uid')->where(array('related_id'=>$org_id))->select();
         if(count($uid_arr) == 0) {
             $this->renderFailed('暂无管理员');
         }
         foreach ($uid_arr as $row) {
             $uids[] = $row['uid'];
         }
+        
         $Member = M('member');
         $map['uid'] = array('IN', $uids);
         $map['nickname'] = array('LIKE', "%$name%");
