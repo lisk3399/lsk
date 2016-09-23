@@ -388,6 +388,40 @@ class OrgnizationController extends HomeController {
         }
     }
     
+    //搜索机构管理员
+    public function searchOrgAdmin() {
+        $name = I('post.name', '', 'trim');
+        if(empty($name)) {
+            $this->renderFailed('昵称为空');
+        }
+        $org_id = I('post.org_id', '', 'intval');
+        if(empty($org_id)) {
+            $this->renderFailed('机构为空');
+        }
+        
+        //查找加入机构的用户id
+        $mo = M('member_org');
+        $uid_arr = $mo->field('uid')->where(array('org_id'=>$org_id))->select();
+        if(count($uid_arr) == 0) {
+            $this->renderFailed('暂无管理员');
+        }
+        foreach ($uid_arr as $row) {
+            $uids[] = $row['uid'];
+        }
+        $Member = M('member');
+        $map['uid'] = array('IN', $uids);
+        $map['nickname'] = array('LIKE', "%$name%");
+        $list = $Member->field('uid,nickname')->where($map)->select();
+        
+        if(count($list) == 0) {
+            $this->renderFailed('未找到用户');
+        }
+        $api = new UserApi;
+        $list = $api->setDefaultAvatar($list);
+        
+        $this->renderSuccess('搜索结果', $list);
+    }
+    
     //机构管理员列表
     public function orgAdminList() {
         if(IS_POST) {
