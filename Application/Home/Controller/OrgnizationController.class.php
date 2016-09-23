@@ -298,6 +298,13 @@ class OrgnizationController extends HomeController {
         }
     }
     
+    //添加管理员
+    
+    //删除管理员
+    
+    //管理员列表
+    
+    
     /**
      * 根据班级id获取用户列表
      * @param $group_ids 批量班级id，如:1,2,3,4

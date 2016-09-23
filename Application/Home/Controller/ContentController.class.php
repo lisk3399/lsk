@@ -181,7 +181,7 @@ class ContentController extends HomeController {
         ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
         ->where($map)
-        ->order('c.id desc')
+        ->order('c.is_top desc,c.id desc')
         ->select();
         
         if(count($list) == 0) {
@@ -252,7 +252,7 @@ class ContentController extends HomeController {
         ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
         ->where($map)
-        ->order('c.id desc')
+        ->order('c.is_top desc,c.id desc')
         ->select();
         
         if(count($list) == 0) {
