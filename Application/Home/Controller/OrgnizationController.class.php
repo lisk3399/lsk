@@ -298,8 +298,14 @@ class OrgnizationController extends HomeController {
             if($org_star->where($map)->find()) {
                 $this->renderFailed('该学员已经是明星学员');
             }
-            
-            //@todo 权限判断，当前登录用户是否是机构管理员，当前机构管理员有权限添加明星学员
+            //不能添加自己
+            if($uid == $login_uid) {
+                $this->renderFailed('不能添加自己');
+            }
+            //登录用户是否为机构管理员
+            if(!$this->isOrgAdmin($uid, $org_id)) {
+                $this->renderFailed('您没有权限添加明星学员');
+            }
             
             if($org_star->add($data)) {
                 $this->renderSuccess('添加成功');
@@ -309,8 +315,35 @@ class OrgnizationController extends HomeController {
     }
     
     //删除机构明星成员
-    public function delStartMember() {
+    public function delStarMember() {
+        if(IS_POST) {
+            $login_uid = is_login();
+            if(!$login_uid) {
+                $this->renderFailed('请先登录', -1);
+            }
         
+            $uid = I('post.uid', '', 'intval');
+            if(empty($uid)) {
+                $this->renderFailed('用户为空');
+            }
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            //登录用户是否为机构管理员
+            if(!$this->isOrgAdmin($login_uid, $org_id)) {
+                $this->renderFailed('您没有权限删除明星学员');
+            }
+            
+            $map['uid'] = $uid;
+            $map['org_id'] = $org_id;
+            
+            $org_star = M('org_star');
+            if($org_star->where($map)->delete()) {
+                $this->renderSuccess('删除成功');
+            }
+            $this->renderFailed('删除失败');
+        }
     }
     
     //添加机构管理员
