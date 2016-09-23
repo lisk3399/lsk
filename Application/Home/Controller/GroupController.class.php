@@ -266,20 +266,19 @@ class GroupController extends HomeController {
 	        $member_groupid = M('member_group')->add($data);
 	        if($member_groupid) {
 	            
-	            //不是二维码扫码加班级则给管理员发消息
+	            //给班级管理员发送消息通知
+	            $group_info = $this->getGroupInfo($group_id);
+	            $group_ownerid = $group_info['uid'];
+	            $extra_info['group_name'] = $group_info['group_name'];
+	            $extra_info['uid'] = $uid;
+	            $extra_info['member_groupid'] = $member_groupid;
+	            $Api = new UserApi;
+	            $Api->sendMessage($group_ownerid, C('MESSAGE_TYPE.ADD_GROUP'), $extra_info);
+	            //非二维码扫码加班级提示
 	            if($from != 'qrcode') {
-	                //给班级管理员发送消息通知
-	                $group_info = $this->getGroupInfo($group_id);
-	                $group_ownerid = $group_info['uid'];
-	                $extra_info['group_name'] = $group_info['group_name'];
-	                $extra_info['uid'] = $uid;
-	                $extra_info['member_groupid'] = $member_groupid;
-	                $Api = new UserApi;
-	                $Api->sendMessage($group_ownerid, C('MESSAGE_TYPE.ADD_GROUP'), $extra_info);
 	                $this->renderSuccess('您的加入班级申请已经发送给管理员');
 	            }
-
-	            $this->renderSuccess('加入成功');
+	            $this->renderFailed('您的加入班级申请已经发送给管理员');
 	        }
 	        $this->renderFailed('加入失败，请稍后再试');
 	    }
