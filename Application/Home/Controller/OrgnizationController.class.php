@@ -219,9 +219,11 @@ class OrgnizationController extends HomeController {
                 $this->renderFailed('机构为空');
             }
 
+            //@todo 设置头像问题
             //获取机构下班级id
             $map['org_id'] = $org_id;
-            $group_rs = M('group')->field('id')->where($map)->page($page, $rows)->order('id desc')->select();
+            $Group = M('group');
+            $group_rs = $Group->field('id')->where($map)->page($page, $rows)->order('id desc')->select();
             if(count($group_rs) == 0) {
                 $this->renderFailed('没有更多成员');
             }
@@ -433,8 +435,8 @@ class OrgnizationController extends HomeController {
         }
         
         //查找加入机构的用户id
-        $Admin = M('admin');
-        $uid_arr = $Admin->field('uid')->where(array('related_id'=>$org_id))->select();
+        $Admin = M('member_org');
+        $uid_arr = $Admin->field('uid')->where(array('org_id'=>$org_id))->select();
         if(count($uid_arr) == 0) {
             $this->renderFailed('暂无管理员');
         }
@@ -451,6 +453,7 @@ class OrgnizationController extends HomeController {
             $this->renderFailed('未找到用户');
         }
         $api = new UserApi;
+        
         $list = $api->setDefaultAvatar($list);
         
         $this->renderSuccess('搜索结果', $list);
