@@ -274,10 +274,10 @@ class GroupController extends HomeController {
 	            $extra_info['member_groupid'] = $member_groupid;
 	            $Api = new UserApi;
 	            $Api->sendMessage($group_ownerid, C('MESSAGE_TYPE.ADD_GROUP'), $extra_info);
-	            //非二维码扫码加班级提示
-	            if($from != 'qrcode') {
-	                $this->renderSuccess('您的加入班级申请已经发送给管理员');
-	            }
+// 	            //非二维码扫码加班级提示
+// 	            if($from != 'qrcode') {
+// 	                $this->renderFailed('您的加入班级申请已经发送给管理员');
+// 	            }
 	            $this->renderFailed('您的加入班级申请已经发送给管理员');
 	        }
 	        $this->renderFailed('加入失败，请稍后再试');
