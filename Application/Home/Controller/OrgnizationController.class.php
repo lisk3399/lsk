@@ -455,6 +455,40 @@ class OrgnizationController extends HomeController {
         $this->renderSuccess('搜索结果', $list);
     }
     
+    //查找明星学员
+    public function searchStarMember() {
+        $name = I('post.name', '', 'trim');
+        if(empty($name)) {
+            $this->renderFailed('昵称为空');
+        }
+        $org_id = I('post.org_id', '', 'intval');
+        if(empty($org_id)) {
+            $this->renderFailed('机构为空');
+        }
+        
+        //查找明星学员用户id
+        $mo = M('org_star');
+        $uid_arr = $mo->field('uid')->where(array('org_id'=>$org_id))->select();
+        if(count($uid_arr) == 0) {
+            $this->renderFailed('暂无明星学员');
+        }
+        foreach ($uid_arr as $row) {
+            $uids[] = $row['uid'];
+        }
+        $Member = M('member');
+        $map['uid'] = array('IN', $uids);
+        $map['nickname'] = array('LIKE', "%$name%");
+        $list = $Member->field('uid,nickname')->where($map)->select();
+        
+        if(count($list) == 0) {
+            $this->renderFailed('未找到用户');
+        }
+        $api = new UserApi;
+        $list = $api->setDefaultAvatar($list);
+        
+        $this->renderSuccess('搜索结果', $list);
+    }
+    
     //机构管理员列表
     public function orgAdminList() {
         if(IS_POST) {
