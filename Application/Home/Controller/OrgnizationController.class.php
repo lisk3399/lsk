@@ -9,6 +9,9 @@ namespace Home\Controller;
 use User\Api\UserApi;
 class OrgnizationController extends HomeController {
     
+    const ADMIN_TYPE_ORG = 'ORG'; //管理员类型为机构
+    const ADMIN_TYPE_GROUP = 'GROUP'; //管理员类型为班级
+    
     //某个机构首页信息
     public function orgIndexInfo() {
         $org_id = I('org_id', '', 'intval');
@@ -268,9 +271,14 @@ class OrgnizationController extends HomeController {
         }
     }
     
-    //添加明星学员
+    //添加机构明星学员
     public function addStarMember() {
         if(IS_POST) {
+            $login_uid = is_login();
+            if(!$login_uid) {
+                $this->renderFailed('请先登录', -1);
+            }
+            
             $uid = I('post.uid', '', 'intval');
             if(empty($uid)) {
                 $this->renderFailed('用户为空');
@@ -291,6 +299,8 @@ class OrgnizationController extends HomeController {
                 $this->renderFailed('该学员已经是明星学员');
             }
             
+            //@todo 权限判断，当前登录用户是否是机构管理员，当前机构管理员有权限添加明星学员
+            
             if($org_star->add($data)) {
                 $this->renderSuccess('添加成功');
             }
@@ -298,12 +308,147 @@ class OrgnizationController extends HomeController {
         }
     }
     
-    //添加管理员
+    //删除机构明星成员
+    public function delStartMember() {
+        
+    }
     
-    //删除管理员
+    //添加机构管理员
+    public function addOrgAdmin() {
+        if(IS_POST) {
+            $login_uid = is_login();
+            if(!$login_uid) {
+                $this->renderFailed('请先登录', -1);
+            }
+            
+            $uid = I('post.uid', '', 'intval');
+            if(empty($uid)) {
+                $this->renderFailed('用户为空');
+            }
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            //机构创建者有权创建管理员
+            if(!$this->isOrgOwner($login_uid, $org_id)) {
+                $this->renderFailed('机构创建者才有权限添加');
+            }
+            //不能添加自己
+            if($uid == $login_uid) {
+                $this->renderFailed('不能添加自己');
+            }
+            if($this->isOrgAdmin($uid, $org_id)) {
+                $this->renderFailed('已经是该机构管理员');
+            }
+            $Admin = M('admin');
+            $data['type'] = self::ADMIN_TYPE_ORG;            
+            $data['uid'] = $uid;
+            $data['related_id'] = $org_id;
+            $data['create_time'] = NOW_TIME;
+            
+            if($Admin->add($data)) {
+                $this->renderSuccess('添加成功');
+            }
+            $this->renderFailed('添加失败');
+        }
+    }
     
-    //管理员列表
+    //删除机构管理员
+    public function delOrgAdmin() {
+        if(IS_POST) {
+            $login_uid = is_login();
+            if(!$login_uid) {
+                $this->renderFailed('请先登录', -1);
+            }
+            
+            $uid = I('post.uid', '', 'intval');
+            if(empty($uid)) {
+                $this->renderFailed('用户为空');
+            }
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            //机构创建者有权创建管理员
+            if(!$this->isOrgOwner($login_uid, $org_id)) {
+                $this->renderFailed('机构创建者才有权限删除');
+            }
+            
+            $Admin = M('admin');
+            $map['uid'] = $uid;
+            $map['related_id'] = $org_id;
+            $map['type'] = self::ADMIN_TYPE_ORG;
+            
+            if($Admin->where($map)->delete()) {
+                $this->renderSuccess('删除成功');
+            }
+            $this->renderFailed('删除失败');
+        }
+    }
     
+    //机构管理员列表
+    public function orgAdminList() {
+        if(IS_POST) {
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            $page = I('page', '1', 'intval');
+            $rows = I('rows', '20', 'intval');
+             
+            //限制单次最大读取数量
+            if($rows > C('API_MAX_ROWS')) {
+                $rows = C('API_MAX_ROWS');
+            }
+            
+            $Admin = M('admin');
+            $map['type'] = self::ADMIN_TYPE_ORG;
+            $map['related_id'] = $org_id;
+            
+            $uid_arr = $Admin->field('uid')->where($map)->select();
+            
+            if(count($uid_arr) == 0) {
+                $this->renderFailed('暂无管理员');
+            }
+            $uids = array();
+            foreach ($uid_arr as $row) {
+                $uids[] = $row['uid'];
+            }
+            $uids = implode(',', $uids);
+            $api = new UserApi;
+            $list = $api->batchMemberInfo($uids);
+            
+            $this->renderSuccess('管理员列表', $list);
+        }
+    }
+    
+    //是否机构管理员
+    public function isOrgAdmin($uid, $org_id) {
+        $Admin = M('admin');
+        $map['uid'] = $uid;
+        $map['related_id'] = $org_id;
+        $map['type'] = self::ADMIN_TYPE_ORG;
+        $info = $Admin->field('id')->where($map)->find();
+        if(!empty($info['id'])) {
+            return TRUE;
+        }
+        return FALSE;
+    }
+    
+    //是否机构创建者
+    public function isOrgOwner($uid, $org_id) {
+        $Org = M('orgnization');
+        $map['uid'] = $uid;
+        $map['id'] = $org_id;
+        $info = $Org->field('id')->where($map)->find();
+        if(!empty($info['id'])) {
+            return TRUE;
+        }
+        return FALSE;
+    }
     
     /**
      * 根据班级id获取用户列表
