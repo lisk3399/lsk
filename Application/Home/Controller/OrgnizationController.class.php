@@ -336,6 +336,9 @@ class OrgnizationController extends HomeController {
             if(!$this->isOrgAdmin($login_uid, $org_id)) {
                 $this->renderFailed('您没有权限删除明星学员');
             }
+            if($uid == $login_uid) {
+                $this->renderFailed('不能删除自己');
+            }
             
             $map['uid'] = $uid;
             $map['org_id'] = $org_id;
@@ -409,6 +412,9 @@ class OrgnizationController extends HomeController {
             //机构创建者有权创建管理员
             if(!$this->isOrgOwner($login_uid, $org_id)) {
                 $this->renderFailed('机构创建者才有权限删除');
+            }
+            if($uid == $login_uid) {
+                $this->renderFailed('不能删除自己');
             }
             
             $Admin = M('admin');
