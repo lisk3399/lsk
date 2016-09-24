@@ -245,7 +245,15 @@ class OrgnizationController extends HomeController {
     
     //活跃班级
     public function activeGroup() {
-        
+        if(IS_POST) {
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            //查找机构下班级id
+            
+        }
     }
     
     //机构明星学员列表
@@ -485,7 +493,7 @@ class OrgnizationController extends HomeController {
         }
         
         //查找明星学员用户id
-        $mo = M('org_star');
+        $mo = M('member_org');
         $uid_arr = $mo->field('uid')->where(array('org_id'=>$org_id))->select();
         if(count($uid_arr) == 0) {
             $this->renderFailed('暂无明星学员');
