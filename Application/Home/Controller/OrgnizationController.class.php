@@ -252,7 +252,23 @@ class OrgnizationController extends HomeController {
             }
             
             //查找机构下班级id
+            $Group = M('group')->alias('g');
+            $list = $Group->field('g.id,g.group_name,g.cover_url')
+            ->join('__CONTENT__ c on c.group_id = g.id', 'left')
+            ->where(array('org_id'=>$org_id))
+            ->order('c.id desc')
+            ->group('g.id')
+            ->limit(5)
+            ->select();
             
+            //如果机构下班级没内容则默认按时间列出班级数据
+            if(count($list) == 0) {
+                $list = M('group')->field('id,group_name,cover_url')->where(array('org_id'=>$org_id))->select()->limit(5);
+                if(count($list) == 0) {
+                    $this->renderFailed('该机构下暂无班级');
+                }
+            }
+            $this->renderSuccess('活跃班级列表', $list);
         }
     }
     
