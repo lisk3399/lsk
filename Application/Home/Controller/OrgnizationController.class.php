@@ -206,6 +206,11 @@ class OrgnizationController extends HomeController {
     //机构成员
     public function orgMember() {
         if(IS_POST) {
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
             $page = I('page', '1', 'intval');
             $rows = I('rows', '20', 'intval');
              
@@ -214,11 +219,6 @@ class OrgnizationController extends HomeController {
                 $rows = C('API_MAX_ROWS');
             }
             
-            $org_id = I('post.org_id', '', 'intval');
-            if(empty($org_id)) {
-                $this->renderFailed('机构为空');
-            }
-
             //@todo 设置头像问题
             //获取机构下班级id
             $map['org_id'] = $org_id;
@@ -256,9 +256,17 @@ class OrgnizationController extends HomeController {
                 $this->renderFailed('机构为空');
             }
             
+            $page = I('page', '1', 'intval');
+            $rows = I('rows', '20', 'intval');
+             
+            //限制单次最大读取数量
+            if($rows > C('API_MAX_ROWS')) {
+                $rows = C('API_MAX_ROWS');
+            }
+            
             $org_star = M('org_star');
             //获取用户id
-            $uid_arr = $org_star->field('uid')->where(array('org_id'=>$org_id))->select();
+            $uid_arr = $org_star->field('uid')->where(array('org_id'=>$org_id))->order('id desc')->page($page, $rows)->select();
             if(count($uid_arr) > 0) {
                 foreach ($uid_arr as $row) {
                     $uids[] = $row['uid'];
@@ -519,7 +527,7 @@ class OrgnizationController extends HomeController {
             $map['type'] = self::ADMIN_TYPE_ORG;
             $map['related_id'] = $org_id;
             
-            $uid_arr = $Admin->field('uid')->where($map)->select();
+            $uid_arr = $Admin->field('uid')->where($map)->order('id desc')->page($page, $rows)->select();
             
             if(count($uid_arr) == 0) {
                 $this->renderFailed('暂无管理员');
