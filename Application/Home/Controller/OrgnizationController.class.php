@@ -243,6 +243,40 @@ class OrgnizationController extends HomeController {
         }
     }
     
+    //删除机构成员
+    public function delOrgMember() {
+        if(IS_POST) {
+            $login_uid = is_login();
+            if(!$login_uid) {
+                $this->renderFailed('请先登录', -1);
+            }
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            $uid = I('post.uid', '', 'intval');
+            if(empty($uid)) {
+                $this->renderFailed('用户为空');
+            }
+            
+            if(!$this->isOrgAdmin($login_uid, $org_id)) {
+                $this->renderFailed('您不是管理员');
+            }
+            if($uid == $login_uid) {
+                $this->renderFailed('不能删除自己');
+            }
+            
+            $map['uid'] = $uid;
+            $map['org_id'] = $org_id;
+            
+            $mo = M('member_org');
+            if($mo->where($map)->delete()) {
+                $this->renderSuccess('删除成功');
+            }
+            $this->renderFailed('删除失败');
+        }
+    }
+    
     //活跃班级
     public function activeGroup() {
         if(IS_POST) {
