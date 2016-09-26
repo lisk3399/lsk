@@ -14,6 +14,8 @@ class OrgnizationController extends HomeController {
     
     //某个机构首页信息
     public function orgIndexInfo() {
+        $uid = is_login();
+        
         $org_id = I('org_id', '', 'intval');
         if(!empty($org_id)) {
             $info = M('orgnization')->where(array('id'=>$org_id))->find();
@@ -30,10 +32,22 @@ class OrgnizationController extends HomeController {
                 }
                 $info['content_num'] = M('content')->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
             }
+            
             $info['member_num'] = M('member_org')->where(array('org_id'=>$org_id))->count();
             $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
             $i = rand(0,2);
             $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
+            
+            $info['type'] = 'USER';
+            if(!empty($uid)) {
+                //登录用户角色
+                if($this->isOrgOwner($uid, $org_id)) {
+                    $info['type'] = 'OWNER';    
+                } elseif ($this->isOrgAdmin($uid, $org_id)) {
+                    $info['type'] = 'ADMIN';
+                }
+            }
+            
             $this->renderSuccess('机构信息', $info);
         }
         $this->renderFailed('暂无信息');
