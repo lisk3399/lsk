@@ -87,6 +87,12 @@ class GroupController extends HomeController {
 	            $this->renderFailed('需要登录', -1);
 	        }
 	        
+	        //指定机构下的班级
+	        $org_id = I('post.org_id', '', 'intval');
+	        if(!empty($org_id)) {
+	            $map['org_id'] = $org_id;
+	        }
+	        
 	        $Group = M('group');
 	        $map['uid'] = $uid;
 	        $map['is_delete'] = 0;
