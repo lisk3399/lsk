@@ -243,6 +243,32 @@ class OrgnizationController extends HomeController {
         }
     }
     
+    //某机构下所有班级列表
+    public function orgClasses() {
+        if(IS_POST) {
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            $page = I('page', '1', 'intval');
+            $rows = I('rows', '20', 'intval');
+             
+            //限制单次最大读取数量
+            if($rows > C('API_MAX_ROWS')) {
+                $rows = C('API_MAX_ROWS');
+            }
+            
+            $Group = M('group');
+            $list = $Group->field('id,group_name,cover_url,background_url')->where(array('org_id'=>$org_id))->page($page, $rows)->select();
+            
+            if(count($list) == 0) {
+                $this->renderFailed('没有更多数据');
+            }
+            $this->renderSuccess('机构班级列表', $list);
+        }
+    }
+    
     //删除机构成员
     public function delOrgMember() {
         if(IS_POST) {
