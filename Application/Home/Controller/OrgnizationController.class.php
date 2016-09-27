@@ -21,6 +21,40 @@ class OrgnizationController extends HomeController {
         
     }
     
+    //设置机构区块排序
+    public function orgBlockSort() {
+        if(IS_POST) {
+            $block = I('post.block', '', 'trim');
+            if(empty($block)) {
+                $this->renderFailed('缺少区块信息');
+            }
+            if(!is_valid_json($block)) {
+                $this->renderFailed('json格式不对');
+            }
+            
+            $block_arr = json_decode($block, TRUE);
+            if(is_array($block_arr) && count($block_arr) > 0) {
+                $Tags = M('tags');
+                foreach ($block_arr as $row) {
+                    $data['id'] = $row['id'];
+                    $data['sort']= $row['sort'];
+                    $Tags->save($data);
+                }
+            }
+            $this->renderSuccess('设置成功');
+        }
+    }
+    
+    //机构区块列表
+    public function orgBlock() {
+        $Tags = M('tags');
+        $map['type'] = 'ORG_ADMIN';
+        $map['id'] = array('gt', 1);
+        $list = $Tags->field('id,name,sort')->where($map)->order('sort desc')->select();
+        
+        $this->renderSuccess('机构区块列表', $list);
+    }
+    
     //某个机构首页信息
     public function orgIndexInfo() {
         $uid = is_login();

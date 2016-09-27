@@ -1077,3 +1077,9 @@ function postRequest( $api, array $params = array(), $timeout = 30 ) {
     curl_close( $ch );
     return $response;
 }
+
+//是否合格json
+function is_valid_json($string) {
+    json_decode($string);
+    return (json_last_error() == JSON_ERROR_NONE);
+}

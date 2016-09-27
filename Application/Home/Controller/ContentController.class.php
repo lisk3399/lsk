@@ -41,7 +41,7 @@ class ContentController extends HomeController {
     	        if(ini_get('magic_quotes_gpc')) {
     	            $content = stripslashes($content);
     	        }
-    	        if(!$this->is_valid_json($content)) {
+    	        if(!is_valid_json($content)) {
     	            $this->renderFailed('json格式不对');
     	        }
     	        $is_hav_content = 1;
@@ -117,11 +117,6 @@ class ContentController extends HomeController {
 	    
 	    $this->renderSuccess('机构发布内容标签', $list);
 	}
-	
-    private function is_valid_json($string) {
-        json_decode($string);
-        return (json_last_error() == JSON_ERROR_NONE);
-    }
     
     //动态详情
     public function viewContent() {
