@@ -561,6 +561,13 @@ class GroupController extends HomeController {
 	        if(empty($group_name)) {
 	            $this->renderFailed('班级名为空');
 	        }
+	        
+	        //搜索机构下班级
+	        $org_id = I('post.org_id', '', 'intval');
+	        if(!empty($org_id)) {
+	            $map['org_id'] = $org_id;
+	        }
+	        
 	        $Group = M('group');
 	        $map['is_delete'] = 0;
 	        $map['group_name'] = array('LIKE', '%'.$group_name.'%');
