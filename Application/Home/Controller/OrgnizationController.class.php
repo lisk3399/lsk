@@ -186,9 +186,18 @@ class OrgnizationController extends HomeController {
             if(empty($name)) {
                 $this->renderFailed('机构名为空');
             }
+            
+            $page = I('page', '1', 'intval');
+            $rows = I('rows', '20', 'intval');
+             
+            //限制单次最大读取数量
+            if($rows > C('API_MAX_ROWS')) {
+                $rows = C('API_MAX_ROWS');
+            }
+            
             $map['name'] = array('like', "%$name%");
             $Org = M('orgnization');
-            $list = $Org->where($map)->select();
+            $list = $Org->where($map)->page($page, $rows)->order('id desc')->select();
             
             if(count($list) == 0) {
                 $this->renderFailed('未找到该机构');
