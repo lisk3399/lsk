@@ -12,13 +12,73 @@ class OrgnizationController extends HomeController {
     const ADMIN_TYPE_ORG = 'ORG'; //管理员类型为机构
     const ADMIN_TYPE_GROUP = 'GROUP'; //管理员类型为班级
     
-    //机构动态：来自机构各班级的内容列表
+    //机构发布信息列表
     public function orgContent() {
-        //获取登录用户在机构下加入的班级id
+        if(IS_POST) {
+            $org_id = I('org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            $uid = is_login();
+            
+            $Content = M('content');
+            $map['g.org_id'] = $org_id;
+            $map['t.type'] = 'ORG_ADMIN';
+            
+            //指定标签id
+            $tag_id = I('tag_id', '', 'intval');
+            if(!empty($tag_id)) {
+                $page = I('page', '1', 'intval');
+                $rows = I('rows', '20', 'intval');
+                 
+                //限制单次最大读取数量
+                if($rows > C('API_MAX_ROWS')) {
+                    $rows = C('API_MAX_ROWS');
+                }
+                $map['t.id'] = $tag_id;
+                $list = $Content->alias('c')
+                ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
+                ->join('__TAGS__ t on t.id = c.tag_id')
+                ->join('__GROUP__ g on c.group_id = g.id')
+                ->where($map)->group('t.id')->order('t.sort desc,c.create_time desc')->page($page, $rows)->select();
+            } else {
+                $list = $Content->alias('c')
+                ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
+                ->join('__TAGS__ t on t.id = c.tag_id')
+                ->join('__GROUP__ g on c.group_id = g.id')
+                ->where($map)->group('t.id')->order('t.sort desc,c.create_time desc')->select();
+            }
+            
+            if(count($list) == 0) {
+                $this->renderFailed('没有更多了');
+            }
         
-        //获取班级下内容
+            $Api = new UserApi;
+            $Content = M('Content_material');
+            foreach ($list as &$row) {
+                $row['is_like'] = 0;
+                $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+                $result = $Content->field('type,value,cover_url')
+                ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
+                ->limit(3)->select();
+                if($uid) {
+                    $is_like = $Api->isLike($uid, $row['id']);
+                    $row['is_like'] = (!empty($is_like))?1:0;
+                }
         
+                foreach ($result as $key=>$content) {
+                    $row['pic'][$key]['cover_url'] = $content['cover_url'];
+                    $row['pic'][$key]['type'] = $content['type'];
+                    $row['pic'][$key]['value'] = $content['value'];
+                }
+            }
         
+            $Api = new UserApi();
+            $list =  $Api->setDefaultAvatar($list);
+            
+            $this->renderSuccess('机构发布信息列表', $list);
+        }
     }
     
     //设置机构区块排序

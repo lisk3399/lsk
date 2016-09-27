@@ -314,6 +314,66 @@ class ContentController extends HomeController {
     }
     
     /**
+     * 机构动态列表
+     */
+    public function orgContentList() {
+        $page = I('page', '1', 'intval');
+        $rows = I('rows', '10', 'intval');
+    
+        //限制单次最大读取数量
+        if($rows > C('API_MAX_ROWS')) {
+            $rows = C('API_MAX_ROWS');
+        }
+        $uid = is_login();
+
+        $org_id = I('org_id', '', 'intval');
+        if(empty($org_id)) {
+            $this->renderFailed('机构为空');
+        }
+        
+        $map['c.status'] = 1;
+        $map['g.org_id'] = $org_id;
+        $Content = M('Content');
+        $list = $Content->alias('c')
+        ->page($page, $rows)
+        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar,g.group_name')
+        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+        ->join('__GROUP__ g on g.id = c.group_id')
+        ->where($map)
+        ->order('c.is_top desc,c.id desc')
+        ->select();
+    
+        if(count($list) == 0) {
+            $this->renderFailed('没有更多了');
+        }
+    
+        $Api = new UserApi;
+        $Content = M('Content_material');
+        foreach ($list as &$row) {
+            $row['is_like'] = 0;
+            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+            $result = $Content->field('type,value,cover_url')
+            ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
+            ->limit(3)->select();
+            if($uid) {
+                $is_like = $Api->isLike($uid, $row['id']);
+                $row['is_like'] = (!empty($is_like))?1:0;
+            }
+    
+            foreach ($result as $key=>$content) {
+                $row['pic'][$key]['cover_url'] = $content['cover_url'];
+                $row['pic'][$key]['type'] = $content['type'];
+                $row['pic'][$key]['value'] = $content['value'];
+            }
+        }
+    
+        $Api = new UserApi();
+        $list =  $Api->setDefaultAvatar($list);
+    
+        $this->renderSuccess('机构动态列表', $list);
+    }
+    
+    /**
      * 我的动态列表
      */
     public function myContentList() {
