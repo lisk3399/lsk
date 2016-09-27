@@ -88,6 +88,9 @@ class OrgnizationController extends HomeController {
             if(empty($block)) {
                 $this->renderFailed('缺少区块信息');
             }
+            if(ini_get('magic_quotes_gpc')) {
+                $block = stripslashes($block);
+            }
             if(!is_valid_json($block)) {
                 $this->renderFailed('json格式不对');
             }
