@@ -54,6 +54,13 @@ class ContentController extends HomeController {
 	        $data['description'] = $description;
 	        $data['create_time'] = NOW_TIME;
 	        $data['group_id'] = $group_id;
+	        
+	        //发布标签
+	        $tag_id = I('tag_id', '', 'intval');
+	        if(!empty($tag_id)) {
+	            $data['tag_id'] = $tag_id;
+	        }
+	        
 	        $content_id = $Content->data($data)->add();
 	        
 	        //插入详细内容
@@ -85,6 +92,32 @@ class ContentController extends HomeController {
 	    }
 	}
 
+	//获取官方发布内容标签
+	public function officialTags() {
+	    $map['type'] = 'OFFICIAL';
+	    $Tags = M('tags');
+	    $list = $Tags->field('id,name,sort')->where($map)->select();
+	    
+	    if(count($list) == 0) {
+            $this->renderFailed('没有更多了');
+        }
+        
+        $this->renderSuccess('官方发布标签', $list);
+	}
+	
+	//机构发布内容标签
+	public function orgTags() {
+	    $map['type'] = 'ORG_ADMIN';
+	    $Tags = M('tags');
+	    $list = $Tags->field('id,name,sort')->where($map)->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	    
+	    $this->renderSuccess('机构发布内容标签', $list);
+	}
+	
     private function is_valid_json($string) {
         json_decode($string);
         return (json_last_error() == JSON_ERROR_NONE);
