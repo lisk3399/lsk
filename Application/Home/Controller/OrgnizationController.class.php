@@ -555,9 +555,17 @@ class OrgnizationController extends HomeController {
             $this->renderFailed('机构为空');
         }
         
+        $page = I('page', '1', 'intval');
+        $rows = I('rows', '20', 'intval');
+         
+        //限制单次最大读取数量
+        if($rows > C('API_MAX_ROWS')) {
+            $rows = C('API_MAX_ROWS');
+        }
+        
         //查找加入机构的用户id
         $Admin = M('member_org');
-        $uid_arr = $Admin->field('uid')->where(array('org_id'=>$org_id))->select();
+        $uid_arr = $Admin->field('uid')->where(array('org_id'=>$org_id))->page($page, $rows)->order('id desc')->select();
         if(count($uid_arr) == 0) {
             $this->renderFailed('暂无成员信息');
         }
