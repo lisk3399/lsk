@@ -190,19 +190,7 @@ class ContentController extends HomeController {
         $where['c.uid'] = array('IN', $uid_arr);
         //用户登录后展示用户所有在班级发布的动态
         if($uid) {
-            $cond['mg.uid'] = $uid;
-            $org_id = I('org_id', '', 'intval');
-            $mg = M('member_group');
-            //机构班级
-            if(!empty($org_id)) {
-                $cond['g.org_id'] = $org_id;
-                $group_rs = $mg->alias('mg')->field('g.id')
-                ->join('__GROUP__ g on g.id = mg.group_id', 'left')
-                ->where($cond)->select();
-            } else {
-                $group_rs = $mg->alias('mg')->field('group_id')->where($cond)->select();
-            }
-            
+            $group_rs = M('member_group')->field('group_id')->where(array('uid'=>$uid))->select();
             //用户没有加入或创建任何班级不走这块
             if(!empty($group_rs[0]['group_id'])) {
                 foreach ($group_rs as $row) {
@@ -217,9 +205,8 @@ class ContentController extends HomeController {
         $m = M('Content');
         $list = $m->alias('c')
         ->page($page, $rows)
-        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar,g.group_name')
+        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
-        ->join('__GROUP__ g on g.id = c.group_id', 'left')
         ->where($map)
         ->order('c.is_top desc,c.id desc')
         ->select();
