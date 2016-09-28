@@ -37,17 +37,18 @@ class OrgnizationController extends HomeController {
                     $rows = C('API_MAX_ROWS');
                 }
                 $map['t.id'] = $tag_id;
+                $map['c.status'] = 1;
                 $list = $Content->alias('c')
                 ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
                 ->join('__TAGS__ t on t.id = c.tag_id')
                 //->join('__GROUP__ g on c.group_id = g.id')
-                ->where($map)->group('t.id')->order('t.sort desc,c.create_time desc')->page($page, $rows)->select();
+                ->where($map)->order('c.is_top desc,c.create_time desc')->page($page, $rows)->select();
             } else {
                 $list = $Content->alias('c')
                 ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
                 ->join('__TAGS__ t on t.id = c.tag_id')
                 //->join('__GROUP__ g on c.group_id = g.id')
-                ->where($map)->group('t.id')->order('t.sort desc,c.create_time desc')->select();
+                ->where($map)->group('t.id')->order('t.sort desc,c.is_top desc,c.create_time desc')->select();
             }
             
             if(count($list) == 0) {
@@ -163,6 +164,24 @@ class OrgnizationController extends HomeController {
             else {
                 $this->renderFailed('添加失败');
             }
+        }
+    }
+    
+    //设置
+    public function setContentTop() {
+        if(IS_POST) {
+            $content_id = I('post.id', '', 'intval');
+            if(empty($content_id)) {
+                $this->renderFailed('未指定内容');
+            }
+
+            $Content = M('content');
+            $data['id'] = $content_id;
+            $data['is_top']= 1;
+            if($Content->save($data)) {
+                $this->renderSuccess('设置成功');
+            }
+            $this->renderFailed('设置失败');
         }
     }
     
