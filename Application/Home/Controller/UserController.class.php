@@ -61,7 +61,7 @@ class UserController extends HomeController {
 		        $this->renderFailed('请输入手机获取到的验证码');
 		    }
 			//短信验证
-            $ret = $this->sms_verify($mobile, $verify);
+            $ret = $this->sms_verify($mobile, $verify, $platform);
             if(!ret) {
                 $this->renderFailed('短信验证失败~');
             }
@@ -92,9 +92,9 @@ class UserController extends HomeController {
 	}
 
 	//短信验证
-	private function sms_verify($mobile, $verify){
+	private function sms_verify($mobile, $verify, $platform){
 	    $MOB_VERIFY_URL = C('MOB_VERIFY_URL');
-	    $MOB_APP_KEY = C('MOB_APP_KEY');
+	    $MOB_APP_KEY = ($platform == "ANDROID") ? C('MOB_APP_KEY_ANDROID') : C('MOB_APP_KEY');
 	    $fields = array(
 	        'appkey' => $MOB_APP_KEY,
 	        'phone' => $mobile,

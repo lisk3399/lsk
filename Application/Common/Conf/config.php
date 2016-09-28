@@ -53,6 +53,7 @@ return array(
     /* 短信网关相关配置mob.com 文档：http://wiki.mob.com/webapi2-0/ */
     'MOB_VERIFY_URL' => 'https://webapi.sms.mob.com/sms/verify',
     'MOB_APP_KEY' => '11f3481134820',
+    'MOB_APP_KEY_ANDROID' => '1693e93843627',
     
     /* API每次请求最大数量 */
     'API_MAX_ROWS' => 50,
