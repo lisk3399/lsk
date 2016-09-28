@@ -96,8 +96,6 @@ class OrgnizationController extends HomeController {
             if($title_len>30 || $title_len<4) {
                 $this->renderFailed('标题字数在4-30个字');
             }
-            $description = I('description', '', 'trim');
-            $content = I('content', '', 'trim');
             //发布必须指定机构
             $org_id = I('org_id', '', 'intval');
             if(empty($org_id)) {
@@ -106,7 +104,8 @@ class OrgnizationController extends HomeController {
             if(!$this->checkOrgIdExists($org_id)) {
                 $this->renderFailed('该机构不存在');
             }
-    
+            $description = I('description', '', 'trim');
+            $content = I('content', '', 'trim');
             //描述和详细内容不能同时为空
             if(empty($description) && empty($content)) {
                 $this->renderFailed('内容不能为空');
