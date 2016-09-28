@@ -55,12 +55,6 @@ class ContentController extends HomeController {
 	        $data['create_time'] = NOW_TIME;
 	        $data['group_id'] = $group_id;
 	        
-	        //发布标签
-	        $tag_id = I('tag_id', '', 'intval');
-	        if(!empty($tag_id)) {
-	            $data['tag_id'] = $tag_id;
-	        }
-	        
 	        $content_id = $Content->data($data)->add();
 	        
 	        //插入详细内容

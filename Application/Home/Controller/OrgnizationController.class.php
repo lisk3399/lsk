@@ -23,7 +23,7 @@ class OrgnizationController extends HomeController {
             $uid = is_login();
             
             $Content = M('content');
-            $map['g.org_id'] = $org_id;
+            $map['c.org_id'] = $org_id;
             $map['t.type'] = 'ORG_ADMIN';
             
             //指定标签id
@@ -40,13 +40,13 @@ class OrgnizationController extends HomeController {
                 $list = $Content->alias('c')
                 ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
                 ->join('__TAGS__ t on t.id = c.tag_id')
-                ->join('__GROUP__ g on c.group_id = g.id')
+                //->join('__GROUP__ g on c.group_id = g.id')
                 ->where($map)->group('t.id')->order('t.sort desc,c.create_time desc')->page($page, $rows)->select();
             } else {
                 $list = $Content->alias('c')
                 ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
                 ->join('__TAGS__ t on t.id = c.tag_id')
-                ->join('__GROUP__ g on c.group_id = g.id')
+                //->join('__GROUP__ g on c.group_id = g.id')
                 ->where($map)->group('t.id')->order('t.sort desc,c.create_time desc')->select();
             }
             
@@ -78,6 +78,92 @@ class OrgnizationController extends HomeController {
             $list =  $Api->setDefaultAvatar($list);
             
             $this->renderSuccess('机构发布信息列表', $list);
+        }
+    }
+    
+    //机构发布内容
+    public function pubOrgContent() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录');
+            }
+            $title = I('title', '', 'trim');
+            if(empty($title)) {
+                $this->renderFailed('标题不能为空');
+            }
+            $title_len = mb_strlen($title, 'utf-8');
+            if($title_len>30 || $title_len<4) {
+                $this->renderFailed('标题字数在4-30个字');
+            }
+            $description = I('description', '', 'trim');
+            $content = I('content', '', 'trim');
+            //发布必须指定机构
+            $org_id = I('org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('未指定机构');
+            }
+            if(!$this->checkOrgIdExists($org_id)) {
+                $this->renderFailed('该机构不存在');
+            }
+    
+            //描述和详细内容不能同时为空
+            if(empty($description) && empty($content)) {
+                $this->renderFailed('内容不能为空');
+            }
+            $is_hav_content = 0;
+            if(!empty($content)) {
+                if(ini_get('magic_quotes_gpc')) {
+                    $content = stripslashes($content);
+                }
+                if(!is_valid_json($content)) {
+                    $this->renderFailed('json格式不对');
+                }
+                $is_hav_content = 1;
+            }
+            //创建内容content表插入数据，返回content_id
+            $Content = M("Content");
+            $data = array();
+            $data['uid'] = $uid;
+            $data['title'] = $title;
+            $data['description'] = $description;
+            $data['create_time'] = NOW_TIME;
+            $data['org_id'] = $org_id;
+    
+            //发布标签
+            $tag_id = I('tag_id', '', 'intval');
+            if(!empty($tag_id)) {
+                $data['tag_id'] = $tag_id;
+            }
+             
+            $content_id = $Content->data($data)->add();
+    
+            //插入详细内容
+            if($content_id && $is_hav_content) {
+                $ContentMaterial = M("Content_material");
+                $create_time = NOW_TIME;
+                $dataList = array();
+                $content_arr = json_decode($content, TRUE);
+                foreach ($content_arr as $row) {
+                    $dataList[] = array(
+                        'content_id'=>$content_id,
+                        'type'=>$row['type'],
+                        'value'=>$row['value'],
+                        'cover_url'=>(!empty($row['cover_url'])?$row['cover_url']:''),
+                        'create_time'=>$create_time
+                    );
+                }
+                if(!$ContentMaterial->addAll($dataList)) {
+                    $this->renderFailed('添加失败，请稍后再试');
+                }
+                $this->renderSuccess('添加成功');
+            }
+            elseif($content_id) {
+                $this->renderSuccess('添加成功');
+            }
+            else {
+                $this->renderFailed('添加失败');
+            }
         }
     }
     
