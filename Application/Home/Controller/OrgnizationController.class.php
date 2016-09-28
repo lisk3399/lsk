@@ -167,7 +167,38 @@ class OrgnizationController extends HomeController {
         }
     }
     
-    //设置
+    //删除机构发布内容
+    public function delContent() {
+        if(IS_POST) {
+            $content_id = I('post.id', '', 'intval');
+            if(empty($content_id)) {
+                $this->renderFailed('未指定内容');
+            }
+            
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录', -1);
+            }
+            if(!$this->isOrgAdmin($uid, $org_id)) {
+                $this->renderFailed('不是机构管理员');
+            }
+            
+            $Content = M('content');
+            $data['id'] = $content_id;
+            $data['status']= -1;
+            if($Content->save($data)) {
+                $this->renderSuccess('删除成功');
+            }
+            $this->renderFailed('删除失败');
+        }
+    }
+    
+    //设置机构发布内容置顶
     public function setContentTop() {
         if(IS_POST) {
             $content_id = I('post.id', '', 'intval');
