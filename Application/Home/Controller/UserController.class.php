@@ -102,6 +102,9 @@ class UserController extends HomeController {
 	        'code' => $verify
 	    );
 	    $response = postRequest($MOB_VERIFY_URL, $fields);
+	    if(empty($response['status'])) {
+	        $this->renderFailed('网络问题，请稍后再试');
+	    }
 	    $response = json_decode($response, TRUE);
 	    $resultCode = $response['status'];
 	    
