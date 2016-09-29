@@ -103,7 +103,6 @@ class ContentController extends HomeController {
 	        }
 	        $description = I('description', '', 'trim');
 	        $content = I('content', '', 'trim');
-	         
 	        //描述和详细内容不能同时为空
 	        if(empty($description) && empty($content)) {
 	            $this->renderFailed('内容不能为空');
@@ -118,12 +117,18 @@ class ContentController extends HomeController {
 	            }
 	            $is_hav_content = 1;
 	        }
+	        $tag_id = I('tag_id', '', 'intval');
+	        if(empty($tag_id)) {
+	            $this->renderFailed('未选择标签');
+	        }
+	        
 	        //创建内容content表插入数据，返回content_id
 	        $Content = M("Content");
 	        $data = array();
 	        $data['uid'] = $uid;
 	        $data['title'] = $title;
 	        $data['description'] = $description;
+	        $data['tag_id'] = $tag_id;
 	        $data['create_time'] = NOW_TIME;
 	         
 	        $content_id = $Content->data($data)->add();
@@ -267,6 +272,7 @@ class ContentController extends HomeController {
         }
         $map['_complex'] = $where;
         $map['c.status'] = 1;
+        $map['c.org_id']= 0;
         $m = M('Content');
         $list = $m->alias('c')
         ->page($page, $rows)
