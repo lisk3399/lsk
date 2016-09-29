@@ -579,7 +579,7 @@ class OrgnizationController extends HomeController {
             $Group = M('group')->alias('g');
             $list = $Group->field('g.id,g.group_name,g.cover_url')
             ->join('__CONTENT__ c on c.group_id = g.id', 'left')
-            ->where(array('org_id'=>$org_id))
+            ->where(array('g.org_id'=>$org_id))
             ->order('c.id desc')
             ->group('g.id')
             ->limit(5)
