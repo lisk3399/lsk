@@ -12,7 +12,7 @@ class OrgnizationController extends HomeController {
     const ADMIN_TYPE_ORG = 'ORG'; //管理员类型为机构
     const ADMIN_TYPE_GROUP = 'GROUP'; //管理员类型为班级
     
-    //机构发布信息列表
+    //机构发布的信息列表
     public function orgContent() {
         if(IS_POST) {
             $org_id = I('org_id', '', 'intval');

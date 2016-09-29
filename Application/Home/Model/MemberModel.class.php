@@ -86,12 +86,19 @@ class MemberModel extends Model{
         $avatar = !empty($user['avatar'])?$user['avatar']: C('USER_INFO_DEFAULT.avatar');
         $signature = !empty($user['signature'])?$user['signature']: C('USER_INFO_DEFAULT.signature');
         
+        $role = 'USER';
+        //如果是官方用户
+        $auth_info = M('auth_group_access')->field('uid')->where(array('uid'=>$user['uid'], 'group_id'=>3))->find();
+        if($auth_info['uid']) {
+            $role = 'OFFICIAL';
+        }
         $auth = array(
             'uid'             => $user['uid'],
             'nickname'        => get_nickname($user['uid']),
             'avatar'          => $avatar,
             'signature'          => $signature,
             'last_login_time' => $user['last_login_time'],
+            'role' => $role
         );
 
         session('user_auth', $auth);
