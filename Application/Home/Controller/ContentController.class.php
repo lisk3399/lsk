@@ -276,8 +276,9 @@ class ContentController extends HomeController {
         $m = M('Content');
         $list = $m->alias('c')
         ->page($page, $rows)
-        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
+        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar,ifnull(t.name, "") as name')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+        ->join('__TAGS__ t on t.id = c.tag_id', 'left')
         ->where($map)
         ->order('c.is_top desc,c.id desc')
         ->select();
@@ -413,6 +414,7 @@ class ContentController extends HomeController {
         ->order('c.is_top desc,c.id desc')
         ->select();
     
+        echo $Content->getLastSql();die;
         if(count($list) == 0) {
             $this->renderFailed('没有更多了');
         }
