@@ -42,13 +42,14 @@ class OrgnizationController extends HomeController {
                 ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
                 ->join('__TAGS__ t on t.id = c.tag_id')
                 //->join('__GROUP__ g on c.group_id = g.id')
-                ->where($map)->order('c.is_top desc,c.create_time desc')->page($page, $rows)->select();
+                ->where($map)->order('c.is_top desc,c.id desc')->page($page, $rows)->select();
             } else {
                 $list = $Content->alias('c')
                 ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
                 ->join('__TAGS__ t on t.id = c.tag_id')
                 //->join('__GROUP__ g on c.group_id = g.id')
-                ->where($map)->group('t.id')->order('c.is_top desc,c.create_time desc')->select();
+                ->where($map)->group('t.id')->order('t.sort desc,c.is_top desc,c.id desc')->select();
+                echo $Content->getLastSql();die;
             }
             
             if(count($list) == 0) {
