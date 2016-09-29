@@ -49,7 +49,6 @@ class OrgnizationController extends HomeController {
                 ->join('__TAGS__ t on t.id = c.tag_id')
                 //->join('__GROUP__ g on c.group_id = g.id')
                 ->where($map)->group('t.id')->order('t.sort desc,c.is_top desc,c.id desc')->select();
-                echo $Content->getLastSql();die;
             }
             
             if(count($list) == 0) {
