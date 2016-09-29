@@ -414,7 +414,6 @@ class ContentController extends HomeController {
         ->order('c.is_top desc,c.id desc')
         ->select();
     
-        echo $Content->getLastSql();die;
         if(count($list) == 0) {
             $this->renderFailed('没有更多了');
         }
