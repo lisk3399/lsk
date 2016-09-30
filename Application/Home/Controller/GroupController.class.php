@@ -321,10 +321,9 @@ class GroupController extends HomeController {
             //判断班级是否属于机构
             $groupInfo = M('group')->field('org_id')->where(array('id'=>$group_id))->find();
             if(empty($groupInfo['org_id'])) {
-                $this->renderFailed('该班级不属于任何机构，请补充机构信息');
+                $this->renderFailed('该班级不属于任何机构，请通知管理员补充机构信息');
             }
             
-            $org_id = $groupInfo['org_id'];
             //通过用户申请
             $map['id'] = $member_groupid;
             if(M('member_group')->data(array('status'=>1))->where($map)->save()) {
@@ -333,15 +332,6 @@ class GroupController extends HomeController {
                 //给申请人发消息
                 $Api->sendMessage($apply_uid, C('MESSAGE_TYPE.SYSTEM'), $extra_info);
                 
-                //将申请人加入机构
-                $orgController = new OrgnizationController();
-                if(!$orgController->isJoinOrg($apply_uid, $org_id)) {
-                    $map = array();
-                    $map['uid'] = $apply_uid;
-                    $map['org_id'] = $org_id;
-                    $map['create_time'] = NOW_TIME;
-                    M('member_org')->add($map);
-                }
                 //设置已读
                 M('Message')->data(array('is_read'=>1))->where(array('id'=>$message_id))->save();
                 
