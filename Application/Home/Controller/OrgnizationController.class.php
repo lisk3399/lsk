@@ -378,6 +378,12 @@ class OrgnizationController extends HomeController {
             if(count($list) == 0) {
                 $this->renderFailed('没有更多了');
             }
+            
+            //是否机构管理员
+            foreach ($list as &$row) {
+                $row['is_admin'] = ($this->isOrgAdmin($uid, $row['id'])) ? 1 : 0;
+            }
+            
             $this->renderSuccess('我关注的机构', $list);
         }
         //未登录不显示
