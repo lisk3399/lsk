@@ -25,6 +25,7 @@ class OrgnizationController extends HomeController {
             $Content = M('content');
             $map['c.org_id'] = $org_id;
             $map['t.type'] = 'ORG_ADMIN';
+            $map['c.status'] = 1;
             
             //指定标签id列表
             $tag_id = I('tag_id', '', 'intval');
@@ -37,19 +38,17 @@ class OrgnizationController extends HomeController {
                     $rows = C('API_MAX_ROWS');
                 }
                 $map['t.id'] = $tag_id;
-                $map['c.status'] = 1;
                 $list = $Content->alias('c')
                 ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
                 ->join('__TAGS__ t on t.id = c.tag_id', 'left')
-                //->join('__GROUP__ g on c.group_id = g.id')
                 ->where($map)->order('c.is_top desc,c.id desc')->page($page, $rows)->select();
             } else {
                 $subQuery = $Content->alias('c')
                 ->field('c.id,c.title,c.description,c.comments,c.likes,c.create_time,t.id as tag_id,t.name')
                 ->join('__TAGS__ t on t.id = c.tag_id', 'left')
-                //->join('__GROUP__ g on c.group_id = g.id')
                 ->where($map)->order('t.sort desc,c.is_top desc,c.id desc')->buildSql();
                 $sql = 'select * from '.$subQuery.' t group by t.tag_id';
+                
                 $list = $Content->query($sql);
             }
             
@@ -186,7 +185,7 @@ class OrgnizationController extends HomeController {
             if(!$uid) {
                 $this->renderFailed('请先登录', -1);
             }
-            if(!$this->isOrgAdmin($uid, $org_id) && !$this->isOrgOwner($uid, $org_id)) {
+            if(!$this->isOrgAdmin($uid, $org_id)) {
                 $this->renderFailed('不是机构管理员');
             }
             
@@ -212,11 +211,8 @@ class OrgnizationController extends HomeController {
                 $this->renderFailed('未指定机构id');
             }
             $Content = M('content');
-            $data['org_id'] = $org_id;
-            $data['is_top']= 0;
-            $Content->save($data);
+            $Content->where(array('org_id'=>$org_id))->save(array('is_top'=>0));
             
-            $data = array();
             $data['id'] = $content_id;
             $data['is_top']= 1;
             if($Content->save($data)) {
@@ -298,6 +294,8 @@ class OrgnizationController extends HomeController {
                     $info['type'] = 'ADMIN';
                 }
             }
+            
+            
             
             $this->renderSuccess('机构信息', $info);
         }
@@ -883,7 +881,7 @@ class OrgnizationController extends HomeController {
         $map['related_id'] = $org_id;
         $map['type'] = self::ADMIN_TYPE_ORG;
         $info = $Admin->field('id')->where($map)->find();
-        if(!empty($info['id'])) {
+        if(!empty($info['id']) || $this->isOrgOwner($uid, $org_id)) {
             return TRUE;
         }
         return FALSE;
