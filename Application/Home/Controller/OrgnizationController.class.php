@@ -381,7 +381,7 @@ class OrgnizationController extends HomeController {
             
             //是否机构管理员
             foreach ($list as &$row) {
-                $row['is_admin'] = !empty($this->isOrgAdmin($uid, $row['id'])) ? 1 : 0;
+                $row['is_admin'] = ($this->isOrgAdmin($uid, $row['id']) === TRUE) ? 1 : 0;
             }
             
             $this->renderSuccess('我关注的机构', $list);
