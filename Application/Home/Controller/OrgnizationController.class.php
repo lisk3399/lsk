@@ -261,49 +261,51 @@ class OrgnizationController extends HomeController {
     
     //某个机构首页信息
     public function orgIndexInfo() {
-        $uid = is_login();
-        
-        $org_id = I('org_id', '', 'intval');
-        if(!empty($org_id)) {
-            $info = M('orgnization')->where(array('id'=>$org_id))->find();
-            if(!$info['id']) {
-                $this->renderFailed('暂无信息');
-            }
+        if(IS_POST) {
+            $uid = is_login();
             
-            $group_rs = M('group')->field('id')->where(array('org_id'=>$org_id))->select();
-            //机构下有班级信息
-            $info['content_num'] = '0';
-            if(count($group_rs) != 0){
-                foreach ($group_rs as $row) {
-                    $group_ids[] = $row['id'];
+            $org_id = I('org_id', '', 'intval');
+            if(!empty($org_id)) {
+                $info = M('orgnization')->where(array('id'=>$org_id))->find();
+                if(!$info['id']) {
+                    $this->renderFailed('暂无信息');
                 }
-                $info['content_num'] = M('content')->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
-            }
-            
-            $org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
-            $group_member_num = M('member_group')->where(array('group_id'=>array('in', $group_ids)))->count();
-            $info['member_num'] = $org_member_num + $group_member_num;
-            
-            $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
-            $i = rand(0,2);
-            $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
-            
-            $info['type'] = 'USER';
-            if(!empty($uid)) {
-                //登录用户角色
-                if($this->isOrgOwner($uid, $org_id)) {
-                    $info['type'] = 'OWNER';    
-                } elseif ($this->isOrgAdmin($uid, $org_id)) {
-                    $info['type'] = 'ADMIN';
+                
+                $group_rs = M('group')->field('id')->where(array('org_id'=>$org_id))->select();
+                //机构下有班级信息
+                $info['content_num'] = '0';
+                if(count($group_rs) != 0){
+                    foreach ($group_rs as $row) {
+                        $group_ids[] = $row['id'];
+                    }
+                    $info['content_num'] = M('content')->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
                 }
+                
+                $org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
+                $group_member_num = M('member_group')->where(array('group_id'=>array('in', $group_ids)))->count();
+                $info['member_num'] = $org_member_num + $group_member_num;
+                
+                $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
+                $i = rand(0,2);
+                $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
+                
+                $info['type'] = 'USER';
+                if(!empty($uid)) {
+                    //登录用户角色
+                    if($this->isOrgOwner($uid, $org_id)) {
+                        $info['type'] = 'OWNER';    
+                    } elseif ($this->isOrgAdmin($uid, $org_id)) {
+                        $info['type'] = 'ADMIN';
+                    }
+                }
+                
+                $info['admin_num'] = $this->getAdminNum($org_id);
+                $info['star_num'] = $this->getStarMemberNum($org_id);
+                
+                $this->renderSuccess('机构信息', $info);
             }
-            
-            $info['admin_num'] = $this->getAdminNum($org_id);
-            $info['star_num'] = $this->getStarMemberNum($org_id);
-            
-            $this->renderSuccess('机构信息', $info);
+            $this->renderFailed('暂无信息');
         }
-        $this->renderFailed('暂无信息');
     }
     
     //获取管理员数
