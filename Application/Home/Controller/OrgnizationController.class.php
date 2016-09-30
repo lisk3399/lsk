@@ -186,7 +186,7 @@ class OrgnizationController extends HomeController {
             if(!$uid) {
                 $this->renderFailed('请先登录', -1);
             }
-            if(!$this->isOrgAdmin($uid, $org_id)) {
+            if(!$this->isOrgAdmin($uid, $org_id) && !$this->isOrgOwner($uid, $org_id)) {
                 $this->renderFailed('不是机构管理员');
             }
             
@@ -593,7 +593,7 @@ class OrgnizationController extends HomeController {
             ->where(array('g.org_id'=>$org_id))
             ->order('c.id desc')
             ->group('g.id')
-            ->limit(5)
+            ->limit(4)
             ->select();
             
             //如果机构下班级没内容则默认按时间列出班级数据
