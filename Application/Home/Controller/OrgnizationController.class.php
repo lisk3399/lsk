@@ -611,7 +611,7 @@ class OrgnizationController extends HomeController {
             
             //如果机构下班级没内容则默认按时间列出班级数据
             if(count($list) == 0) {
-                $list = M('group')->field('id,group_name,cover_url')->where(array('org_id'=>$org_id))->select()->limit(5);
+                $list = M('group')->field('id,group_name,cover_url')->where(array('org_id'=>$org_id))->limit(4)->select();
                 if(count($list) == 0) {
                     $this->renderFailed('该机构下暂无班级');
                 }
