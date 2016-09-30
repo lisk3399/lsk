@@ -274,15 +274,16 @@ class OrgnizationController extends HomeController {
                 $group_rs = M('group')->field('id')->where(array('org_id'=>$org_id))->select();
                 //机构下有班级信息
                 $info['content_num'] = '0';
+                $group_member_num = 0;
                 if(count($group_rs) != 0){
                     foreach ($group_rs as $row) {
                         $group_ids[] = $row['id'];
                     }
                     $info['content_num'] = M('content')->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
+                    $group_member_num = M('member_group')->where(array('group_id'=>array('in', $group_ids)))->count();
                 }
                 
                 $org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
-                $group_member_num = M('member_group')->where(array('group_id'=>array('in', $group_ids)))->count();
                 $info['member_num'] = $org_member_num + $group_member_num;
                 
                 $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
