@@ -26,7 +26,7 @@ class OrgnizationController extends HomeController {
             $map['c.org_id'] = $org_id;
             $map['t.type'] = 'ORG_ADMIN';
             
-            //指定标签id
+            //指定标签id列表
             $tag_id = I('tag_id', '', 'intval');
             if(!empty($tag_id)) {
                 $page = I('page', '1', 'intval');
@@ -205,15 +205,24 @@ class OrgnizationController extends HomeController {
         if(IS_POST) {
             $content_id = I('post.id', '', 'intval');
             if(empty($content_id)) {
-                $this->renderFailed('未指定内容');
+                $this->renderFailed('未指定内容id');
+            }
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('未指定机构id');
+            }
+            $Content = M('content');
+            $data['org_id'] = $org_id;
+            $data['is_top']= 0;
+            if($Content->save($data)){
+                $data = array();
+                $data['id'] = $content_id;
+                $data['is_top']= 1;
+                if($Content->save($data)) {
+                    $this->renderSuccess('设置成功');
+                }
             }
 
-            $Content = M('content');
-            $data['id'] = $content_id;
-            $data['is_top']= 1;
-            if($Content->save($data)) {
-                $this->renderSuccess('设置成功');
-            }
             $this->renderFailed('设置失败');
         }
     }
