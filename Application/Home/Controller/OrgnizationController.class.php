@@ -280,7 +280,10 @@ class OrgnizationController extends HomeController {
                 $info['content_num'] = M('content')->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
             }
             
-            $info['member_num'] = M('member_org')->where(array('org_id'=>$org_id))->count();
+            $org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
+            $group_member_num = M('member_group')->where(array('org_id'=>$org_id))->count();
+            $info['member_num'] = $org_member_num + $group_member_num;
+            
             $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
             $i = rand(0,2);
             $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
@@ -294,7 +297,6 @@ class OrgnizationController extends HomeController {
                     $info['type'] = 'ADMIN';
                 }
             }
-            
             
             $info['admin_num'] = $this->getAdminNum($org_id);
             $info['star_num'] = $this->getStarMemberNum($org_id);
@@ -363,7 +365,7 @@ class OrgnizationController extends HomeController {
             foreach ($mo_list as $row) {
                 $org_ids[] = $row['org_id'];
             }
-        
+            
             $map['is_delete'] = 0;
             $map['uid'] = array('NEQ', $uid);
             $map['id'] = array('IN', $org_ids);
