@@ -296,10 +296,26 @@ class OrgnizationController extends HomeController {
             }
             
             
+            $info['admin_num'] = $this->getAdminNum($org_id);
+            $info['star_num'] = $this->getStarMemberNum($org_id);
             
             $this->renderSuccess('机构信息', $info);
         }
         $this->renderFailed('暂无信息');
+    }
+    
+    //获取管理员数
+    public function getAdminNum($org_id) {
+        $Admin = M('admin');
+        $map['type'] = self::ADMIN_TYPE_ORG;
+        $map['related_id'] = $org_id;
+        return $Admin->where($map)->count();
+    }
+    
+    //获取明星成员数
+    public function getStarMemberNum($org_id) {
+        $Star = M('org_star');
+        return $Star->where(array('org_id'=>$org_id))->count();
     }
     
     //我创建的机构
