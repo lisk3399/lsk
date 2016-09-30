@@ -214,16 +214,15 @@ class OrgnizationController extends HomeController {
             $Content = M('content');
             $data['org_id'] = $org_id;
             $data['is_top']= 0;
-            if($Content->save($data)){
-                $data = array();
-                $data['id'] = $content_id;
-                $data['is_top']= 1;
-                if($Content->save($data)) {
-                    $this->renderSuccess('设置成功');
-                }
+            $Content->save($data);
+            
+            $data = array();
+            $data['id'] = $content_id;
+            $data['is_top']= 1;
+            if($Content->save($data)) {
+                $this->renderSuccess('设置成功');
             }
-
-            $this->renderFailed('设置失败');
+            $this->renderFailed('设置失败或已经设置置顶');
         }
     }
     
