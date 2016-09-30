@@ -263,6 +263,11 @@ class GroupController extends HomeController {
 	        if($this->checkJoin($uid, $group_id)){
 	            $this->renderFailed('您已经申请过加入或已经加入该班级');
 	        }
+	        $groupInfo = M('group')->field('org_id')->where(array('id'=>$group_id))->find();
+	        if(empty($groupInfo['org_id'])) {
+	            $this->renderFailed('该班级不属于任何机构，请通知管理员补充机构信息');
+	        }
+	        
 	        $from = I('post.from', '', 'trim');
 	        
 	        $data['uid'] = $uid;
@@ -309,15 +314,34 @@ class GroupController extends HomeController {
                 $this->renderFailed('消息id不存在');
             }
             //获取申请人uid
-            $apply_uid = M('member_group')->where(array('id'=>$member_groupid))->getField('uid');
+            $mg = M('member_group')->field('uid,group_id')->where(array('id'=>$member_groupid))->find();
+            $apply_uid = $mg['uid'];
+            $group_id = $mg['group_id'];
             
+            //判断班级是否属于机构
+            $groupInfo = M('group')->field('org_id')->where(array('id'=>$group_id))->find();
+            if(empty($groupInfo['org_id'])) {
+                $this->renderFailed('该班级不属于任何机构，请补充机构信息');
+            }
+            
+            $org_id = $groupInfo['org_id'];
             //通过用户申请
             $map['id'] = $member_groupid;
             if(M('member_group')->data(array('status'=>1))->where($map)->save()) {
                 $extra_info['content'] = '管理员同意了您加入班级申请';
                 $Api = new UserApi;
+                //给申请人发消息
                 $Api->sendMessage($apply_uid, C('MESSAGE_TYPE.SYSTEM'), $extra_info);
                 
+                //将申请人加入机构
+                $orgController = new OrgnizationController();
+                if(!$orgController->isJoinOrg($apply_uid, $org_id)) {
+                    $map = array();
+                    $map['uid'] = $apply_uid;
+                    $map['org_id'] = $org_id;
+                    $map['create_time'] = NOW_TIME;
+                    M('member_org')->add($map);
+                }
                 //设置已读
                 M('Message')->data(array('is_read'=>1))->where(array('id'=>$message_id))->save();
                 

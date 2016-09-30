@@ -934,7 +934,7 @@ class OrgnizationController extends HomeController {
     }
     
     //是否已经加入机构
-    private function isJoinOrg($uid, $org_id) {
+    public function isJoinOrg($uid, $org_id) {
         $mo = M('member_org');
         $map['uid'] = $uid;
         $map['org_id'] = $org_id;
