@@ -448,56 +448,63 @@ class ContentController extends HomeController {
      * 我的动态列表
      */
     public function myContentList() {
-        $page = I('page', '1', 'intval');
-        $rows = I('rows', '10', 'intval');
-    
-        //限制单次最大读取数量
-        if($rows > C('API_MAX_ROWS')) {
-            $rows = C('API_MAX_ROWS');
-        }
-        $uid = is_login();
-        if(!$uid) {
-            $this->renderFailed('请先登录', -1);
-        }
+        if(IS_POST) {
+            $page = I('page', '1', 'intval');
+            $rows = I('rows', '10', 'intval');
         
-        $map['c.status'] = 1;
-        $map['c.uid'] = $uid;
-        $list = M('Content')->alias('c')
-        ->page($page, $rows)
-        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
-        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
-        ->where($map)
-        ->order('c.id desc')
-        ->select();
-    
-        if(count($list) == 0) {
-            $this->renderFailed('没有更多了');
-        }
-    
-        $Api = new UserApi;
-        $Content = M('Content_material');
-        foreach ($list as &$row) {
-            $row['is_like'] = 0;
-            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
-            $result = $Content->field('type,value,cover_url')
-            ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
-            ->limit(3)->select();
-            if($uid) {
-                $is_like = $Api->isLike($uid, $row['id']);
-                $row['is_like'] = (!empty($is_like))?1:0;
+            //限制单次最大读取数量
+            if($rows > C('API_MAX_ROWS')) {
+                $rows = C('API_MAX_ROWS');
             }
-    
-            foreach ($result as $key=>$content) {
-                $row['pic'][$key]['cover_url'] = $content['cover_url'];
-                $row['pic'][$key]['type'] = $content['type'];
-                $row['pic'][$key]['value'] = $content['value'];
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录', -1);
             }
+            $group_id = I('post.group_id', '', 'intval');
+            if(empty($group_id)) {
+                $this->renderFailed('班级id不存在');
+            }
+            
+            $map['c.status'] = 1;
+            $map['c.uid'] = $uid;
+            $map['c.group_id'] = $group_id;
+            $list = M('Content')->alias('c')
+            ->page($page, $rows)
+            ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
+            ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+            ->where($map)
+            ->order('c.id desc')
+            ->select();
+        
+            if(count($list) == 0) {
+                $this->renderFailed('没有更多了');
+            }
+        
+            $Api = new UserApi;
+            $Content = M('Content_material');
+            foreach ($list as &$row) {
+                $row['is_like'] = 0;
+                $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+                $result = $Content->field('type,value,cover_url')
+                ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
+                ->limit(3)->select();
+                if($uid) {
+                    $is_like = $Api->isLike($uid, $row['id']);
+                    $row['is_like'] = (!empty($is_like))?1:0;
+                }
+        
+                foreach ($result as $key=>$content) {
+                    $row['pic'][$key]['cover_url'] = $content['cover_url'];
+                    $row['pic'][$key]['type'] = $content['type'];
+                    $row['pic'][$key]['value'] = $content['value'];
+                }
+            }
+        
+            $Api = new UserApi();
+            $list =  $Api->setDefaultAvatar($list);
+        
+            $this->renderSuccess('我的动态列表', $list);
         }
-    
-        $Api = new UserApi();
-        $list =  $Api->setDefaultAvatar($list);
-    
-        $this->renderSuccess('我的动态列表', $list);
     }
     
     public function editContent() {
