@@ -14,7 +14,7 @@ class ContentController extends HomeController {
             }
             
             $Slider = M('document')->alias('d');
-            $map['d.model_id'] = 10;
+            $map['d.model_id'] = 8;
             $map['ds.position'] = $position;
             $list = $Slider->join('__DOCUMENT_SLIDER__ ds on d.id = ds.id', 'left')
             ->field('d.title,d.cover_id,ds.position,ds.jump_type,ds.outlink')
