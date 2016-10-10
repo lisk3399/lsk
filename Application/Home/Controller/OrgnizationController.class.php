@@ -694,7 +694,7 @@ class OrgnizationController extends HomeController {
                 $this->renderFailed('不能添加自己');
             }
             //登录用户是否为机构管理员
-            if(!$this->isOrgAdmin($uid, $org_id)) {
+            if(!$this->isOrgAdmin($login_uid, $org_id)) {
                 $this->renderFailed('您没有权限添加明星学员');
             }
             
