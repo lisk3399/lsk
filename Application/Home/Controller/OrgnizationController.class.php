@@ -840,13 +840,44 @@ class OrgnizationController extends HomeController {
         //查找加入机构的用户id
         $Admin = M('member_org');
         $uid_arr = $Admin->field('uid')->where(array('org_id'=>$org_id))->page($page, $rows)->order('id desc')->select();
-        if(count($uid_arr) == 0) {
-            $this->renderFailed('暂无成员信息');
-        }
-        foreach ($uid_arr as $row) {
-            $uids[] = $row['uid'];
+
+        //机构下班级id
+        $Group = M('group');
+        $group_arr = $Group->field('id')->where(array('org_id'=>$org_id))->select();
+        if(count($group_arr) > 0) {
+            foreach ($group_arr as $row) {
+                $group_ids[] = $row['id'];
+            }
+            $mg = M('member_group');
+            $map['group_id'] = array('in', $group_ids);
+            $map['status'] = 1;
+            $group_uids = $Group
+            ->page($page, $rows)
+            ->field('uid')
+            ->order('id desc')
+            ->where($map)->select();
         }
         
+        $uid_count = count($uid_arr);
+        $group_uid_count = count($group_uids);
+        
+        if($uid_count == 0 && $group_uid_count == 0) {
+            $this->renderFailed('暂无成员信息');
+        }
+        
+        //有机构成员显示机构成员
+        if($uid_count > 0) {
+            foreach ($uid_arr as $row) {
+                $uids[] = $row['uid'];
+            }
+        }
+        
+        //有班级成员显示班级成员
+        if($group_uid_count > 0) {
+            foreach ($group_uids as $row) {
+                $uids[] = $row['uid'];
+            }
+        } 
         $Member = M('member');
         $map['uid'] = array('IN', $uids);
         $map['nickname'] = array('LIKE', "%$name%");
@@ -856,7 +887,6 @@ class OrgnizationController extends HomeController {
             $this->renderFailed('未找到用户');
         }
         $api = new UserApi;
-        
         $list = $api->setDefaultAvatar($list);
         
         $this->renderSuccess('搜索结果', $list);
