@@ -4,6 +4,36 @@ namespace Home\Controller;
 use User\Api\UserApi;
 
 class ContentController extends HomeController {
+    
+    //发现首页滚动切换
+    public function topSlider() {
+        if(IS_POST) {
+            $position = I('post.position', '', 'intval');
+            if(empty($position)) {
+                $this->renderFailed('位置不对');
+            }
+            
+            $Slider = M('document')->alias('d');
+            $map['d.model_id'] = 10;
+            $map['ds.position'] = $position;
+            $list = $Slider->join('__DOCUMENT_SLIDER__ ds on d.id = ds.id', 'left')
+            ->field('d.title,d.cover_id,ds.position,ds.jump_type,ds.outlink')
+            ->where($map)
+            ->limit(5)->select();
+            
+            if(count($list) == 0) {
+                $this->renderFailed('暂无内容');
+            }
+            
+            foreach ($list as &$row) {
+                $row['cover_url'] = C('WEBSITE_URL').get_cover($row['cover_id'], 'path');
+                unset($row['position']);
+            }
+            
+            $this->renderSuccess('首页slider', $list);
+        }
+    }
+    
 	/**
 	 * 用户发布内容
 	 */
