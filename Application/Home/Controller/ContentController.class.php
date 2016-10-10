@@ -8,10 +8,7 @@ class ContentController extends HomeController {
     //发现首页滚动切换
     public function topSlider() {
         if(IS_POST) {
-            $position = I('post.position', '', 'intval');
-            if(empty($position)) {
-                $this->renderFailed('位置不对');
-            }
+            $position = I('post.position', 0, 'intval');
             
             $Slider = M('document')->alias('d');
             $map['d.model_id'] = 8;
