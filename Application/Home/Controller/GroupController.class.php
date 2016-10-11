@@ -376,8 +376,10 @@ class GroupController extends HomeController {
 	            $this->renderFailed('已存在该班级名');
 	        }
 	        //创建群组数量限制
-	        if($this->checkGroupNum($uid) >= 10) {
-	            $this->renderFailed('您最多只能创建10个班级');
+	        if($uid != 246) { //官方帐号可以无限制创建
+    	        if($this->checkGroupNum($uid) >= 10) {
+    	            $this->renderFailed('您最多只能创建10个班级');
+    	        }
 	        }
 	        
 	        //@todo 10.1上线后需要修改为必须提交机构id
