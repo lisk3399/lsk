@@ -1115,6 +1115,11 @@ class GroupController extends HomeController {
 	 */
 	public function delGroupMember() {
 	    if(IS_POST) {
+	        $login_uid = is_login();
+	        if(!$login_uid) {
+	            $this->renderFailed('需要先登录');
+	        }
+	        
 	        $uid = I('post.uid', '', 'intval');
 	        if(empty($uid)) {
 	            $this->renderFailed('用户id为空');
@@ -1131,15 +1136,19 @@ class GroupController extends HomeController {
 	        if(!$this->checkJoin($uid, $group_id)) {
 	            $this->renderFailed('该用户不是该班级成员');
 	        }
-	         
+	        //不能删除自己
+	        if($uid == $login_uid) {
+	            $this->renderFailed('不能删除自己');
+	        }
 	        //不能删除创建者
 	        if($this->isGroupOwner($uid, $group_id)){
 	            $this->renderFailed('不能删除创建者');
 	        }
-	        //不是管理员不能删除
-	        if(!$this->isGroupOwner($uid, $group_id)){
+	        //登录用户不是管理员无权限删除
+	        if(!$this->isGroupOwner($login_uid, $group_id)){
 	            $this->renderFailed('不是管理员不能删除');
 	        }
+	        
 	        $Group = M('member_group');
 	        $map['uid'] = $uid;
 	        $map['group_id'] = $group_id;
