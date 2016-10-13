@@ -462,7 +462,7 @@ class GroupController extends HomeController {
 	    }
 	}
 	
-	//班级信息
+	//班级首页信息
 	public function groupIndexInfo() {
 	    $group_id = I('group_id', '', 'intval');
 	    if(empty($group_id)) {
@@ -492,9 +492,14 @@ class GroupController extends HomeController {
 	    //是否管理员
 	    $uid = is_login();
 	    $info['is_admin'] = 0;
+	    $info['is_group_member'] = 0;
 	    if($uid) {
     	    if($this->isGroupOwner($uid, $group_id)) {
     	        $info['is_admin'] = 1;
+    	    }
+    	    //是否加入班级
+    	    if($this->checkJoin($uid, $group_id)) {
+    	        $info['is_group_member'] = 1;
     	    }
 	    }
 	    
