@@ -189,6 +189,95 @@ class ContentController extends HomeController {
 	    }
 	}
 
+	/**
+	 * 管理员发布作业和任务
+	 */
+	public function pubTask() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('请先登录');
+	        }
+	        $title = I('title', '', 'trim');
+	        if(empty($title)) {
+	            $this->renderFailed('任务标题不能为空');
+	        }
+	        $title_len = mb_strlen($title, 'utf-8');
+	        if($title_len>30 || $title_len<4) {
+	            $this->renderFailed('标题字数在4-30个字');
+	        }
+	        $description = I('description', '', 'trim');
+	        $content = I('content', '', 'trim');
+	        //发布必须指定班级
+	        $group_id = I('group_id', '', 'intval');
+	        if(empty($group_id)) {
+	            $this->renderFailed('未指定要发到的班级');
+	        }
+	        if(!$this->isGroupidExists($group_id)) {
+	            $this->renderFailed('该班级id不存在');
+	        }
+	        
+	        //任务说明不能为空
+	        if(empty($description)) {
+	            $this->renderFailed('任务说明不能为空');
+	        }
+	        
+	        $is_hav_content = 0;
+	        if(!empty($content)) {
+	            if(ini_get('magic_quotes_gpc')) {
+	                $content = stripslashes($content);
+	            }
+	            if(!is_valid_json($content)) {
+	                $this->renderFailed('json格式不对');
+	            }
+	            $is_hav_content = 1;
+	        }
+	        //创建内容content表插入数据，返回content_id
+	        $Content = M("Content");
+	        $data = array();
+	        $data['uid'] = $uid;
+	        $data['title'] = $title;
+	        $data['description'] = $description;
+	        $data['create_time'] = NOW_TIME;
+	        $data['group_id'] = $group_id;
+	        $data['is_task'] = 1;
+	        //截至时间，默认5天过期
+	        $deadline = I('deadline', '', 'trim');
+	        if(empty($deadline)) {
+	            $data['deadline'] = time() + 86400*5;
+	        }
+	         
+	        $content_id = $Content->data($data)->add();
+	         
+	        //插入详细内容
+	        if($content_id && $is_hav_content) {
+	            $ContentMaterial = M("Content_material");
+	            $create_time = NOW_TIME;
+	            $dataList = array();
+	            $content_arr = json_decode($content, TRUE);
+	            foreach ($content_arr as $row) {
+	                $dataList[] = array(
+	                    'content_id'=>$content_id,
+	                    'type'=>$row['type'],
+	                    'value'=>$row['value'],
+	                    'cover_url'=>(!empty($row['cover_url'])?$row['cover_url']:''),
+	                    'create_time'=>$create_time
+	                );
+	            }
+	            if(!$ContentMaterial->addAll($dataList)) {
+	                $this->renderFailed('添加失败，请稍后再试');
+	            }
+	            $this->renderSuccess('添加成功');
+	        }
+	        elseif($content_id) {
+	            $this->renderSuccess('添加成功');
+	        }
+	        else {
+	            $this->renderFailed('添加失败');
+	        }
+	    }
+	}
+	
 	//获取官方发布内容标签
 	public function officialTags() {
 	    $map['type'] = 'OFFICIAL';
