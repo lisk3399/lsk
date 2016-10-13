@@ -492,14 +492,15 @@ class GroupController extends HomeController {
 	    //是否管理员
 	    $uid = is_login();
 	    $info['is_admin'] = 0;
-	    $info['is_group_member'] = 0;
 	    if($uid) {
     	    if($this->isGroupOwner($uid, $group_id)) {
     	        $info['is_admin'] = 1;
     	    }
-    	    //是否加入班级
+    	    //是否加入班级,历史问题
     	    if($this->checkJoin($uid, $group_id)) {
-    	        $info['is_group_member'] = 1;
+    	        $info['is_admin'] = 2;
+    	    } else {
+    	        $info['is_admin'] = 3;
     	    }
 	    }
 	    
