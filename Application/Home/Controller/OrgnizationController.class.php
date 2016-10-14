@@ -557,7 +557,7 @@ class OrgnizationController extends HomeController {
             }
             
             $Group = M('group');
-            $list = $Group->field('id,group_name,cover_url,background_url')->where(array('org_id'=>$org_id))->page($page, $rows)->select();
+            $list = $Group->field('id,group_name,cover_url,background_url')->where(array('org_id'=>$org_id,'is_delete'=>0))->page($page, $rows)->select();
             
             if(count($list) == 0) {
                 $this->renderFailed('没有更多数据');
