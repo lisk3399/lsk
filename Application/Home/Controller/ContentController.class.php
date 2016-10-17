@@ -314,8 +314,18 @@ class ContentController extends HomeController {
 	        $result = $Content->field('value')
 	        ->where(array('content_id'=>$row['id'], 'type'=>'PIC')) //获取任务封面图
             ->find();
-	        
 	        $row['cover_url'] = !empty($result['value']) ? $result['value'] : '';
+	        
+	        $row['is_end'] = 0;
+	        //时间已经截至
+	        if($row['deadline'] >= NOW_TIME) {
+	            $row['is_end'] = 1;
+	        }
+	        $row['is_done_task'] = 0;
+	        if($this->isDoneTask()) {
+	            $row['is_done_task'] = 1;
+	        }
+	        $row['deadline'] = date('Y-m-d H:i', $row['deadline']);
 	    }
 	    
 	    $this->renderSuccess('班级任务列表', $list);
@@ -349,7 +359,7 @@ class ContentController extends HomeController {
 	    $map['is_read'] = $is_read; //是否批阅
 	    $map['c.status'] = 1;
 	    
-	    $list = $Content->field('c.id,c.title,m.nickname,m.avatar')->where($map)
+	    $list = $Content->field('c.id,c.title,c.create_time,m.nickname,m.avatar')->where($map)
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
 	    ->page($page, $rows)
 	    ->select();
@@ -360,6 +370,9 @@ class ContentController extends HomeController {
 	    
 	    $api = new UserApi();
 	    $list = $api->setDefaultAvatar($list);
+	    foreach ($list as &$row) {
+	        $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+	    }
 	    
 	    $this->renderSuccess('班级任务列表', $list);
 	}
@@ -919,6 +932,14 @@ class ContentController extends HomeController {
                 $this->renderFailed('取消点赞失败');
             }
         }
+    }
+    
+    //是否已经做了作业
+    private function isDoneTask($uid, $group_id) {
+        $Content = M('content');
+        $map[''] = 1;
+        
+        $Content->field('')->where($map);
     }
     
     /**
