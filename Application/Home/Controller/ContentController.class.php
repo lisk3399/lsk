@@ -242,11 +242,13 @@ class ContentController extends HomeController {
 	        $data['group_id'] = $group_id;
 	        $data['is_task'] = 1;
 	        //截至时间，默认5天过期
-	        $deadline = I('deadline', '', 'trim');
+	        $deadline = I('deadline', '', 'intval');
+	        
+	        $data['deadline'] = $deadline;
 	        if(empty($deadline)) {
-	            $data['deadline'] = time() + 86400*5;
+	            $data['deadline'] = NOW_TIME + 86400*5;
 	        }
-	         
+	        
 	        $content_id = $Content->data($data)->add();
 	         
 	        //插入详细内容
