@@ -278,14 +278,21 @@ class OrgnizationController extends HomeController {
                 foreach ($group_rs as $row) {
                     $group_ids[] = $row['id'];
                 }
-                $info['content_num'] = M('content')->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
-                $group_member_num = M('member_group')->where(array('group_id'=>array('in', $group_ids)))->count();
+                $info['content_num'] = M('content')
+                ->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
+                $group_member_num = M('member_group')
+                ->where(array('group_id'=>array('in', $group_ids)))->count();
             }
         
             $org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
             $info['member_num'] = $org_member_num + $group_member_num;
         
-            $back_arr = array('/Public/static/app/group_cover_url1.jpg', '/Public/static/app/group_cover_url2.jpg', '/Public/static/app/group_cover_url3.jpg');
+            $back_arr = array(
+                '/Public/static/app/group_cover_url1.jpg',
+                '/Public/static/app/group_cover_url2.jpg',
+                '/Public/static/app/group_cover_url3.jpg'
+            );
+            
             $i = rand(0,2);
             $info['background_url'] = !empty($info['background_url']) ? $info['background_url'] : C('WEBSITE_URL').$back_arr[$i];
         
@@ -557,7 +564,10 @@ class OrgnizationController extends HomeController {
             }
             
             $Group = M('group');
-            $list = $Group->field('id,group_name,cover_url,background_url')->where(array('org_id'=>$org_id,'is_delete'=>0))->page($page, $rows)->select();
+            $list = $Group->field('id,group_name,cover_url,background_url')
+            ->where(array('org_id'=>$org_id,'is_delete'=>0))
+            ->page($page, $rows)
+            ->select();
             
             if(count($list) == 0) {
                 $this->renderFailed('没有更多数据');

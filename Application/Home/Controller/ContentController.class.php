@@ -277,6 +277,92 @@ class ContentController extends HomeController {
 	        }
 	    }
 	}
+
+	//班级任务列表
+	public function groupTaskList() {
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '10', 'intval');
+	    
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+	    $group_id = I('group_id', '', 'intval');
+	    if(empty($group_id)) {
+	        $this->renderFailed('班级为空');
+	    }
+	    
+	    $Content = M('content')->alias('c');
+	    $map['is_task'] = 1; //任务
+	    $map['group_id'] = $group_id;
+	    $map['deadline'] = array('gt', 0); //管理员发布的任务
+	    $map['status'] = 1;
+
+	    $list = $Content->field('c.id,c.title,c.deadline,g.group_name')->where($map)
+	    ->join('__GROUP__ g on g.id = c.group_id', 'left')
+	    ->order('c.deadline desc')
+	    ->page($page, $rows)
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	    
+	    $Content = M('Content_material');
+	    foreach ($list as &$row) {
+	        $result = $Content->field('value')
+	        ->where(array('content_id'=>$row['id'], 'type'=>'PIC')) //获取任务封面图
+            ->find();
+	        
+	        $row['cover_url'] = !empty($result['value']) ? $result['value'] : '';
+	    }
+	    
+	    $this->renderSuccess('班级任务列表', $list);
+	}
+	
+	//任务详情
+	public function taskDetail() {
+	    
+	}
+	
+	//批阅作业列表
+	public function readTaskList() {
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '10', 'intval');
+	     
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	     
+	    $group_id = I('group_id', '', 'intval');
+	    if(empty($group_id)) {
+	        $this->renderFailed('班级为空');
+	    }
+	    $is_read = I('is_read', 0, 'intval');
+	    
+	    $Content = M('content')->alias('c');
+	    $map['is_task'] = 1;//任务
+	    $map['group_id'] = $group_id;
+	    $map['deadline'] = 0; //用户完成的任务
+	    $map['is_read'] = $is_read; //是否批阅
+	    $map['c.status'] = 1;
+	    
+	    $list = $Content->field('c.id,c.title,m.nickname,m.avatar')->where($map)
+	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+	    ->page($page, $rows)
+	    ->select();
+	     
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	    
+	    $api = new UserApi();
+	    $list = $api->setDefaultAvatar($list);
+	    
+	    $this->renderSuccess('班级任务列表', $list);
+	}
 	
 	//获取官方发布内容标签
 	public function officialTags() {
@@ -423,7 +509,6 @@ class ContentController extends HomeController {
             }
         }
         
-        $Api = new UserApi();
         $list =  $Api->setDefaultAvatar($list);
         
         $this->renderSuccess('动态列表', $list);        
