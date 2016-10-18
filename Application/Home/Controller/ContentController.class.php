@@ -302,15 +302,15 @@ class ContentController extends HomeController {
 	        $this->renderFailed('班级为空');
 	    }
 	    
-	    $Content = M('content')->alias('c');
-	    $map['is_task'] = 1; //任务
+	    //获取发布任务列表
 	    $map['group_id'] = $group_id;
-	    $map['deadline'] = array('gt', 0); //管理员发布的任务
+	    $map['is_admin'] = 1;
 	    $map['status'] = 1;
-
-	    $list = $Content->field('c.id,c.title,c.description,c.deadline,g.group_name')->where($map)
+	    $Content = M('content')->alias('c');
+	    $list = $Content->field('c.id,c.uid,c.title,c.description,t.id as task_id,t.deadline,g.group_name')->where($map)
 	    ->join('__GROUP__ g on g.id = c.group_id', 'left')
-	    ->order('c.deadline desc')
+	    ->join('__TASK__ t on t.id = c.task_id', 'left')
+	    ->order('t.id desc')
 	    ->page($page, $rows)
 	    ->select();
 	    
@@ -318,31 +318,35 @@ class ContentController extends HomeController {
 	        $this->renderFailed('没有更多了');
 	    }
 	    
-	    $Content = M('Content_material');
-	    foreach ($list as &$row) {
-	        $result = $Content->field('value')
+	    $cm = M('Content_material');
+	    foreach ($list as $key => &$row) {
+	        $result = $cm->field('value')
 	        ->where(array('content_id'=>$row['id'], 'type'=>'PIC')) //获取任务封面图
             ->find();
 	        $row['cover_url'] = !empty($result['value']) ? $result['value'] : '';
 	        
+	        //截至时间
 	        $row['is_end'] = 0;
-	        //时间已经截至
 	        if($row['deadline'] >= NOW_TIME) {
 	            $row['is_end'] = 1;
 	        }
+	        //是否已经参与
 	        $row['is_done_task'] = 0;
-	        if($this->isDoneTask()) {
+	        if($this->isDoneTask($row['uid'], $row['task_id'])) {
 	            $row['is_done_task'] = 1;
 	        }
 	        $row['deadline'] = date('Y-m-d H:i', $row['deadline']);
+	        
+	        //多少人完成作业(仅第一条)
+	        if($key == 0) {
+    	        $cond['group_id'] = $group_id;
+    	        $cond['task_id'] = $row['task_id'];
+    	        $cond['is_admin'] = 0;
+    	        $row['complete_num'] = (int)M('content')->where($cond)->count();
+	        }
 	    }
-        //多少人完成作业	    
-	    $cond['group_id'] = $group_id;
-	    $cond['is_task'] = 1;
-	    $cond['status'] = 1;
-	    $cond['deadline'] = 0;
-	    $extra['complete_num'] = M('content')->where($cond)->count();
-	    $this->renderSuccess('班级任务列表', $list, $extra);
+
+	    $this->renderSuccess('班级任务列表', $list);
 	}
 	
 	//任务详情
@@ -949,11 +953,12 @@ class ContentController extends HomeController {
     }
     
     //是否已经做了作业
-    private function isDoneTask($uid, $group_id) {
+    private function isDoneTask($uid, $task_id) {
         $Content = M('content');
-        $map[''] = 1;
+        $map['is_admin'] = 0;
+        $map['task_id'] = $task_id;
         
-        $Content->field('')->where($map);
+        return $Content->field('id')->where($map)->find();
     }
     
     /**
