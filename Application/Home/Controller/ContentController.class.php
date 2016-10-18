@@ -371,14 +371,14 @@ class ContentController extends HomeController {
 	    $is_read = I('is_read', 0, 'intval');
 	    
 	    $Content = M('content')->alias('c');
-	    $map['is_task'] = 1;//任务
 	    $map['group_id'] = $group_id;
-	    $map['deadline'] = 0; //用户完成的任务
+	    $map['is_admin'] = 0;
 	    $map['is_read'] = $is_read; //是否批阅
 	    $map['c.status'] = 1;
 	    
 	    $list = $Content->field('c.id,c.title,c.create_time,m.nickname,m.avatar')->where($map)
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+	    ->join('__TASK__ t on t.id = c.task_id', 'left')
 	    ->page($page, $rows)
 	    ->select();
 	     
@@ -392,7 +392,7 @@ class ContentController extends HomeController {
 	        $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
 	    }
 	    
-	    $this->renderSuccess('班级任务列表', $list);
+	    $this->renderSuccess('批阅作业列表', $list);
 	}
 	
 	//获取官方发布内容标签
