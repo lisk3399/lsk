@@ -221,7 +221,7 @@ class ContentController extends HomeController {
 	        if(empty($description)) {
 	            $this->renderFailed('任务说明不能为空');
 	        }
-	        
+	        //是否有详情内容
 	        $is_hav_content = 0;
 	        if(!empty($content)) {
 	            if(ini_get('magic_quotes_gpc')) {
@@ -232,30 +232,37 @@ class ContentController extends HomeController {
 	            }
 	            $is_hav_content = 1;
 	        }
+	        
+	        //创建任务
+	        $Task = M('task');
+	        $deadline = I('deadline', '', 'intval'); 
+	        $data['deadline'] = $deadline;
+	        $create_time = NOW_TIME;
+	        if(empty($deadline)) {
+	            $data['deadline'] = $create_time + 86400*5; //截至时间，默认5天过期
+	        }
+	        $data['create_time'] = $create_time;
+	        $task_id = $Task->data($data)->add();
+	        
+	        if(empty($task_id)) {
+	            $this->renderFailed('任务添加失败');
+	        }
+	        
 	        //创建内容content表插入数据，返回content_id
 	        $Content = M("Content");
 	        $data = array();
 	        $data['uid'] = $uid;
 	        $data['title'] = $title;
 	        $data['description'] = $description;
-	        $data['create_time'] = NOW_TIME;
 	        $data['group_id'] = $group_id;
-	        $data['is_task'] = 1;
-	        //截至时间，默认5天过期
-	        $deadline = I('deadline', '', 'intval');
-	        
-	        $data['deadline'] = $deadline;
-	        if(empty($deadline)) {
-	            $data['deadline'] = NOW_TIME + 86400*5;
-	        }
-	        
+	        $data['task_id'] = $task_id;
+	        $data['is_admin'] = 1;
+	        $data['create_time'] = $create_time;
+
 	        $content_id = $Content->data($data)->add();
-	         
 	        //插入详细内容
 	        if($content_id && $is_hav_content) {
 	            $ContentMaterial = M("Content_material");
-	            $create_time = NOW_TIME;
-	            $dataList = array();
 	            $content_arr = json_decode($content, TRUE);
 	            foreach ($content_arr as $row) {
 	                $dataList[] = array(
@@ -267,7 +274,7 @@ class ContentController extends HomeController {
 	                );
 	            }
 	            if(!$ContentMaterial->addAll($dataList)) {
-	                $this->renderFailed('添加失败，请稍后再试');
+	                $this->renderFailed('内容详情添加失败，请稍后再试');
 	            }
 	            $this->renderSuccess('添加成功');
 	        }
