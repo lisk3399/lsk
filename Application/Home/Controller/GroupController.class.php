@@ -382,17 +382,17 @@ class GroupController extends HomeController {
     	        }
 	        }
 	        
-	        //@todo 10.1上线后需要修改为必须提交机构id
+	        //创建班级必须指定机构
 	        $org_id = I('post.org_id', '', 'intval');
-	        if(!empty($org_id)) {
-	            $data['org_id'] = $org_id;
-	            
-	            $org_con = new OrgnizationController();
-	            if(!$org_con->checkOrgIdExists($org_id)) {
-	                $this->renderFailed('该机构不存在');
-	            }
+	        if(empty($org_id)) {
+                $this->renderFailed('需要先指定机构');
+	        }
+	        $org_con = new OrgnizationController();
+	        if(!$org_con->checkOrgIdExists($org_id)) {
+	            $this->renderFailed('该机构不存在');
 	        }
 	        
+	        $data['org_id'] = $org_id;
 	        $data['uid'] = $uid;
 	        $data['group_name'] = $group_name;
 	        $data['is_delete'] = 0;
