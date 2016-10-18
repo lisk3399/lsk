@@ -81,9 +81,13 @@ class ContentController extends HomeController {
 	        $data['description'] = $description;
 	        $data['create_time'] = NOW_TIME;
 	        $data['group_id'] = $group_id;
+	        //用户完成任务标识
+	        $task_id = I('task_id', '', 'intval');
+	        if(!empty($task_id)) {
+	            $data['task_id'] = $task_id;
+	        }
 	        
 	        $content_id = $Content->data($data)->add();
-	        
 	        //插入详细内容
 	        if($content_id && $is_hav_content) {
 	            $ContentMaterial = M("Content_material");
