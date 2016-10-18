@@ -353,6 +353,69 @@ class ContentController extends HomeController {
 	    $this->renderSuccess('班级任务列表', $list);
 	}
 	
+	//用户完成任务列表：最新/最赞
+	public function memberTaskList() {
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '10', 'intval');
+	    
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+	    $group_id = I('group_id', '', 'intval');
+	    if(empty($group_id)) {
+	        $this->renderFailed('班级为空');
+	    }
+
+	    $Content = M('task')->alias('t');
+	    $map['group_id'] = $group_id;
+	    $map['is_admin'] = 0;
+	    $map['c.status'] = 1;
+	    
+	    //排序方式
+	    $order = (I('order', '', 'trim') == 'likes') ? 'c.likes desc' : 'c.id desc';
+	    
+	    $list = $Content->field('c.id,c.title,c.create_time,m.nickname,m.avatar')->where($map)
+	    ->join('__CONTENT__ c on t.id = c.task_id', 'left')
+	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+	    ->page($page, $rows)
+	    ->order($order)
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	     
+	    $Api = new UserApi();
+	    $list = $Api->setDefaultAvatar($list);
+	    foreach ($list as &$row) {
+	        $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+	    }
+	    
+	    $uid = is_login();
+	    $Content = M('Content_material');
+	    foreach ($list as &$row) {
+	        $row['is_like'] = 0;
+	        $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+	        $result = $Content->field('type,value,cover_url')
+	        ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
+	        ->limit(3)->select();
+	        if($uid) {
+	            $is_like = $Api->isLike($uid, $row['id']);
+	            $row['is_like'] = (!empty($is_like))?1:0;
+	        }
+	    
+	        foreach ($result as $key=>$content) {
+	            $row['pic'][$key]['cover_url'] = $content['cover_url'];
+	            $row['pic'][$key]['type'] = $content['type'];
+	            $row['pic'][$key]['value'] = $content['value'];
+	        }
+	    }
+	    
+	    $this->renderSuccess('用户作业列表', $list);
+	}
+	
 	//任务详情
 	public function taskDetail() {
 	    
