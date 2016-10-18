@@ -418,7 +418,37 @@ class ContentController extends HomeController {
 	
 	//任务详情
 	public function taskDetail() {
+	    $task_id = I('task_id', '', 'intval');
+	    if(empty($task_id)) {
+	        $this->renderFailed('任务id为空');
+	    }
 	    
+	    $Content = M('task')->alias('t');
+	    $map['task_id'] = $task_id;
+	    $detail = $Content->field('c.id,c.uid,c.title,c.description,t.deadline,m.nickname')
+	    ->join('__CONTENT__ c on t.id = c.task_id', 'left')
+	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+	    ->where($map)->find();
+	    
+	    if(count($detail) == 0) {
+	        $this->renderFailed('任务不存在');
+	    }
+	    
+	    $content_id = $detail['id'];
+	    $CM = M('Content_material');
+	    $result = $CM->field('type,value,cover_url')
+	    ->where(array('content_id'=>$content_id))
+	    ->select();
+	    
+	    $detail['create_time'] = date('Y-m-d H:i', $detail['create_time']);
+        $detail['deadline'] = date('Y-m-d H:i', $detail['deadline']);
+	    foreach ($result as $key=>$content) {
+	        $detail['pic'][$key]['cover_url'] = $content['cover_url'];
+	        $detail['pic'][$key]['type'] = $content['type'];
+	        $detail['pic'][$key]['value'] = $content['value'];
+	    }
+	    
+	    $this->renderSuccess('', $detail);
 	}
 	
 	//批阅作业列表
