@@ -301,7 +301,7 @@ class ContentController extends HomeController {
 	    $map['deadline'] = array('gt', 0); //管理员发布的任务
 	    $map['status'] = 1;
 
-	    $list = $Content->field('c.id,c.title,c.deadline,g.group_name')->where($map)
+	    $list = $Content->field('c.id,c.title,c.description,c.deadline,g.group_name')->where($map)
 	    ->join('__GROUP__ g on g.id = c.group_id', 'left')
 	    ->order('c.deadline desc')
 	    ->page($page, $rows)
@@ -329,8 +329,13 @@ class ContentController extends HomeController {
 	        }
 	        $row['deadline'] = date('Y-m-d H:i', $row['deadline']);
 	    }
-	    
-	    $this->renderSuccess('班级任务列表', $list);
+        //多少人完成作业	    
+	    $cond['group_id'] = $group_id;
+	    $cond['is_task'] = 1;
+	    $cond['status'] = 1;
+	    $cond['deadline'] = 0;
+	    $extra['complete_num'] = M('content')->where($cond)->count();
+	    $this->renderSuccess('班级任务列表', $list, $extra);
 	}
 	
 	//任务详情
