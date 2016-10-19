@@ -367,11 +367,16 @@ class ContentController extends HomeController {
 	    if(empty($group_id)) {
 	        $this->renderFailed('班级为空');
 	    }
-
+	    $task_id = I('task_id', '', 'intval');
+	    if(empty($task_id)) {
+	        $this->renderFailed('任务为空');
+	    }
+	    
 	    $Content = M('task')->alias('t');
 	    $map['group_id'] = $group_id;
 	    $map['is_admin'] = 0;
 	    $map['c.status'] = 1;
+	    $map['t.id'] = $task_id;
 	    
 	    //排序方式
 	    $order = (I('order', '', 'trim') == 'likes') ? 'c.likes desc' : 'c.id desc';
@@ -467,9 +472,51 @@ class ContentController extends HomeController {
 	    }
 	}
 	
-	//我的任务和批阅情况
+	//我的任务和批阅列表
 	public function myTask() {
+	    $page = I('page', '1', 'intval');
+	    $rows = I('rows', '10', 'intval');
 	    
+	    //限制单次最大读取数量
+	    if($rows > C('API_MAX_ROWS')) {
+	        $rows = C('API_MAX_ROWS');
+	    }
+	    
+	    $uid = is_login();
+	    if(!$uid) {
+	        $this->renderFailed('请先登录');
+	    }
+	    
+	    $group_id = I('group_id', '', 'intval');
+	    if(empty($group_id)) {
+	        $this->renderFailed('班级为空');
+	    }
+	    $is_read = I('is_read', 0, 'intval');
+	     
+	    $Content = M('content')->alias('c');
+	    $map['group_id'] = $group_id;
+	    $map['is_admin'] = 0;
+	    $map['is_read'] = $is_read; //是否批阅
+	    $map['c.status'] = 1;
+	    $map['c.uid'] = $uid;
+	     
+	    $list = $Content->field('c.id,c.title,c.create_time,m.nickname,m.avatar')->where($map)
+	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+	    ->join('__TASK__ t on t.id = c.task_id', 'left')
+	    ->page($page, $rows)
+	    ->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有更多了');
+	    }
+	     
+	    $api = new UserApi();
+	    $list = $api->setDefaultAvatar($list);
+	    foreach ($list as &$row) {
+	        $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+	    }
+	     
+	    $this->renderSuccess('批阅作业列表', $list);
 	}
 	
 	//批阅作业列表
@@ -968,6 +1015,10 @@ class ContentController extends HomeController {
                 $this->renderFailed('请输入内容');
             }
     
+            $task_id = I('task_id', '', 'intval');
+            if(!empty($task_id)) {
+                $data['task_id'] = $task_id;
+            }
             $data['uid'] = $uid;
             $data['work_id'] = $work_id;
             $data['content'] = rawurlencode($content);
@@ -979,10 +1030,12 @@ class ContentController extends HomeController {
             // 	        }
             $Comment = M('comment');
             if($Comment->add($data)){
-                //更新评论数
-                $Content = M('Content');
-                $map = array('id' => $work_id);
-                $Content->where($map)->setInc('comments');
+                //不是批阅时，更新评论数
+                if(empty($task_id)) {
+                    $Content = M('Content');
+                    $map = array('id' => $work_id);
+                    $Content->where($map)->setInc('comments');
+                }
                 $this->renderSuccess('评论成功');
             }
             $this->renderFailed('评论失败');
