@@ -441,7 +441,7 @@ class ContentController extends HomeController {
 	    ->select();
 	    
 	    $detail['create_time'] = date('Y-m-d H:i', $detail['create_time']);
-        $detail['deadline'] = date('Y-m-d H:i', $detail['deadline']);
+        $detail['deadline'] = date('Y-m-d', $detail['deadline']);
 	    foreach ($result as $key=>$content) {
 	        $detail['pic'][$key]['cover_url'] = $content['cover_url'];
 	        $detail['pic'][$key]['type'] = $content['type'];
@@ -449,6 +449,27 @@ class ContentController extends HomeController {
 	    }
 	    
 	    $this->renderSuccess('', $detail);
+	}
+	
+	//批阅作业
+	public function readTask() {
+	    if(IS_POST) {
+	        $task_id = I('task_id', '', 'intval');
+	        if(empty($task_id)) {
+	            $this->renderFailed('任务id为空');
+	        }
+	        
+	        if(M('task')->where(array('id'=>$task_id, 'is_read'=>1))->save()) {
+	            $this->renderSuccess('批阅成功');
+	        }
+	        
+	        $this->renderFailed('批阅失败');
+	    }
+	}
+	
+	//我的任务和批阅情况
+	public function myTask() {
+	    
 	}
 	
 	//批阅作业列表
