@@ -331,7 +331,7 @@ class ContentController extends HomeController {
 	        
 	        //截至时间
 	        $row['is_end'] = 0;
-	        if($row['deadline'] >= NOW_TIME) {
+	        if($row['deadline'] <= NOW_TIME) {
 	            $row['is_end'] = 1;
 	        }
 	        //是否已经参与
@@ -1217,7 +1217,7 @@ class ContentController extends HomeController {
         $map['is_admin'] = 0;
         $map['task_id'] = $task_id;
         $map['uid'] = $uid;
-        
+
         return $Content->field('id')->where($map)->find();
     }
     
