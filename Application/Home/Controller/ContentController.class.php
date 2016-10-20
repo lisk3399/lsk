@@ -774,6 +774,7 @@ class ContentController extends HomeController {
         
         $map['c.status'] = 1;
         $map['c.group_id'] = $group_id;
+        $map['c.task_id'] = 0;
         $list = M('Content')->alias('c')
         ->page($page, $rows)
         ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
@@ -896,6 +897,7 @@ class ContentController extends HomeController {
             $map['c.status'] = 1;
             $map['c.uid'] = $uid;
             $map['c.group_id'] = $group_id;
+            $map['c.task_id'] = 0;
             $list = M('Content')->alias('c')
             ->page($page, $rows)
             ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
