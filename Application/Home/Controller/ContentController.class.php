@@ -1216,6 +1216,7 @@ class ContentController extends HomeController {
         $Content = M('content');
         $map['is_admin'] = 0;
         $map['task_id'] = $task_id;
+        $map['uid'] = $uid;
         
         return $Content->field('id')->where($map)->find();
     }
