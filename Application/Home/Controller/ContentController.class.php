@@ -470,12 +470,19 @@ class ContentController extends HomeController {
 	//批阅作业
 	public function readTask() {
 	    if(IS_POST) {
+	        $content_id = I('content_id', '', 'intval');
+	        if(empty($content_id)) {
+	            $this->renderFailed('作品id为空');
+	        }
 	        $task_id = I('task_id', '', 'intval');
 	        if(empty($task_id)) {
 	            $this->renderFailed('任务id为空');
 	        }
 	        
-	        if(M('task')->where(array('id'=>$task_id, 'is_read'=>1))->save()) {
+	        $map['id'] = $content_id;
+	        $map['task_id'] = $task_id;
+	        $data['is_read'] = 1;
+	        if(M('content')->where($map)->save($data)) {
 	            $this->renderSuccess('批阅成功');
 	        }
 	        
@@ -506,13 +513,13 @@ class ContentController extends HomeController {
 	    $Content = M('content')->alias('c');
 	    $map['group_id'] = $group_id;
 	    $map['is_admin'] = 0;
-	    $map['is_read'] = 1; //是否批阅
+	    $map['c.is_read'] = 1; //是否批阅
 	    $map['c.status'] = 1;
 	    $map['c.uid'] = $uid;
 	     
 	    $list = $Content->field('c.id,c.task_id,c.title,c.create_time,m.nickname,m.avatar')->where($map)
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
-	    ->join('__TASK__ t on t.id = c.task_id', 'left')
+	    //->join('__TASK__ t on t.id = c.task_id', 'left')
 	    ->page($page, $rows)
 	    ->select();
 	    
@@ -580,12 +587,12 @@ class ContentController extends HomeController {
 	    $Content = M('content')->alias('c');
 	    $map['group_id'] = $group_id;
 	    $map['is_admin'] = 0;
-	    $map['is_read'] = $is_read; //是否批阅
+	    $map['c.is_read'] = $is_read; //是否批阅
 	    $map['c.status'] = 1;
 	    
 	    $list = $Content->field('c.id,c.title,c.task_id,c.create_time,m.nickname,m.avatar')->where($map)
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
-	    ->join('__TASK__ t on t.id = c.task_id', 'left')
+	    //->join('__TASK__ t on t.id = c.task_id', 'left')
 	    ->page($page, $rows)
 	    ->select();
 	     
