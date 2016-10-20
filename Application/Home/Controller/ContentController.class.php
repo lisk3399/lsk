@@ -384,7 +384,7 @@ class ContentController extends HomeController {
 	    //排序方式
 	    $order = (I('order', '', 'trim') == 'likes') ? 'c.likes desc' : 'c.id desc';
 	    
-	    $list = $Content->field('c.id,c.title,c.create_time,m.nickname,m.avatar')->where($map)
+	    $list = $Content->field('c.id,c.title,c.create_time,c.likes,c.comments,m.nickname,m.avatar')->where($map)
 	    ->join('__CONTENT__ c on t.id = c.task_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
 	    ->page($page, $rows)
