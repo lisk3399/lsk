@@ -323,6 +323,14 @@ class GroupController extends HomeController {
             if(empty($groupInfo['org_id'])) {
                 $this->renderFailed('该班级不属于任何机构，请通知管理员补充机构信息');
             }
+            //如果申请人不在班级所在机构，将用户加入该机构
+            $orgController = new OrgnizationController();
+            if(!$orgController->isJoinOrg($apply_uid, $groupInfo['org_id'])) {
+                $data['uid'] = $apply_uid;
+                $data['org_id'] = $groupInfo['org_id'];
+                $data['create_time'] = NOW_TIME;
+                M('member_org')->add($data);
+            }
             
             //通过用户申请
             $map['id'] = $member_groupid;

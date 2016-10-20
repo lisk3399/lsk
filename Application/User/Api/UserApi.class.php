@@ -314,10 +314,10 @@ class UserApi extends Api{
             case C('MESSAGE_TYPE.AT'):
                 $data['content'] = '有人@你，快去看看';
                 break;
-            case C('MESSAGE_TYPE.LIKE'):
+            case C('MESSAGE_TYPE.COMMENT'):
                 $data['content'] = '有人评论了你的作品，快去看看';
                 break;
-            case C('MESSAGE_TYPE.'):
+            case C('MESSAGE_TYPE.FRIENDS'):
                 $data['content'] = '有新的好友加你，快去看看';
                 break;
                 default:
