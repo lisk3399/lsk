@@ -322,6 +322,7 @@ class ContentController extends HomeController {
 	        $this->renderFailed('没有更多了');
 	    }
 	    
+	    $uid = is_login();
 	    $cm = M('Content_material');
 	    foreach ($list as $key => &$row) {
 	        $result = $cm->field('value')
@@ -336,8 +337,10 @@ class ContentController extends HomeController {
 	        }
 	        //是否已经参与
 	        $row['is_done_task'] = 0;
-	        if($this->isDoneTask($row['uid'], $row['task_id'])) {
-	            $row['is_done_task'] = 1;
+	        if(!empty($uid)) {
+	           if($this->isDoneTask($uid, $row['task_id'])) {
+	               $row['is_done_task'] = 1;
+	           }
 	        }
 	        $row['deadline'] = date('Y-m-d H:i', $row['deadline']);
 	        
