@@ -976,6 +976,58 @@ class ContentController extends HomeController {
         
     }
     
+    //教师批阅列表
+    public function readComment() {
+        $work_id = I('work_id', '', 'intval');
+        if(empty($work_id)) {
+            $this->renderFailed('作品id为空');
+        }
+        if(!$this->checkWorkExists($work_id)) {
+            $this->renderFailed('作品不存在');
+        }
+        $task_id = I('task_id', '', 'intval');
+        if(empty($task_id)) {
+            $this->renderFailed('任务id为空');
+        }  
+        $page = I('page', '1', 'intval');
+        $rows = I('rows', '20', 'intval');
+         
+        //限制单次最大读取数量
+        if($rows > C('API_MAX_ROWS')) {
+            $rows = C('API_MAX_ROWS');
+        }
+         
+        $Comment = M('comment');
+        $count = $Comment->alias('c')
+        ->field('m.uid')
+        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+        ->where(array('c.work_id'=>$work_id))->count();
+         
+        $list = $Comment->alias('c')
+        ->page($page, $rows)
+        ->field('m.uid,m.nickname,m.avatar,c.to_uid,c.content,c.create_time')
+        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+        ->where(array('c.work_id'=>$work_id))
+        ->order('c.task_id desc,c.id desc')
+        ->select();
+         
+        if(count($list) == 0) {
+            $this->renderFailed('没有更多了');
+        }
+        if($page>1 && count($list)==0) {
+            $this->renderFailed('没有更多了', -1);
+        }
+        //设置默认头像
+        $Api = new UserApi;
+        $list = $Api->setDefaultAvatar($list);
+        foreach ($list as &$row) {
+            $row['content'] = rawurldecode($row['content']);
+        }
+         
+        $extra['count'] = $count;
+        $this->renderSuccess('', $list, $extra);
+    }
+    
     /**
      * 某个作品评论列表
      */
