@@ -432,7 +432,7 @@ class ContentController extends HomeController {
 	    
 	    $Content = M('task')->alias('t');
 	    $map['task_id'] = $task_id;
-	    $detail = $Content->field('c.id,c.uid,c.title,c.description,t.deadline,m.nickname')
+	    $detail = $Content->field('c.id,c.task_id,c.uid,c.title,c.description,t.deadline,m.nickname')
 	    ->join('__CONTENT__ c on t.id = c.task_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
 	    ->where($map)->find();
@@ -452,10 +452,10 @@ class ContentController extends HomeController {
         
         $uid = is_login();
         //是否已经参与
-        $row['is_done_task'] = 0;
+        $detail['is_done_task'] = 0;
         if(!empty($uid)) {
-            if($this->isDoneTask($uid, $row['task_id'])) {
-                $row['is_done_task'] = 1;
+            if($this->isDoneTask($uid, $detail['task_id'])) {
+                $detail['is_done_task'] = 1;
             }
         }
 	    foreach ($result as $key=>$content) {
