@@ -405,7 +405,6 @@ class ContentController extends HomeController {
 	    $Content = M('Content_material');
 	    foreach ($list as &$row) {
 	        $row['is_like'] = 0;
-	        $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
 	        $result = $Content->field('type,value,cover_url')
 	        ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
 	        ->limit(3)->select();
