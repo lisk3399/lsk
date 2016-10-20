@@ -572,7 +572,7 @@ class ContentController extends HomeController {
 	    $map['is_read'] = $is_read; //是否批阅
 	    $map['c.status'] = 1;
 	    
-	    $list = $Content->field('c.id,c.title,c.create_time,m.nickname,m.avatar')->where($map)
+	    $list = $Content->field('c.id,c.title,c.task_id,c.create_time,m.nickname,m.avatar')->where($map)
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
 	    ->join('__TASK__ t on t.id = c.task_id', 'left')
 	    ->page($page, $rows)
