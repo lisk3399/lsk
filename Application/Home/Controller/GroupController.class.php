@@ -809,6 +809,7 @@ class GroupController extends HomeController {
 	    $Group = M('group');
 	    $map['g.id'] = $group_id;
 	    $map['w.is_delete'] = 0;
+	    $map['w.task_id'] = 0;
 	    $list = $Group->alias('g')
 	    ->page($page, $rows)
 	    ->field('g.group_name,w.id,ifnull(w.cover_url, "") as cover_url,w.create_time,m.nickname,m.avatar')
@@ -833,6 +834,7 @@ class GroupController extends HomeController {
 	    $map['g.id'] = $group_id;
 	    $map['w.is_delete'] = 0;
 	    $map['m.uid'] = $uid;
+	    $map['w.task_id'] = 0;
 	    $list = $Group->alias('g')
 	    ->page($page, $rows)
 	    ->field('g.group_name,w.id,ifnull(w.cover_url, "") as cover_url,w.create_time,m.nickname,m.avatar')
