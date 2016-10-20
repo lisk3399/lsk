@@ -472,8 +472,8 @@ class ContentController extends HomeController {
 	    }
 	}
 	
-	//我的任务和批阅列表
-	public function myTask() {
+	//查看批阅过的任务
+	public function viewReadTask() {
 	    $page = I('page', '1', 'intval');
 	    $rows = I('rows', '10', 'intval');
 	    
@@ -491,16 +491,15 @@ class ContentController extends HomeController {
 	    if(empty($group_id)) {
 	        $this->renderFailed('班级为空');
 	    }
-	    $is_read = I('is_read', 0, 'intval');
 	     
 	    $Content = M('content')->alias('c');
 	    $map['group_id'] = $group_id;
 	    $map['is_admin'] = 0;
-	    $map['is_read'] = $is_read; //是否批阅
+	    $map['is_read'] = 1; //是否批阅
 	    $map['c.status'] = 1;
 	    $map['c.uid'] = $uid;
 	     
-	    $list = $Content->field('c.id,c.title,c.create_time,m.nickname,m.avatar')->where($map)
+	    $list = $Content->field('c.id,c.task_id,c.title,c.create_time,m.nickname,m.avatar')->where($map)
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
 	    ->join('__TASK__ t on t.id = c.task_id', 'left')
 	    ->page($page, $rows)
@@ -509,14 +508,46 @@ class ContentController extends HomeController {
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }
-	     
-	    $api = new UserApi();
-	    $list = $api->setDefaultAvatar($list);
+	    
+	    $Api = new UserApi;
+	    $Content = M('Content_material');
 	    foreach ($list as &$row) {
+	        $row['is_like'] = 0;
 	        $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+	        $result = $Content->field('type,value,cover_url')
+	        ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
+	        ->limit(3)->select();
+	        
+	        if(count($result) > 0) {
+    	        foreach ($result as $key=>$content) {
+    	            $row['pic'][$key]['cover_url'] = $content['cover_url'];
+    	            $row['pic'][$key]['type'] = $content['type'];
+    	            $row['pic'][$key]['value'] = $content['value'];
+    	        }
+	        }
+	        
+	        $map = array();
+	        $map['work_id'] = $row['id'];
+	        $map['task_id'] = $row['task_id'];
+	        
+	        $Comment = M('comment')->alias('c');
+	        $comment_list = $Comment->field('c.id,c.content,m.nickname')
+	        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+	        ->where($map)
+	        ->find();
+	        
+	        if(!empty($comment_list['id'])) {
+	            $row['comment'] = rawurldecode($comment_list['content']);
+	            $row['comment_username'] = $comment_list['nickname'];
+	        }
+	        
+	        $is_like = $Api->isLike($uid, $row['id']);
+	        $row['is_like'] = (!empty($is_like))?1:0;
+	        
 	    }
+	    $list = $Api->setDefaultAvatar($list);
 	     
-	    $this->renderSuccess('批阅作业列表', $list);
+	    $this->renderSuccess('查看批阅过的任务列表', $list);
 	}
 	
 	//批阅作业列表
