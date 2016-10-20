@@ -702,6 +702,7 @@ class ContentController extends HomeController {
         $map['_complex'] = $where;
         $map['c.status'] = 1;
         $map['c.org_id']= 0;
+        $map['c.task_id'] = 0;
         $m = M('Content');
         $list = $m->alias('c')
         ->page($page, $rows)
