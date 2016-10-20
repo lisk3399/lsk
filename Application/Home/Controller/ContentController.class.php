@@ -449,6 +449,15 @@ class ContentController extends HomeController {
 	    
 	    $detail['create_time'] = date('Y-m-d H:i', $detail['create_time']);
         $detail['deadline'] = date('Y-m-d', $detail['deadline']);
+        
+        $uid = is_login();
+        //是否已经参与
+        $row['is_done_task'] = 0;
+        if(!empty($uid)) {
+            if($this->isDoneTask($uid, $row['task_id'])) {
+                $row['is_done_task'] = 1;
+            }
+        }
 	    foreach ($result as $key=>$content) {
 	        $detail['pic'][$key]['cover_url'] = $content['cover_url'];
 	        $detail['pic'][$key]['type'] = $content['type'];
