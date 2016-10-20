@@ -832,6 +832,7 @@ class ContentController extends HomeController {
         }
         
         $map['c.status'] = 1;
+        $map['c.task_id'] = 0;
         $map['g.org_id'] = $org_id;
         $Content = M('Content');
         $list = $Content->alias('c')
