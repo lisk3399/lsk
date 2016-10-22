@@ -73,6 +73,7 @@ return array(
         'COMMENT' => 'COMMENT',
         'FRIENDS' => 'FRIENDS',
         'SYSTEM' => 'SYSTEM',
+        'WAP' => 'WAP'
     ),
     /* 七牛配置文件 */
     'QINIU' => array(

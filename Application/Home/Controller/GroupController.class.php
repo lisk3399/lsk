@@ -10,6 +10,10 @@ namespace Home\Controller;
 use User\Api\UserApi;
 class GroupController extends HomeController {
     
+    const ORG_ADMIN = 1;
+    const USER_JOINED_GROUP = 2;
+    const USER_NOT_JOINED_GROUP = 3;
+    
     //热门群组(固定的几个群组)
     public function hotGroup() {
         $page = I('page', '1', 'intval');
@@ -340,6 +344,11 @@ class GroupController extends HomeController {
                 //给申请人发消息
                 $Api->sendMessage($apply_uid, C('MESSAGE_TYPE.SYSTEM'), $extra_info);
                 
+//                 //发送优惠券
+//                 $extra_info['content'] = '恭喜你获得优惠券，点击查看'; 
+//                 $extra_info['extra'] = 'html5地址';
+//                 $Api->sendMessage($apply_uid, C('MESSAGE_TYPE.WAP'), $extra_info);
+                
                 //设置已读
                 M('Message')->data(array('is_read'=>1))->where(array('id'=>$message_id))->save();
                 
@@ -502,14 +511,14 @@ class GroupController extends HomeController {
 	    $info['is_admin'] = 0;
 	    if($uid) {
     	    if($this->isGroupOwner($uid, $group_id)) {
-    	        $info['is_admin'] = 1;
+    	        $info['is_admin'] = self::ORG_ADMIN;
     	    } 
     	    else {
     	        //是否加入班级,历史问题
     	        if($this->checkJoin($uid, $group_id)) {
-    	            $info['is_admin'] = 2;
+    	            $info['is_admin'] = self::USER_JOINED_GROUP;
     	        } else {
-    	            $info['is_admin'] = 3;
+    	            $info['is_admin'] = self::USER_NOT_JOINED_GROUP;
     	        }
     	    }
 	    }

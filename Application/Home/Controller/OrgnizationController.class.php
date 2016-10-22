@@ -467,6 +467,7 @@ class OrgnizationController extends HomeController {
                 $rows = C('API_MAX_ROWS');
             }
             
+            $map['is_delete'] = 0;
             $map['name'] = array('like', "%$name%");
             $Org = M('orgnization');
             $list = $Org->where($map)->page($page, $rows)->order('id desc')->select();
