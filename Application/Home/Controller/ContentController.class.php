@@ -58,10 +58,7 @@ class ContentController extends HomeController {
 	            $this->renderFailed('该班级id不存在');
 	        }
 	        
-	        //描述和详细内容不能同时为空
-	        if(empty($description) && empty($content)) {
-	            $this->renderFailed('内容不能为空');
-	        }
+	        //是否有附件内容
 	        $is_hav_content = 0;
 	        if(!empty($content)) {
     	        if(ini_get('magic_quotes_gpc')) {
@@ -70,8 +67,14 @@ class ContentController extends HomeController {
     	        if(!is_valid_json($content)) {
     	            $this->renderFailed('json格式不对');
     	        }
+    	        //json数组为空判断
+    	        $content_arr = json_decode($content, TRUE);
+    	        if(empty($description) && count($content_arr) == 0) {
+    	            $this->renderFailed('描述和详细内容不能都为空');
+    	        }
     	        $is_hav_content = 1;
 	        }
+	        
 	        //创建内容content表插入数据，返回content_id
 	        $Content = M("Content");
 	        $data = array();
@@ -98,7 +101,7 @@ class ContentController extends HomeController {
 	            $ContentMaterial = M("Content_material");
 	            $create_time = NOW_TIME;
 	            $dataList = array();
-	            $content_arr = json_decode($content, TRUE);
+	            
 	            foreach ($content_arr as $row) {
 	                $dataList[] = array(
 	                    'content_id'=>$content_id,
