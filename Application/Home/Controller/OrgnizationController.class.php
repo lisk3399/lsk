@@ -496,7 +496,7 @@ class OrgnizationController extends HomeController {
             }
             //是否已经加入
             if($this->isJoinOrg($uid, $org_id)) {
-                $this->renderFailed('您已关注该机构');
+                $this->renderFailed('您已加入该机构');
             }
             $map['uid'] = $uid;
             $map['org_id'] = $org_id;

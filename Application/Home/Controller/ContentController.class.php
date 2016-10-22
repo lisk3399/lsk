@@ -325,10 +325,14 @@ class ContentController extends HomeController {
 	    $uid = is_login();
 	    $cm = M('Content_material');
 	    foreach ($list as $key => &$row) {
-	        $result = $cm->field('value')
-	        ->where(array('content_id'=>$row['id'], 'type'=>'PIC')) //获取任务封面图
+	        $cm_map['content_id'] = $row['id'];
+	        $cm_map['_string'] = 'type="PIC" OR type="VIDEO"';
+	        $result = $cm->field('value,type')
+	        ->where($cm_map) //获取任务封面图
             ->find();
+	        
 	        $row['cover_url'] = !empty($result['value']) ? $result['value'] : '';
+	        $row['pic_type'] = !empty($result['type']) ? $result['type'] : '';
 	        
 	        //截至时间
 	        $row['is_end'] = 0;
@@ -467,9 +471,50 @@ class ContentController extends HomeController {
 	    $this->renderSuccess('', $detail);
 	}
 	
+	//删除作业
+	public function deleteTask() {
+	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+	            $this->renderFailed('请先登录');
+	        }
+	        
+	        $content_id = I('content_id', '', 'intval');
+	        if(empty($content_id)) {
+	            $this->renderFailed('作品id为空');
+	        }
+// 	        $task_id = I('task_id', '', 'intval');
+// 	        if(empty($task_id)) {
+// 	            $this->renderFailed('任务id为空');
+// 	        }
+            
+	        $map['id'] = $content_id;
+	        //$map['task_id'] = $task_id;
+	        $Content = M('content');
+	        $result = $Content->field('uid')->where($map)->find();
+	        if(empty($result['uid'])) {
+	            $this->renderFailed('任务不存在');
+	        }
+            if($uid != $result['uid']) {
+                $this->renderFailed('您没有权限删除哦');
+            }
+	        
+	        $data['status'] = -1;
+	        if($Content->where($map)->save($data)) {
+	            $this->renderSuccess('删除成功');
+	        }
+	        
+	        $this->renderFailed('删除失败');
+	    }
+	}
+	
 	//批阅作业
 	public function readTask() {
 	    if(IS_POST) {
+	        $uid = is_login();
+	        if(!$uid) {
+                $this->renderFailed('请先登录');
+	        }
 	        $content_id = I('content_id', '', 'intval');
 	        if(empty($content_id)) {
 	            $this->renderFailed('作品id为空');
