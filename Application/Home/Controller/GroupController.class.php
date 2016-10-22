@@ -493,7 +493,7 @@ class GroupController extends HomeController {
 	    
 	    $Group = M('group');
 	    $map['id'] = $group_id;
-	    $info = $Group->field('id,group_name,description,cover_url,background_url')->where($map)->find();
+	    $info = $Group->field('id,org_id,group_name,description,cover_url,background_url')->where($map)->find();
 	    
 	    $info['member_num'] = M('member_group')->where(array('group_id'=>$group_id, 'status'=>'1'))->count();
 	    $info['content_num'] = M('content')->where(array('group_id'=>$group_id, 'status'=>1))->count();
@@ -510,9 +510,11 @@ class GroupController extends HomeController {
 	    $uid = is_login();
 	    $info['is_admin'] = 0;
 	    if($uid) {
-    	    if($this->isGroupOwner($uid, $group_id)) {
-    	        $info['is_admin'] = self::ORG_ADMIN;
-    	    } 
+	        $Org = new OrgnizationController();
+	        //是否机构管理员或者班级创建者
+	        if($Org->isOrgAdmin($uid, $info['org_id']) || $this->isGroupOwner($uid, $group_id)) {
+	            $info['is_admin'] = self::ORG_ADMIN;
+	        }
     	    else {
     	        //是否加入班级,历史问题
     	        if($this->checkJoin($uid, $group_id)) {
