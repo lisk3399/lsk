@@ -4,7 +4,6 @@ namespace Home\Controller;
 use User\Api\UserApi;
 
 class ContentController extends HomeController {
-    
     //发现首页滚动切换
     public function topSlider() {
         if(IS_POST) {
@@ -81,10 +80,16 @@ class ContentController extends HomeController {
 	        $data['description'] = $description;
 	        $data['create_time'] = NOW_TIME;
 	        $data['group_id'] = $group_id;
+	        
 	        //用户完成任务标识
 	        $task_id = I('task_id', '', 'intval');
 	        if(!empty($task_id)) {
 	            $data['task_id'] = $task_id;
+	            //检查任务是否已经删除
+	            $status = $Content->field('status')->where(array('task_id'=>$task_id, 'is_admin'=>1))->find();
+	            if((int)$status['status'] <= 0) {
+	                $this->renderFailed('抱歉，该任务已被管理员删除');
+	            }
 	        }
 	        
 	        $content_id = $Content->data($data)->add();
@@ -310,6 +315,7 @@ class ContentController extends HomeController {
 	    $map['group_id'] = $group_id;
 	    $map['is_admin'] = 1;
 	    $map['status'] = 1;
+	    
 	    $Content = M('content')->alias('c');
 	    $list = $Content->field('c.id,c.uid,c.title,c.description,t.id as task_id,t.deadline,g.group_name')->where($map)
 	    ->join('__GROUP__ g on g.id = c.group_id', 'left')
@@ -353,6 +359,7 @@ class ContentController extends HomeController {
     	        $cond['group_id'] = $group_id;
     	        $cond['task_id'] = $row['task_id'];
     	        $cond['is_admin'] = 0;
+    	        $cond['status'] = 1;
     	        $row['complete_num'] = (int)M('content')->where($cond)->count();
 	        }
 	    }
