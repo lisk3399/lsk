@@ -479,17 +479,12 @@ class ContentController extends HomeController {
 	            $this->renderFailed('请先登录');
 	        }
 	        
-	        $content_id = I('content_id', '', 'intval');
-	        if(empty($content_id)) {
+	        $id = I('id', '', 'intval');
+	        if(empty($id)) {
 	            $this->renderFailed('作品id为空');
 	        }
-// 	        $task_id = I('task_id', '', 'intval');
-// 	        if(empty($task_id)) {
-// 	            $this->renderFailed('任务id为空');
-// 	        }
             
-	        $map['id'] = $content_id;
-	        //$map['task_id'] = $task_id;
+	        $map['id'] = $id;
 	        $Content = M('content');
 	        $result = $Content->field('uid')->where($map)->find();
 	        if(empty($result['uid'])) {
