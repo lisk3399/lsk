@@ -23,7 +23,7 @@ class MessageController extends HomeController {
 	        $rows = C('API_MAX_ROWS');
 	    }
 	    $map['uid'] = $uid;
-	    $list = M('Message')->where($map)->select();
+	    $list = M('Message')->where($map)->order('id desc')->select();
 	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
