@@ -327,11 +327,11 @@ class ContentController extends HomeController {
 	    foreach ($list as $key => &$row) {
 	        $cm_map['content_id'] = $row['id'];
 	        $cm_map['_string'] = 'type="PIC" OR type="VIDEO"';
-	        $result = $cm->field('value,type')
+	        $result = $cm->field('cover_url,type')
 	        ->where($cm_map) //获取任务封面图
             ->find();
 	        
-	        $row['cover_url'] = !empty($result['value']) ? $result['value'] : '';
+	        $row['cover_url'] = !empty($result['cover_url']) ? $result['cover_url'] : '';
 	        $row['pic_type'] = !empty($result['type']) ? $result['type'] : '';
 	        
 	        //截至时间
