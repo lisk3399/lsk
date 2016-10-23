@@ -282,7 +282,13 @@ class ContentController extends HomeController {
 	        if($content_id && $is_hav_content) {
 	            $ContentMaterial = M("Content_material");
 	            
-	            foreach ($content_arr as $row) {
+	            foreach ($content_arr as $key=>$row) {
+	                if(strtolower($row['type']) == 'pic' || strtolower($row['type']) == 'video') {
+	                    if($row['value'] == '' || $row['cover_url'] == '') {
+	                        unset($row[$key]);
+	                        continue;
+	                    }
+	                }
 	                $dataList[] = array(
 	                    'content_id'=>$content_id,
 	                    'type'=>$row['type'],
@@ -291,6 +297,7 @@ class ContentController extends HomeController {
 	                    'create_time'=>$create_time
 	                );
 	            }
+	            
 	            if(!$ContentMaterial->addAll($dataList)) {
 	                $this->renderFailed('内容详情添加失败，请稍后再试');
 	            }
