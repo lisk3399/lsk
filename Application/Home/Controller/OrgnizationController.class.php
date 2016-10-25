@@ -314,6 +314,45 @@ class OrgnizationController extends HomeController {
         $this->renderFailed('暂无信息');
     }
     
+    //编辑机构信息
+    public function editOrg() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录');
+            }
+            
+            $data = array();
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构id为空');
+            }
+            if(!$this->isOrgAdmin($uid, $org_id)) {
+                $this->renderFailed('不是机构管理员');
+            }
+            $org_name = I('post.org_name', '', 'trim');
+            if(!empty($org_name)) {
+                $data['name'] = $org_name;
+            }
+            $description = I('post.description', '', 'trim');
+            if(!empty($description)) {
+                $data['description'] = $description;
+            }
+            $cover_url = I('post.cover_url', '', 'trim');
+            if(!empty($cover_url)) {
+                $data['cover_url'] = $cover_url;
+            }
+            
+            $Org = M('orgnization');
+            $map['id'] = $org_id;
+            
+            if($Org->where($map)->save($data)) {
+                $this->renderSuccess('更新成功');
+            }
+            $this->renderFailed('更新失败');
+        }
+    }
+    
     //获取管理员数
     public function getAdminNum($org_id) {
         $Admin = M('admin');
