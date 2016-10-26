@@ -57,6 +57,10 @@ class ContentController extends HomeController {
 	        if(!$this->isGroupidExists($group_id)) {
 	            $this->renderFailed('该班级id不存在');
 	        }
+	        $Group = new GroupController();
+	        if(!$Group->checkJoin($uid, $group_id)) {
+	            $this->renderFailed('您未加入该班级');
+	        }
 	        
 	        //是否有附件内容
 	        $is_hav_content = 0;
@@ -84,7 +88,7 @@ class ContentController extends HomeController {
 	        $data['create_time'] = NOW_TIME;
 	        $data['group_id'] = $group_id;
 	        
-	        //用户完成任务标识
+	        //用户完成作业
 	        $task_id = I('task_id', '', 'intval');
 	        if(!empty($task_id)) {
 	            $data['task_id'] = $task_id;
@@ -1298,6 +1302,7 @@ class ContentController extends HomeController {
         $map['is_admin'] = 0;
         $map['task_id'] = $task_id;
         $map['uid'] = $uid;
+        $map['status'] = 1; 
 
         return $Content->field('id')->where($map)->find();
     }

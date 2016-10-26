@@ -552,7 +552,7 @@ class GroupController extends HomeController {
 	/**
 	 * 检查某用户是否加入某班级
 	 */
-	private function checkJoin($uid, $group_id) {
+	public function checkJoin($uid, $group_id) {
 	    $Group = M('member_group');
 	    $map['uid'] = $uid;
 	    $map['group_id'] = $group_id;
