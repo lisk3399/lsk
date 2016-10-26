@@ -368,7 +368,7 @@ class ContentController extends HomeController {
 	        //是否已经参与
 	        $row['is_done_task'] = 0;
 	        if($row['is_end'] == 1) {
-	            $row['is_done_task'] = 0;
+	            $row['is_done_task'] = 1;
 	        }
 	        //2016.10.26注释，用户可以多次完成作业
 // 	        if(!empty($uid)) {
