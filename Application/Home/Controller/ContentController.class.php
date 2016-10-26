@@ -367,11 +367,12 @@ class ContentController extends HomeController {
 	        }
 	        //是否已经参与
 	        $row['is_done_task'] = 0;
-	        if(!empty($uid)) {
-	           if($this->isDoneTask($uid, $row['task_id'])) {
-	               $row['is_done_task'] = 1;
-	           }
-	        }
+	        //2016.10.26注释，用户可以多次完成作业
+// 	        if(!empty($uid)) {
+// 	           if($this->isDoneTask($uid, $row['task_id'])) {
+// 	               $row['is_done_task'] = 1;
+// 	           }
+// 	        }
 	        $row['deadline'] = date('Y-m-d H:i', $row['deadline']);
 	        
 	        //多少人完成作业(仅第一条)
