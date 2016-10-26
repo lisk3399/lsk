@@ -635,7 +635,7 @@ class ContentController extends HomeController {
 	    $this->renderSuccess('查看批阅过的任务列表', $list);
 	}
 	
-	//批阅作业列表
+	//批阅作业列表(已批阅/未批阅)
 	public function readTaskList() {
 	    $page = I('page', '1', 'intval');
 	    $rows = I('rows', '10', 'intval');
@@ -644,25 +644,42 @@ class ContentController extends HomeController {
 	    if($rows > C('API_MAX_ROWS')) {
 	        $rows = C('API_MAX_ROWS');
 	    }
-	     
-	    $group_id = I('group_id', '', 'intval');
+	    
+	    $uid = is_login();
+	    if(!$uid) {
+	        $this->renderFailed('需要登录');
+	    }
+ 	    $group_id = I('group_id', '', 'intval');
 	    if(empty($group_id)) {
 	        $this->renderFailed('班级为空');
 	    }
 	    $is_read = I('is_read', 0, 'intval');
 	    
+	    
+	    //如果登录用户未机构或班级管理员
+	    $Org = new OrgnizationController();
+	    $Group = new GroupController();
+	    $org_id = $Group->getOrgIdByGroupId($group_id);
+	    if($Org->isOrgAdmin($uid, $org_id) || $this->isGroupOwner($uid, $group_id)) {
+	         $map['is_admin'] = 1;
+	    } else {//登录用户未班级用户
+	        $map['is_admin'] = 0;
+	        $map['c.uid'] = $uid;
+	    }
+	    
 	    $Content = M('content')->alias('c');
 	    $map['group_id'] = $group_id;
-	    $map['is_admin'] = 0;
 	    $map['c.is_read'] = $is_read; //是否批阅
 	    $map['c.status'] = 1;
 	    
-	    $list = $Content->field('c.id,c.title,c.task_id,c.create_time,m.nickname,m.avatar')->where($map)
+	    $list = $Content->field('c.id,c.title,c.task_id,c.create_time,m.nickname,m.avatar')
+	    ->where($map)
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
 	    //->join('__TASK__ t on t.id = c.task_id', 'left')
 	    ->page($page, $rows)
+	    ->order('c.id desc')
 	    ->select();
-	     
+	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有更多了');
 	    }

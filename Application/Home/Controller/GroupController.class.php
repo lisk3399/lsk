@@ -1201,4 +1201,12 @@ class GroupController extends HomeController {
 
 	    return $group_stat;
 	}
+	
+	//根据班级id获取机构id
+	public function getOrgIdByGroupId($group_id) {
+	    $map['id'] = $group_id;
+	    $map['is_delete'] = 0;
+	    $ret = M('group')->field('org_id')->where($map)->find();
+	    return $ret['org_id'];
+	}
 }	
