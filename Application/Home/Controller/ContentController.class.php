@@ -376,7 +376,7 @@ class ContentController extends HomeController {
 // 	               $row['is_done_task'] = 1;
 // 	           }
 // 	        }
-	        $row['deadline'] = date('Y-m-d H:i', $row['deadline']);
+	        $row['deadline'] = date('Y-m-d', $row['deadline']);
 	        
 	        //多少人完成作业(仅第一条)
 	        if($key == 0) {
