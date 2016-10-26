@@ -656,21 +656,20 @@ class ContentController extends HomeController {
 	    $is_read = I('is_read', 0, 'intval');
 	    
 	    
-	    //如果登录用户未机构或班级管理员
+	    //如果登录用户不是机构或班级管理员
 	    $Org = new OrgnizationController();
 	    $Group = new GroupController();
 	    $org_id = $Group->getOrgIdByGroupId($group_id);
-	    if($Org->isOrgAdmin($uid, $org_id) || $this->isGroupOwner($uid, $group_id)) {
-	         $map['is_admin'] = 1;
-	    } else {//登录用户未班级用户
-	        $map['is_admin'] = 0;
-	        $map['c.uid'] = $uid;
+	    if(!$Org->isOrgAdmin($uid, $org_id) && !$this->isGroupOwner($uid, $group_id)) {
+	         $map['c.uid'] = $uid;
 	    }
 	    
 	    $Content = M('content')->alias('c');
+	    $map['is_admin'] = 0;
 	    $map['group_id'] = $group_id;
 	    $map['c.is_read'] = $is_read; //是否批阅
 	    $map['c.status'] = 1;
+	    $map['c.task_id'] = array("gt", 0);
 	    
 	    $list = $Content->field('c.id,c.title,c.task_id,c.create_time,m.nickname,m.avatar')
 	    ->where($map)
