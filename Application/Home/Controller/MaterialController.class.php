@@ -426,4 +426,19 @@ class MaterialController extends HomeController {
 	    }
         return false;
 	}
+	
+	//获取录音封面图
+	public function getRecordCover() {
+	    $arr = array();
+	    $arr[0]['title'] = 'cover_1';
+	    $arr[0]['cover_url'] = 'http://vod.doushow.com/luyinfengmian1.jpg';
+	    $arr[1]['title'] = 'cover_2';
+	    $arr[1]['cover_url'] = 'http://vod.doushow.com/luyinfengmian2.jpg';
+	    $arr[2]['title'] = 'cover_3';
+	    $arr[2]['cover_url'] = 'http://vod.doushow.com/luyinfengmian3.jpg';
+	    $arr[3]['title'] = 'cover_4';
+	    $arr[3]['cover_url'] = 'http://vod.doushow.com/luyinfengmian4.jpg';
+	    
+	    $this->renderSuccess('录音封面', $arr);
+	}
 }
