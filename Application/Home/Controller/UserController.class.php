@@ -190,7 +190,7 @@ class UserController extends HomeController {
 	public function userInfo(){
 	    $uid = is_login();
 	    if(!$uid) {
-	        $this->renderFailed('请先登录');
+	        $this->renderFailed('请先登录', -1);
 	    }
 	    $User = new UserApi;
 	    $userinfo = $User->info($uid);
