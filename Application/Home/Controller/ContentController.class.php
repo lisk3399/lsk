@@ -348,7 +348,6 @@ class ContentController extends HomeController {
 	        $this->renderFailed('没有更多了');
 	    }
 	    
-	    $today = strtotime(date("Y-m-d"))+86400;
 	    $uid = is_login();
 	    $cm = M('Content_material');
 	    foreach ($list as $key => &$row) {
@@ -363,8 +362,7 @@ class ContentController extends HomeController {
 	        
 	        //截至时间
 	        $row['is_end'] = 0;
-	        
-	        if($row['deadline'] <= $today) {
+	        if(strtotime(date("Y-m-d", $row['deadline']))+86400 <= NOW_TIME) {
 	            $row['is_end'] = 1;
 	        }
 	        //是否已经参与
