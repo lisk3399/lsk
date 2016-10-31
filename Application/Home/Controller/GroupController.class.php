@@ -37,7 +37,7 @@ class GroupController extends HomeController {
         $this->renderSuccess('我加入的班级', $list);
     }
     
-    //我加入的群组
+    //我加入的群组(某个机构)
     public function myJoinedGroup() {
         if(IS_POST) {
             $uid = is_login();
@@ -53,25 +53,20 @@ class GroupController extends HomeController {
                 $rows = C('API_MAX_ROWS');
             }
             
-            $Mg = M('member_group');
-            $mg_arr = $Mg->field('group_id')->where(array('uid'=>$uid, 'status'=>1))->select();
-            $group_ids = array();
-            foreach ($mg_arr as $row) {
-                $group_ids[] = $row['group_id'];
+            $map['mg.uid'] = $uid;
+            $map['mg.status'] = 1;
+            $map['g.is_delete'] = 0;
+            $map['g.uid'] = array('NEQ', $uid);
+            //指定机构下的班级
+            $org_id = I('post.org_id', '', 'intval');
+            if(!empty($org_id)) {
+                $map['g.org_id'] = $org_id;
             }
-
-            $list = array();
-            if(!empty($group_ids)) {
-                $map['is_delete'] = 0;
-                $map['id'] = array('IN', $group_ids);
-                $map['uid'] = array('NEQ', $uid);
-                $Group = M('group');
-                $list = $Group->field('id,uid,group_name,cover_url')
-                ->page($page, $rows)
-                ->where($map)
-                ->order('id desc')
-                ->select();
-            }
+            
+            $Mg = M('member_group')->alias('mg');
+            $list = $Mg->field('g.id,g.uid,g.group_name,g.cover_url,mg.group_id')
+            ->join('__GROUP__ g on g.id = mg.group_id', 'left')
+            ->where($map)->order('g.id desc')->select();
 
             if(count($list) == 0) {
                 $this->renderFailed('没有更多了');
