@@ -64,7 +64,7 @@ class GroupController extends HomeController {
             }
             
             $Mg = M('member_group')->alias('mg');
-            $list = $Mg->field('g.id,g.group_name,g.cover_url,mg.group_id,m.nickname as teacher')
+            $list = $Mg->field('g.id,g.group_name,g.cover_url,mg.group_id,m.nickname')
             ->join('__GROUP__ g on g.id = mg.group_id', 'left')
             ->join('__MEMBER__ m on m.uid = g.uid', 'left')
             ->where($map)->order('g.id desc')->select();
@@ -85,7 +85,7 @@ class GroupController extends HomeController {
                 $content_map['group_id'] = $row['id'];
                 $mg_map['group_id'] = $row['group_id'];
                 $content_num = $Content->where($content_map)->count();
-                $row['content_num'] = $content_num;
+                $row['work_num'] = $content_num;
                 
                 $member_num = $member_num = $Mg->where($mg_map)->count();
                 $row['member_num'] = $member_num;
