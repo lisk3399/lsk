@@ -93,6 +93,7 @@ class GroupController extends HomeController {
             //查找机构下的所有班级id
             $Group = M('group');
             $map['org_id'] = $org_id;
+            $map['is_delete'] = 0;
             $id_arr = $Group->field('id')->where($map)->select();
             if(count($id_arr) == 0) {
                 $this->renderFailed('该机构下还没创建班级');
@@ -107,6 +108,7 @@ class GroupController extends HomeController {
             $map['g.org_id'] = $org_id;
             $map['mg.status'] = 1;
             $map['g.is_delete'] = 0;
+            $map['mg.uid'] = $uid;
             $map['g.uid'] = array('NEQ', $uid);
             
             $Mg = M('member_group')->alias('mg');
