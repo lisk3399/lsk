@@ -114,17 +114,16 @@ class GroupController extends HomeController {
             ->join('__GROUP__ g on g.id = mg.group_id', 'left')
             ->where($map)->select();
             
-            if(count($group_joined_arr) == 0) {
-                $this->renderFailed('还未加入任何班级');
+            //如果已经有加入班级
+            if(count($group_joined_arr) != 0) {
+                $group_joined_ids = array();
+                foreach ($group_joined_arr as $row) {
+                    $group_joined_ids[] = $row['id'];
+                }
+                
+                //所有班级排除已经加入的班级
+                $group_ids = array_diff($group_ids, $group_joined_ids);
             }
-            
-            $group_joined_ids = array();
-            foreach ($group_joined_arr as $row) {
-                $group_joined_ids[] = $row['id'];
-            }
-            
-            //所有班级排除已经加入的班级
-            $group_ids = array_diff($group_ids, $group_joined_ids);
             
             if(count($group_ids) == 0) {
                 $this->renderFailed('没有更多了');
