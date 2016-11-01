@@ -46,7 +46,7 @@ class GroupController extends HomeController {
             }
              
             $page = I('page', '1', 'intval');
-            $rows = I('rows', '20', 'intval');
+            $rows = I('rows', '5', 'intval');
              
             //限制单次最大读取数量
             if($rows > C('API_MAX_ROWS')) {
@@ -64,14 +64,33 @@ class GroupController extends HomeController {
             }
             
             $Mg = M('member_group')->alias('mg');
-            $list = $Mg->field('g.id,g.uid,g.group_name,g.cover_url,mg.group_id')
+            $list = $Mg->field('g.id,g.group_name,g.cover_url,mg.group_id,m.nickname as teacher')
             ->join('__GROUP__ g on g.id = mg.group_id', 'left')
+            ->join('__MEMBER__ m on m.uid = g.uid', 'left')
             ->where($map)->order('g.id desc')->select();
 
             if(count($list) == 0) {
                 $this->renderFailed('没有更多了');
             }
         
+            //统计动态数和成员数
+            $content_map['task_id'] = 0; 
+            $content_map['status'] = 1;
+            $mg_map['status'] = 1;
+            $content_num = 0;
+            $member_num = 0;
+            $Mg = M('member_group');
+            $Content = M('content');
+            foreach ($list as &$row) {
+                $content_map['group_id'] = $row['id'];
+                $mg_map['group_id'] = $row['group_id'];
+                $content_num = $Content->where($content_map)->count();
+                $row['content_num'] = $content_num;
+                
+                $member_num = $member_num = $Mg->where($mg_map)->count();
+                $row['member_num'] = $member_num;
+            }
+            
             $this->renderSuccess('我加入的班级', $list);
         }
     }
