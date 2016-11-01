@@ -76,6 +76,69 @@ class GroupController extends HomeController {
         }
     }
     
+    //当前机构未加入班级列表
+    public function groupNotJoined() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(empty($uid)) {
+                $this->renderFailed('需要登录', -1);
+            }
+
+            //指定机构下的班级
+            $org_id = I('post.org_id', '', 'intval');
+            if(empty($org_id)) {
+                $this->renderFailed('机构为空');
+            }
+            
+            //查找机构下的所有班级id
+            $Group = M('group');
+            $map['org_id'] = $org_id;
+            $id_arr = $Group->field('id')->where($map)->select();
+            if(count($id_arr) == 0) {
+                $this->renderFailed('该机构下还没创建班级');
+            }
+            
+            $group_ids = array();
+            foreach ($id_arr as $row) {
+                $group_ids[] = $row['id'];
+            }
+            
+            //查找已经加入的班级
+            $map['g.org_id'] = $org_id;
+            $map['mg.status'] = 1;
+            $map['g.is_delete'] = 0;
+            $map['g.uid'] = array('NEQ', $uid);
+            
+            $Mg = M('member_group')->alias('mg');
+            $group_joined_arr = $Mg->field('g.id')
+            ->join('__GROUP__ g on g.id = mg.group_id', 'left')
+            ->where($map)->select();
+            
+            if(count($group_joined_arr) == 0) {
+                $this->renderFailed('还未加入任何班级');
+            }
+            
+            $group_joined_ids = array();
+            foreach ($group_joined_arr as $row) {
+                $group_joined_ids[] = $row['id'];
+            }
+            
+            //所有班级排除已经加入的班级
+            $group_ids = array_diff($group_ids, $group_joined_ids);
+            
+            if(count($group_ids) == 0) {
+                $this->renderFailed('没有更多了');
+            }
+            
+            $map = array();
+            $map['is_delete'] = 0;
+            $map['id'] = array('in', $group_ids);
+            $list = $Group->field('id,group_name,description,cover_url')->where($map)->select();
+            
+            $this->renderSuccess('当前机构还未加入的班级列表', $list);
+        }
+    }
+    
 	/**
 	 * 我创建的群组
 	 */
