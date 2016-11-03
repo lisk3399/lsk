@@ -214,7 +214,7 @@ class ContentController extends HomeController {
 	        $this->renderFailed('没有标签了');
 	    }
 	    
-	    $this->renderSuccess($list);
+	    $this->renderSuccess('发布任务标签列表', $list);
  	}
 	/**
 	 * 管理员发布作业和任务
