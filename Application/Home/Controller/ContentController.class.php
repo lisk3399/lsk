@@ -208,7 +208,7 @@ class ContentController extends HomeController {
 	//获取发布任务标签
 	public function getPubTaskTag() {
 	    $Tag = M('tags');
-	    $list = $Tag->field('id as tag_id,name')->where(array('type'=>'TASK'))->select();
+	    $list = $Tag->field('id,name,sort')->where(array('type'=>'TASK'))->select();
 	    
 	    if(count($list) == 0) {
 	        $this->renderFailed('没有标签了');
