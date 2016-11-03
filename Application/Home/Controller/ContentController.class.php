@@ -205,6 +205,17 @@ class ContentController extends HomeController {
 	    }
 	}
 
+	//获取发布任务标签
+	public function getPubTaskTag() {
+	    $Tag = M('tags');
+	    $list = $Tag->field('id as tag_id,name')->where(array('type'=>'TASK'))->select();
+	    
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有标签了');
+	    }
+	    
+	    $this->renderSuccess($list);
+ 	}
 	/**
 	 * 管理员发布作业和任务
 	 */
@@ -260,6 +271,11 @@ class ContentController extends HomeController {
 	        $deadline = I('deadline', '', 'intval'); 
 	        $data['deadline'] = $deadline;
 	        $create_time = NOW_TIME;
+	        //任务标签
+	    	$tag_id = I('tag_id', '', 'intval');
+	        if(!empty($tag_id)) {
+	            $data['tag_id'] = $tag_id;
+	        }
 	        if(empty($deadline)) {
 	            $data['deadline'] = $create_time + 86400*5; //截至时间，默认5天过期
 	        }
