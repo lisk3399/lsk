@@ -353,9 +353,10 @@ class ContentController extends HomeController {
 	    $map['status'] = 1;
 	    
 	    $Content = M('content')->alias('c');
-	    $list = $Content->field('c.id,c.uid,c.title,c.description,t.id as task_id,t.deadline,g.group_name')->where($map)
+	    $list = $Content->field('c.id,c.uid,c.title,c.description,t.id as task_id,t.deadline,g.group_name,ifnull(tg.name,"其他") as tag_name')->where($map)
 	    ->join('__GROUP__ g on g.id = c.group_id', 'left')
 	    ->join('__TASK__ t on t.id = c.task_id', 'left')
+	    ->join('__TAGS__ tg on tg.id = t.tag_id', 'left')
 	    ->order('t.id desc')
 	    ->page($page, $rows)
 	    ->select();
