@@ -484,9 +484,10 @@ class ContentController extends HomeController {
 	    
 	    $Content = M('task')->alias('t');
 	    $map['task_id'] = $task_id;
-	    $detail = $Content->field('c.id,c.task_id,c.uid,c.title,c.description,t.deadline,m.nickname')
+	    $detail = $Content->field('c.id,c.task_id,c.uid,c.title,c.description,t.deadline,m.nickname,ifnull(tg.name,"其他") as tag_name')
 	    ->join('__CONTENT__ c on t.id = c.task_id', 'left')
 	    ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+	    ->join('__TAGS__ tg on tg.id = t.tag_id', 'left')
 	    ->where($map)->find();
 	    
 	    if(count($detail) == 0) {
