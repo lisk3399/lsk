@@ -11,11 +11,13 @@ use Think\Page;
 class InstitutionController extends AdminController {
 
 
+
        public function index()
     {
-        if ($_GET['nickname']) 
+        
+        if (I('get.nickname','','htmlspecialchars')) 
         {
-        $name = $_GET['nickname'];   
+        $name = I('get.nickname','','htmlspecialchars');
         $where['name'] =['like','%'.$name.'%'];
       $list = M('_orgnization  as  c')
       ->join('__MEMBER__  as  m  on  c.uid = m.uid')
@@ -27,33 +29,19 @@ class InstitutionController extends AdminController {
         }
 
     else{ 
-             if(!empty($type)) 
-        {
-            $map['w.type'] = $type;
-            $map['is_delete'] = 0;
-            if(!in_array($type, array('DUBBING', 'LIPSYNC', 'ORIGINAL')))
-             {
-                $this->error('类型不正确');
-            }
-            $types = array(
-                'DUBBING' => '机构',
-               
-            );
-        } 
-        else
-         {
+
             $map['is_delete'] = 0;
             $types[$type] = '全部';
+            
+
+            //获取机构列表
+            $list = $this->getWorkList($map); 
+
+             int_to_string($list);
+            $this->assign('list', $list);
+            $this->assign('type', $types[$type]);  
+            $this->display();
         }
-
-        //获取机构列表
-        $list = $this->getWorkList($map); 
-
-         int_to_string($list);
-        $this->assign('list', $list);
-        $this->assign('type', $types[$type]);  
-        $this->display();
-    }
 }
   
 /**
@@ -194,6 +182,7 @@ class InstitutionController extends AdminController {
     }
     // 修改机构
        public function editAction(){
+        var_dump($_GET);exit;
         $id = I('get.id');
 
         empty($id) && $this->error('参数不能为空！');
