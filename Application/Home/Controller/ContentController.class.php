@@ -369,7 +369,7 @@ class ContentController extends HomeController {
 	    $cm = M('Content_material');
 	    foreach ($list as $key => &$row) {
 	        $cm_map['content_id'] = $row['id'];
-	        $cm_map['_string'] = 'type="PIC" OR type="VIDEO"';
+	        $cm_map['type'] = array('in'=>array('PIC','VIDEO','AUDIO'));
 	        $result = $cm->field('cover_url,type')
 	        ->where($cm_map) //获取任务封面图
             ->find();
