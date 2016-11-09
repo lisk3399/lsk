@@ -1066,8 +1066,82 @@ class ContentController extends HomeController {
         }
     }
     
+    //编辑发布的内容
     public function editContent() {
-        
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('请先登录', -1);
+            }
+            
+            $work_id = I('id', '', 'intval');
+            if(empty($work_id)) {
+                $this->renderFailed('动态为空');
+            }
+            if(!$this->checkWorkExists($work_id)) {
+                $this->renderFailed('该动态不存在');
+            }
+            if(!$this->isMyWork($uid, $work_id)) {
+                $this->renderFailed('没有权限修改');
+            }
+            
+            $title = I('title', '', 'trim');
+            if(empty($title)) {
+                $this->renderFailed('标题不能为空');
+            }
+            $title_len = mb_strlen($title, 'utf-8');
+            if($title_len>30 || $title_len<4) {
+                $this->renderFailed('标题字数在4-30个字');
+            }
+            $description = I('description', '', 'trim');
+            $content = I('content', '', 'trim');
+            
+            //是否有附件内容
+            $is_hav_content = 0;
+            if(!empty($content)) {
+                if(ini_get('magic_quotes_gpc')) {
+                    $content = stripslashes($content);
+                }
+                //json数组为空判断
+                $content_arr = json_decode($content, TRUE);
+                if(!is_array($content_arr)) {
+                    $this->renderFailed('json格式不对');
+                }
+                if(count($content_arr) == 0) {
+                    $this->renderFailed('详细内容不能为空');
+                }
+                $is_hav_content = 1;
+            }
+            
+            //修改内容
+            $Content = M("Content");
+            $data = array();
+            $data['title'] = $title;
+            if(!empty($description)) {
+                $data['description'] = $description;
+            }
+            $update_status = $Content->where(array('id'=>$work_id))->save($data);
+            
+            //更新附件
+            if($is_hav_content) {
+                $ContentMaterial = M("Content_material");
+                $dataList = array();
+                
+                foreach ($content_arr as $row) {
+                    $dataList[] = array(
+                        'content_id'=>$work_id,
+                        'type'=>$row['type'],
+                        'value'=>$row['value'],
+                        'cover_url'=>(!empty($row['cover_url'])?$row['cover_url']:''),
+                    );
+                }
+                if(!$ContentMaterial->addAll($dataList)) {
+                    $this->renderFailed('添加失败，请稍后再试');
+                }
+                
+            }
+            $this->renderSuccess('更新成功');
+        }
     }
     
     //删除作品
