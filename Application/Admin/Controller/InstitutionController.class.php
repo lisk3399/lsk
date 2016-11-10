@@ -180,9 +180,26 @@ class InstitutionController extends AdminController {
  
         return $list;
     }
+        // 查看机构下属的班级
+     public function classe(){
+           
+        $id = I('get.id');
+        $Classes = M('group');
+       $list = $Classes
+      // ->alias('group')
+       ->field('dbh_group.id,dbh_group.uid,dbh_group.org_id,dbh_group.group_name,dbh_orgnization.id,dbh_orgnization.name')
+      //->join('_orgnization as m on c.org_id = m.id','left')
+       ->join('__ORGNIZATION__  ON  __GROUP__.org_id = __ORGNIZATION__.id')
+       ->where($id.'=dbh_group.org_id')
+       ->select();
+      
+       $this->assign('list',$list);
+       $this->display('classe');
+    }
+
     // 修改机构
        public function editAction(){
-        var_dump($_GET);exit;
+        
         $id = I('get.id');
 
         empty($id) && $this->error('参数不能为空！');

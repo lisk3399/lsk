@@ -1,0 +1,50 @@
+<extend name="Public/base" />
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+	<div class="main-title cf">
+		<h2><if condition="ACTION_NAME eq 'addaction'">新增<else/>下属</if>班级</h2>
+	</div>
+	<!-- 表单 -->
+
+	<form id="form" method="post" >
+	    <div class="data-table table-striped" >
+	        <table cellpadding="3" cellspacing="1">
+	            <tr>
+	                <th width="70">Id</th>
+	                <th width="150">机构名称</th>
+	                <th>班级</th>  
+	            </tr>
+	            
+	            <?php foreach($list as $k => $v): ?>
+	                <tr>
+	                    <td><?=$v['id']?></td>
+	                    <td><?=$v['name']?></td>
+	                    <td><?=$v['group_name']?></td>
+	                    <td>      
+	                </tr>
+	            <?php endforeach; ?>
+	            <tr>
+	            <tr><td colspan="4" align="center" class="page"><?=$page?></td></tr>
+	            </tr>
+	        </table>
+	    </div>
+
+				<!-- 按钮 -->
+		<div class="form-item cf">
+			<label class="item-label"></label>
+			<div class="controls edit_sort_btn">
+				<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+			</div>
+		</div>
+	</form>
+</block>
+<block name="script">
+<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+	Think.setValue('type',{$type|default=1});
+    //导航高亮
+    highlight_subnav('{:U('Institution/action')}');
+</script>
+</block>
