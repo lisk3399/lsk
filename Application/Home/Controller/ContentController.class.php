@@ -118,7 +118,7 @@ class ContentController extends HomeController {
 	    }
 	}
 	
-	//官方发布内容
+	//官方全局发布内容
 	public function officialPubContent() {
 	    if(IS_POST) {
 	        $uid = is_login();
@@ -133,22 +133,29 @@ class ContentController extends HomeController {
 	        if($title_len>30 || $title_len<4) {
 	            $this->renderFailed('标题字数在4-30个字');
 	        }
+
 	        $description = I('description', '', 'trim');
-	        $content = I('content', '', 'trim');
-	        //描述和详细内容不能同时为空
-	        if(empty($description) && empty($content)) {
-	            $this->renderFailed('内容不能为空');
+	        $content_json = I('content', '', 'trim');
+	        if(empty($description) && empty($content_json)) {
+	            $this->renderFailed('请填写描述或内容');
 	        }
+	        //是否有附件内容
 	        $is_hav_content = 0;
-	        if(!empty($content)) {
+	        if(!empty($content_json)) {
 	            if(ini_get('magic_quotes_gpc')) {
-	                $content = stripslashes($content);
+	                $content_json = stripslashes($content_json);
 	            }
-	            if(!is_valid_json($content)) {
+	            if(!is_valid_json($content_json)) {
 	                $this->renderFailed('json格式不对');
+	            }
+	            //json数组为空判断
+	            $content_arr = json_decode($content_json, TRUE);
+	            if(empty($description) && count($content_arr) == 0) {
+	                $this->renderFailed('描述和详细内容不能都为空');
 	            }
 	            $is_hav_content = 1;
 	        }
+	        
 	        $tag_id = I('tag_id', '', 'intval');
 	        if(empty($tag_id)) {
 	            $this->renderFailed('未选择标签');
@@ -164,47 +171,22 @@ class ContentController extends HomeController {
 	        $data['create_time'] = NOW_TIME;
 	         
 	        $content_id = $Content->data($data)->add();
-	         
-	        //插入详细内容
+	        //如果有素材
 	        if($content_id && $is_hav_content) {
-	            $ContentMaterial = M("Content_material");
-	            $create_time = NOW_TIME;
-	            $dataList = array();
-	            $content_arr = json_decode($content, TRUE);
-	            foreach ($content_arr as $row) {
-	                $dataList[] = array(
-	                    'content_id'=>$content_id,
-	                    'type'=>$row['type'],
-	                    'value'=>$row['value'],
-	                    'cover_url'=>(!empty($row['cover_url'])?$row['cover_url']:''),
-	                    'create_time'=>$create_time
-	                );
+	            $ContentModel = new \Home\Model\ContentModel();
+	            if($ContentModel->addMaterial($content_id, $content_json)) {
+	                $this->renderSuccess('添加成功');
 	            }
-	            if(!$ContentMaterial->addAll($dataList)) {
-	                $this->renderFailed('添加失败，请稍后再试');
-	            }
-	            $this->renderSuccess('添加成功');
+	            $this->renderFailed('素材添加失败');
 	        }
+	        //只有主题
 	        elseif($content_id) {
 	            $this->renderSuccess('添加成功');
 	        }
-	        else {
-	            $this->renderFailed('添加失败');
-	        }
+	        $this->renderFailed('添加失败');
 	    }
 	}
 
-	//获取发布任务标签
-	public function getPubTaskTag() {
-	    $Tag = M('tags');
-	    $list = $Tag->field('id,name,sort')->where(array('type'=>'TASK'))->select();
-	    
-	    if(count($list) == 0) {
-	        $this->renderFailed('没有标签了');
-	    }
-	    
-	    $this->renderSuccess('发布任务标签列表', $list);
- 	}
 	/**
 	 * 管理员发布作业和任务
 	 */
@@ -223,7 +205,27 @@ class ContentController extends HomeController {
 	            $this->renderFailed('标题字数在4-30个字');
 	        }
 	        $description = I('description', '', 'trim');
-	        $content = I('content', '', 'trim');
+	        //任务说明不能为空
+	        if(empty($description)) {
+	            $this->renderFailed('任务说明不能为空');
+	        }
+	        $content_json = I('content', '', 'trim');
+	        //是否有附件内容
+	        $is_hav_content = 0;
+	        if(!empty($content_json)) {
+	            if(ini_get('magic_quotes_gpc')) {
+	                $content_json = stripslashes($content_json);
+	            }
+	            if(!is_valid_json($content_json)) {
+	                $this->renderFailed('json格式不对');
+	            }
+	            //json数组为空判断
+	            $content_arr = json_decode($content_json, TRUE);
+	            if(count($content_arr) > 0) {
+	                $is_hav_content = 1;
+	            }
+	        }
+	        
 	        //发布必须指定班级
 	        $group_id = I('group_id', '', 'intval');
 	        if(empty($group_id)) {
@@ -232,29 +234,6 @@ class ContentController extends HomeController {
 	        if(!$this->isGroupidExists($group_id)) {
 	            $this->renderFailed('该班级id不存在');
 	        }
-	        
-	        //任务说明不能为空
-	        if(empty($description)) {
-	            $this->renderFailed('任务说明不能为空');
-	        }
-	        
-	        //是否有附件内容
-	        $is_hav_content = 0;
-	        if(!empty($content)) {
-	            if(ini_get('magic_quotes_gpc')) {
-	                $content = stripslashes($content);
-	            }
-	            if(!is_valid_json($content)) {
-	                $this->renderFailed('json格式不对');
-	            }
-	            //json数组为空判断
-	            $content_arr = json_decode($content, TRUE);
-	            if(empty($description) && count($content_arr) == 0) {
-	                $this->renderFailed('描述和详细内容不能都为空');
-	            }
-	            $is_hav_content = 1;
-	        }
-	        
 	        //创建任务
 	        $Task = M('task');
 	        $deadline = I('deadline', '', 'intval'); 
@@ -287,40 +266,34 @@ class ContentController extends HomeController {
 	        $data['create_time'] = $create_time;
 
 	        $content_id = $Content->data($data)->add();
-	        //插入详细内容
+	        //如果有素材
 	        if($content_id && $is_hav_content) {
-	            $ContentMaterial = M("Content_material");
-	            
-	            foreach ($content_arr as $key=>$row) {
-	                if(strtolower($row['type']) == 'pic' || strtolower($row['type']) == 'video') {
-	                    if($row['value'] == '' || $row['cover_url'] == '') {
-	                        unset($row[$key]);
-	                        continue;
-	                    }
-	                }
-	                $dataList[] = array(
-	                    'content_id'=>$content_id,
-	                    'type'=>$row['type'],
-	                    'value'=>$row['value'],
-	                    'cover_url'=>(!empty($row['cover_url'])?$row['cover_url']:''),
-	                    'create_time'=>$create_time
-	                );
+	            $ContentModel = new \Home\Model\ContentModel();
+	            if($ContentModel->addMaterial($content_id, $content_json)) {
+	                $this->renderSuccess('添加成功');
 	            }
-	            
-	            if(!$ContentMaterial->addAll($dataList)) {
-	                $this->renderFailed('内容详情添加失败，请稍后再试');
-	            }
-	            $this->renderSuccess('添加成功');
+	            $this->renderFailed('素材添加失败');
 	        }
+	        //只有主题
 	        elseif($content_id) {
 	            $this->renderSuccess('添加成功');
 	        }
-	        else {
-	            $this->renderFailed('添加失败');
-	        }
+	        $this->renderFailed('添加失败');
 	    }
 	}
 
+	//获取发布任务标签
+	public function getPubTaskTag() {
+	    $Tag = M('tags');
+	    $list = $Tag->field('id,name,sort')->where(array('type'=>'TASK'))->select();
+	     
+	    if(count($list) == 0) {
+	        $this->renderFailed('没有标签了');
+	    }
+	     
+	    $this->renderSuccess('发布任务标签列表', $list);
+	}
+	
 	//班级任务列表
 	public function groupTaskList() {
 	    $page = I('page', '1', 'intval');

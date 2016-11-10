@@ -14,6 +14,7 @@ class ContentModel extends Model{
      * @param string $content_json
      */
     public function addMaterial($content_id, $content_json) {
+        
         $ContentMaterial = M("Content_material");
         $data['content_id'] = $content_id;
         $data['create_time'] = NOW_TIME;
