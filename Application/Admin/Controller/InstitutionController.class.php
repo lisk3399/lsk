@@ -134,6 +134,7 @@ class InstitutionController extends AdminController {
         }
         $this->error('操作失败');
     }
+<<<<<<< HEAD
      // 查看机构下属的班级
      public function classe(){
            
@@ -150,6 +151,9 @@ class InstitutionController extends AdminController {
        $this->assign('list',$list);
        $this->display('classe');
     }
+=======
+    
+>>>>>>> 290922f168cfaf1be0106d804c30a229fdeb47b6
     /*
      * 获取机构列表
      */
@@ -197,7 +201,11 @@ class InstitutionController extends AdminController {
     }
     // 修改机构
        public function editAction(){
+<<<<<<< HEAD
         
+=======
+        var_dump($_GET);exit;
+>>>>>>> 290922f168cfaf1be0106d804c30a229fdeb47b6
         $id = I('get.id');
 
         empty($id) && $this->error('参数不能为空！');
@@ -215,11 +223,18 @@ class InstitutionController extends AdminController {
         if(!$res){
             $this->error(D('orgnization')->getError());
         }else{
+<<<<<<< HEAD
              
             $this->success($res['id']?'更新成功！':'新增成功！',U('Institution/index'));
         }
     }
    
+=======
+            
+            $this->success($res['id']?'更新成功！':'新增成功！',U('Institution/index'));
+        }
+    }
+>>>>>>> 290922f168cfaf1be0106d804c30a229fdeb47b6
 
    
   
