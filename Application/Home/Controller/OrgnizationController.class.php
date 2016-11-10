@@ -457,7 +457,7 @@ class OrgnizationController extends HomeController {
             }
             //创建机构字符限制
             $title_len = mb_strlen($name, 'utf-8');
-            if($title_len>30 || $title_len<=2) {
+            if($title_len>30 || $title_len<2) {
                 $this->renderFailed('机构名为2-30个字');
             }
             //群组名是否存在
