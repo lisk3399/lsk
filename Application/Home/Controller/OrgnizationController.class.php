@@ -270,7 +270,7 @@ class OrgnizationController extends HomeController {
                 $this->renderFailed('暂无信息');
             }
         
-            $group_rs = M('group')->field('id')->where(array('org_id'=>$org_id))->select();
+            $group_rs = M('group')->field('id')->where(array('org_id'=>$org_id, 'is_delete'=>0))->select();
             //机构下有班级信息
             $info['content_num'] = '0';
             $group_member_num = 0;
