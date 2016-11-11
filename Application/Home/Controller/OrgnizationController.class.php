@@ -106,22 +106,27 @@ class OrgnizationController extends HomeController {
             if(!$this->checkOrgIdExists($org_id)) {
                 $this->renderFailed('该机构不存在');
             }
-            $description = I('description', '', 'trim');
-            $content = I('content', '', 'trim');
-            //描述和详细内容不能同时为空
-            if(empty($description) && empty($content)) {
-                $this->renderFailed('内容不能为空');
-            }
-            $is_hav_content = 0;
-            if(!empty($content)) {
-                if(ini_get('magic_quotes_gpc')) {
-                    $content = stripslashes($content);
-                }
-                if(!is_valid_json($content)) {
-                    $this->renderFailed('json格式不对');
-                }
-                $is_hav_content = 1;
-            }
+        	$description = I('description', '', 'trim');
+	        $content_json = I('content', '', 'trim');
+	        if(empty($description) && empty($content_json)) {
+	            $this->renderFailed('请填写描述或内容');
+	        }
+	        //是否有附件内容
+	        $is_hav_content = 0;
+	        if(!empty($content_json)) {
+	            if(ini_get('magic_quotes_gpc')) {
+	                $content_json = stripslashes($content_json);
+	            }
+	            if(!is_valid_json($content_json)) {
+	                $this->renderFailed('json格式不对');
+	            }
+	            //json数组为空判断
+	            $content_arr = json_decode($content_json, TRUE);
+	            if(empty($description) && count($content_arr) == 0) {
+	                $this->renderFailed('描述和详细内容不能都为空');
+	            }
+	            $is_hav_content = 1;
+	        }
             //创建内容content表插入数据，返回content_id
             $Content = M("Content");
             $data = array();
@@ -139,32 +144,19 @@ class OrgnizationController extends HomeController {
              
             $content_id = $Content->data($data)->add();
     
-            //插入详细内容
-            if($content_id && $is_hav_content) {
-                $ContentMaterial = M("Content_material");
-                $create_time = NOW_TIME;
-                $dataList = array();
-                $content_arr = json_decode($content, TRUE);
-                foreach ($content_arr as $row) {
-                    $dataList[] = array(
-                        'content_id'=>$content_id,
-                        'type'=>$row['type'],
-                        'value'=>$row['value'],
-                        'cover_url'=>(!empty($row['cover_url'])?$row['cover_url']:''),
-                        'create_time'=>$create_time
-                    );
-                }
-                if(!$ContentMaterial->addAll($dataList)) {
-                    $this->renderFailed('添加失败，请稍后再试');
-                }
-                $this->renderSuccess('添加成功');
-            }
-            elseif($content_id) {
-                $this->renderSuccess('添加成功');
-            }
-            else {
-                $this->renderFailed('添加失败');
-            }
+	        //如果有素材
+	        if($content_id && $is_hav_content) {
+	            $ContentModel = new \Home\Model\ContentModel();
+	            if($ContentModel->addMaterial($content_id, $content_json)) {
+	                $this->renderSuccess('添加成功');
+	            }
+	            $this->renderFailed('素材添加失败');
+	        }
+	        //只有主题
+	        elseif($content_id) {
+	            $this->renderSuccess('添加成功');
+	        }
+	        $this->renderFailed('添加失败');
         }
     }
     
