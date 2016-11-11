@@ -900,6 +900,11 @@ class ContentController extends HomeController {
             $this->renderFailed('班级不存在');
         }
         
+        $GroupController = new GroupController();
+        if(!$GroupController->checkJoin($uid, $group_id)) {
+            $this->renderFailed('您未加入该班级，暂时无法看到班级内容');
+        }
+        
         $map['c.status'] = 1;
         $map['c.group_id'] = $group_id;
         $map['c.task_id'] = 0;
