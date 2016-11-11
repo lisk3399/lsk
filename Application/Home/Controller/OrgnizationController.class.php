@@ -675,6 +675,18 @@ class OrgnizationController extends HomeController {
                     $this->renderFailed('该机构下暂无班级');
                 }
             }
+            
+            $uid = is_login();
+            $GroupController = new GroupController();
+            foreach ($list as &$row) {
+                $row['is_join_group'] = 0;
+                if(!empty($uid)) {
+                    if($GroupController->checkJoin($uid, $row['id'])) {
+                        $row['is_join_group'] = 1;
+                    }
+                }
+            }
+            
             $this->renderSuccess('活跃班级列表', $list);
         }
     }
