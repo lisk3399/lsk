@@ -284,8 +284,8 @@ class OrgnizationController extends HomeController {
                 ->where(array('group_id'=>array('in', $group_ids)))->count();
             }
         
-            $org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
-            $info['member_num'] = $org_member_num + $group_member_num;
+            //$org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
+            $info['member_num'] = $group_member_num;
         
             $back_arr = array(
                 '/Public/static/app/group_cover_url1.jpg',
