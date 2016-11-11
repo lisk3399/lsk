@@ -1018,6 +1018,7 @@ class OrgnizationController extends HomeController {
         ->field('mg.uid,m.nickname,m.avatar')
         ->join('__MEMBER__ m on mg.uid = m.uid', 'left')
         ->order('mg.id desc')
+        ->page($page, $rows)
         ->where($map)->select();
          
         return $list;
