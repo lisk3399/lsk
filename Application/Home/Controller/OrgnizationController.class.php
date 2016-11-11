@@ -281,7 +281,7 @@ class OrgnizationController extends HomeController {
                 $info['content_num'] = M('content')
                 ->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
                 $group_member_num = M('member_group')
-                ->where(array('group_id'=>array('in', $group_ids)))->count();
+                ->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
             }
         
             //$org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
