@@ -2,6 +2,7 @@
 
 namespace Home\Model;
 use Think\Model;
+use User\Api\UserApi;
 
 /**
  * 内容模型
@@ -23,8 +24,52 @@ class ContentModel extends Model{
         return $ContentMaterial->add($data);
     }
     
-    //获取素材列表
-    public function getMaterial() {
+    /**
+     * 获取内容素材列表
+     * @param int $uid 
+     * @param array $list 内容数组
+     */
+    public function getMaterialList($uid, $list) {
+        $Api = new UserApi;
+        $Content = M('Content_material');
+        foreach ($list as $key=>&$row) {
+            $row['is_like'] = 0;
+            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+            
+            $result = $Content->field('content_json')
+            ->where(array('content_id'=>$row['id']))->find();
+            
+            if(!empty($result['content_json'])) {
+                $arr = json_decode($result['content_json'], TRUE);
+                print_r($arr);die;
+                foreach ($arr as $json_key=>$json_row) {
+                    if(empty($json_row['cover_url'])) {
+                        unset($json_row);
+                        continue;
+                    }
+                    $row['pic'][$json_key]['cover_url'] = $json_row['cover_url'];
+                    $row['pic'][$json_key]['type'] = $json_row['type'];
+                    $row['pic'][$json_key]['value'] = $json_row['value'];
+                }
+            }
+            else {
+                $result = $Content->field('type,value,cover_url')
+                ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
+                ->limit(3)->select();
+                foreach ($result as $key=>$content) {
+                    $row['pic'][$key]['cover_url'] = $content['cover_url'];
+                    $row['pic'][$key]['type'] = $content['type'];
+                    $row['pic'][$key]['value'] = $content['value'];
+                }
+            }
+
+            if($uid) {
+                $is_like = $Api->isLike($uid, $row['id']);
+                $row['is_like'] = (!empty($is_like))?1:0;
+            }
+        }
+        $list =  $Api->setDefaultAvatar($list);
         
+        return $list;
     }
 }

@@ -805,28 +805,9 @@ class ContentController extends HomeController {
         if(count($list) == 0) {
             $this->renderFailed('没有更多了');
         }
-        
-        $Api = new UserApi;
-        $Content = M('Content_material');
-        foreach ($list as &$row) {
-            $row['is_like'] = 0;
-            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
-            $result = $Content->field('type,value,cover_url')
-            ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
-            ->limit(3)->select();
-            if($uid) {
-                $is_like = $Api->isLike($uid, $row['id']);
-                $row['is_like'] = (!empty($is_like))?1:0;
-            }
-            
-            foreach ($result as $key=>$content) {
-                $row['pic'][$key]['cover_url'] = $content['cover_url'];
-                $row['pic'][$key]['type'] = $content['type'];
-                $row['pic'][$key]['value'] = $content['value'];
-            }
-        }
-        
-        $list =  $Api->setDefaultAvatar($list);
+        //列表页面获取内容素材
+        $ContentModel = new \Home\Model\ContentModel();
+        $list = $ContentModel->getMaterialList($uid, $list);
         
         $this->renderSuccess('动态列表', $list);        
     }
