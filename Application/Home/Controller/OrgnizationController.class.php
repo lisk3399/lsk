@@ -576,7 +576,7 @@ class OrgnizationController extends HomeController {
                 $group_ids[] = $row['id'];
             }
             //获取班级成员id
-            $member_list = $this->getMemberByGroupIds($group_ids);
+            $member_list = $this->getMemberByGroupIds($group_ids, $page, $rows);
             $api = new UserApi;
             $list = $api->setDefaultAvatar($member_list);
             
