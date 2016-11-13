@@ -760,7 +760,7 @@ class ContentController extends HomeController {
     //动态列表
     public function contentList() {
         $page = I('page', '1', 'intval');
-        $rows = I('rows', '10', 'intval');
+        $rows = I('rows', '20', 'intval');
         
         //限制单次最大读取数量
         if($rows > C('API_MAX_ROWS')) {
@@ -827,7 +827,7 @@ class ContentController extends HomeController {
      */
     public function classContentList() {
         $page = I('page', '1', 'intval');
-        $rows = I('rows', '10', 'intval');
+        $rows = I('rows', '20', 'intval');
         
         //限制单次最大读取数量
         if($rows > C('API_MAX_ROWS')) {
@@ -857,29 +857,9 @@ class ContentController extends HomeController {
         if(count($list) == 0) {
             $this->renderFailed('没有更多了');
         }
-        
-        $Api = new UserApi;
-        $Content = M('Content_material');
-        foreach ($list as &$row) {
-            $row['is_like'] = 0;
-            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
-            $result = $Content->field('type,value,cover_url')
-            ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
-            ->limit(3)->select();
-            if($uid) {
-                $is_like = $Api->isLike($uid, $row['id']);
-                $row['is_like'] = (!empty($is_like))?1:0;
-            }
-        
-            foreach ($result as $key=>$content) {
-                $row['pic'][$key]['cover_url'] = $content['cover_url'];
-                $row['pic'][$key]['type'] = $content['type'];
-                $row['pic'][$key]['value'] = $content['value'];
-            }
-        }
-        
-        $Api = new UserApi();
-        $list =  $Api->setDefaultAvatar($list);
+        //列表页面获取内容素材
+        $ContentModel = new \Home\Model\ContentModel();
+        $list = $ContentModel->getMaterialList($uid, $list);
         
         $this->renderSuccess('班级动态列表', $list);
     }
@@ -889,7 +869,7 @@ class ContentController extends HomeController {
      */
     public function orgContentList() {
         $page = I('page', '1', 'intval');
-        $rows = I('rows', '10', 'intval');
+        $rows = I('rows', '20', 'intval');
     
         //限制单次最大读取数量
         if($rows > C('API_MAX_ROWS')) {
@@ -918,29 +898,9 @@ class ContentController extends HomeController {
         if(count($list) == 0) {
             $this->renderFailed('没有更多了');
         }
-    
-        $Api = new UserApi;
-        $Content = M('Content_material');
-        foreach ($list as &$row) {
-            $row['is_like'] = 0;
-            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
-            $result = $Content->field('type,value,cover_url')
-            ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
-            ->limit(3)->select();
-            if($uid) {
-                $is_like = $Api->isLike($uid, $row['id']);
-                $row['is_like'] = (!empty($is_like))?1:0;
-            }
-    
-            foreach ($result as $key=>$content) {
-                $row['pic'][$key]['cover_url'] = $content['cover_url'];
-                $row['pic'][$key]['type'] = $content['type'];
-                $row['pic'][$key]['value'] = $content['value'];
-            }
-        }
-    
-        $Api = new UserApi();
-        $list =  $Api->setDefaultAvatar($list);
+        //列表页面获取内容素材
+        $ContentModel = new \Home\Model\ContentModel();
+        $list = $ContentModel->getMaterialList($uid, $list);
     
         $this->renderSuccess('机构动态列表', $list);
     }
@@ -951,7 +911,7 @@ class ContentController extends HomeController {
     public function myContentList() {
         if(IS_POST) {
             $page = I('page', '1', 'intval');
-            $rows = I('rows', '10', 'intval');
+            $rows = I('rows', '20', 'intval');
         
             //限制单次最大读取数量
             if($rows > C('API_MAX_ROWS')) {
@@ -981,29 +941,9 @@ class ContentController extends HomeController {
             if(count($list) == 0) {
                 $this->renderFailed('没有更多了');
             }
-        
-            $Api = new UserApi;
-            $Content = M('Content_material');
-            foreach ($list as &$row) {
-                $row['is_like'] = 0;
-                $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
-                $result = $Content->field('type,value,cover_url')
-                ->where(array('content_id'=>$row['id'], 'cover_url'=>array('neq', '')))
-                ->limit(3)->select();
-                if($uid) {
-                    $is_like = $Api->isLike($uid, $row['id']);
-                    $row['is_like'] = (!empty($is_like))?1:0;
-                }
-        
-                foreach ($result as $key=>$content) {
-                    $row['pic'][$key]['cover_url'] = $content['cover_url'];
-                    $row['pic'][$key]['type'] = $content['type'];
-                    $row['pic'][$key]['value'] = $content['value'];
-                }
-            }
-        
-            $Api = new UserApi();
-            $list =  $Api->setDefaultAvatar($list);
+            //列表页面获取内容素材
+            $ContentModel = new \Home\Model\ContentModel();
+            $list = $ContentModel->getMaterialList($uid, $list);
         
             $this->renderSuccess('我的动态列表', $list);
         }

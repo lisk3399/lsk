@@ -26,7 +26,7 @@ class ContentModel extends Model{
     
     /**
      * 获取内容素材列表
-     * @param int $uid 
+     * @param int $uid 登录用户id
      * @param array $list 内容数组
      */
     public function getMaterialList($uid, $list) {
@@ -41,15 +41,16 @@ class ContentModel extends Model{
             
             if(!empty($result['content_json'])) {
                 $arr = json_decode($result['content_json'], TRUE);
-                print_r($arr);die;
+                $counter = 0;
                 foreach ($arr as $json_key=>$json_row) {
                     if(empty($json_row['cover_url'])) {
                         unset($json_row);
                         continue;
                     }
-                    $row['pic'][$json_key]['cover_url'] = $json_row['cover_url'];
-                    $row['pic'][$json_key]['type'] = $json_row['type'];
-                    $row['pic'][$json_key]['value'] = $json_row['value'];
+                    $row['pic'][$counter]['cover_url'] = $json_row['cover_url'];
+                    $row['pic'][$counter]['type'] = $json_row['type'];
+                    $row['pic'][$counter]['value'] = $json_row['value'];
+                    $counter++;
                 }
             }
             else {
