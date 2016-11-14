@@ -634,7 +634,6 @@ class GroupController extends HomeController {
 	    $Group = M('member_group');
 	    $map['uid'] = $uid;
 	    $map['group_id'] = $group_id;
-	    $map['status'] = 1;
 	    return $Group->where($map)->find();
 	}
 	
