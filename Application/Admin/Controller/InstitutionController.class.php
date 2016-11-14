@@ -141,9 +141,7 @@ class InstitutionController extends AdminController {
         $id = I('get.id');
         $Classes = M('group');
        $list = $Classes
-      // ->alias('group')
        ->field('dbh_group.id,dbh_group.uid,dbh_group.org_id,dbh_group.group_name,dbh_orgnization.id,dbh_orgnization.name')
-      //->join('_orgnization as m on c.org_id = m.id','left')
        ->join('__ORGNIZATION__  ON  __GROUP__.org_id = __ORGNIZATION__.id')
        ->where($id.'=dbh_group.org_id')
        ->select();
@@ -206,6 +204,7 @@ class InstitutionController extends AdminController {
         $data = M('orgnization')->field(true)->find($id);
 
         $this->assign('data',$data);
+        
         $this->meta_title = '编辑机构';
         $this->display('edit');
     }

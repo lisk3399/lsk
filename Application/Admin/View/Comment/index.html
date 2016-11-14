@@ -63,8 +63,8 @@
 					<th>用户</th>
 					<th>回复用户</th>
 					<th>内容</th>
-					<th>作品标题</th>
-					<th>作品描述</th>
+				<!-- 	<th>作品标题</th>
+					<th>作品描述</th> -->
 					<th>评论时间</th>
 					<th>操作</th>
                 </tr>
@@ -79,10 +79,13 @@
 						<td>{$data.nickname}</td>
 						<td>{$data.to_uid}</td>
 						<td>{$data.content}</td>
-						<td>{$data.title}</td>
-						<td>{$data.description}</td>
+						<!-- <td>{$data.title}</td>
+						<td>{$data.description}</td> -->
 						<td>{$data.create_time}</td>
-						<td><a href='{:U("Comment/setStatus",array("is_delete"=>1, "ids"=>$data["id"]))}'>删除</a></td>
+						<td>
+							<a href="{:U('Comment/editAction?id='.$data['id'])}">编辑</a>
+							<a href='{:U("Comment/setStatus",array("is_delete"=>1, "ids"=>$data["id"]))}'>删除</a>
+						</td>
                     </tr>
                 </volist>
             </tbody>
