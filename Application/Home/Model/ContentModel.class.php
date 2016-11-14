@@ -73,4 +73,15 @@ class ContentModel extends Model{
         
         return $list;
     }
+    
+    //更新素材
+    public function updateMaterial($content_id, $content_json) {
+        $Content = M('Content_material');
+        $data['content_json'] = $content_json;
+        $ret = $Content->where(array('content_id'=>$content_id))->save($data);
+        if(!$ret) {
+            return FALSE;
+        }
+        return TRUE;
+    }
 }
