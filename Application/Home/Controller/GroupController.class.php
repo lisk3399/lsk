@@ -343,7 +343,7 @@ class GroupController extends HomeController {
 	        }
 	        //是否已经加入
 	        if($this->checkJoin($uid, $group_id)){
-	            $this->renderFailed('您已经申请过加入或已经加入该班级');
+	            $this->renderFailed('您已经申请或已经加入该班级');
 	        }
 	        $groupInfo = M('group')->field('org_id')->where(array('id'=>$group_id))->find();
 	        if(empty($groupInfo['org_id'])) {

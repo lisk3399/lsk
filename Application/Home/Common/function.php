@@ -68,3 +68,29 @@ function get_nav_url($url){
     }
     return $url;
 }
+
+//获取几天几小时几分几秒
+function get_short_time($create_time) {
+    $dur = NOW_TIME - $create_time;
+    if ($dur <= 0) {
+        return date("Y-m-d H:i", $create_time);
+    } else {
+        if ($dur < 60) {
+            return $dur . '秒前';
+        } else {
+            if ($dur < 3600) {
+                return floor($dur / 60) . '分钟前';
+            } else {
+                if ($dur < 86400) {
+                    return floor($dur / 3600) . '小时前';
+                } else {
+                    if ($dur < 432000) { //5天内
+                        return floor($dur / 86400) . '天前';
+                    } else {
+                        return date("Y-m-d H:i", $create_time);
+                    }
+                }
+            }
+        }
+    }
+}

@@ -34,7 +34,8 @@ class ContentModel extends Model{
         $Content = M('Content_material');
         foreach ($list as $key=>&$row) {
             $row['is_like'] = 0;
-            $row['create_time'] = date('Y-m-d H:i', $row['create_time']);
+            $row['create_time'] = get_short_time($row['create_time']);
+            //$row['create_time'] = date('Y-m-d H:i', $row['create_time']);
             
             $result = $Content->field('content_json')
             ->where(array('content_id'=>$row['id']))->find();
