@@ -262,7 +262,7 @@ class OrgnizationController extends HomeController {
                 $this->renderFailed('暂无信息');
             }
         
-            $group_rs = M('group')->field('id')->where(array('org_id'=>$org_id))->select();
+            $group_rs = M('group')->field('id')->where(array('org_id'=>$org_id, 'is_delete'=>0))->select();
             //机构下有班级信息
             $info['content_num'] = '0';
             $group_member_num = 0;
@@ -273,11 +273,11 @@ class OrgnizationController extends HomeController {
                 $info['content_num'] = M('content')
                 ->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
                 $group_member_num = M('member_group')
-                ->where(array('group_id'=>array('in', $group_ids)))->count();
+                ->where(array('group_id'=>array('in', $group_ids), 'status'=>1))->count();
             }
         
-            $org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
-            $info['member_num'] = $org_member_num + $group_member_num;
+            //$org_member_num = M('member_org')->where(array('org_id'=>$org_id))->count();
+            $info['member_num'] = $group_member_num;
         
             $back_arr = array(
                 '/Public/static/app/group_cover_url1.jpg',
@@ -568,7 +568,7 @@ class OrgnizationController extends HomeController {
                 $group_ids[] = $row['id'];
             }
             //获取班级成员id
-            $member_list = $this->getMemberByGroupIds($group_ids);
+            $member_list = $this->getMemberByGroupIds($group_ids, $page, $rows);
             $api = new UserApi;
             $list = $api->setDefaultAvatar($member_list);
             
@@ -667,6 +667,7 @@ class OrgnizationController extends HomeController {
                     $this->renderFailed('该机构下暂无班级');
                 }
             }
+            
             $this->renderSuccess('活跃班级列表', $list);
         }
     }
@@ -1009,6 +1010,7 @@ class OrgnizationController extends HomeController {
         ->field('mg.uid,m.nickname,m.avatar')
         ->join('__MEMBER__ m on mg.uid = m.uid', 'left')
         ->order('mg.id desc')
+        ->page($page, $rows)
         ->where($map)->select();
          
         return $list;
