@@ -20,16 +20,7 @@
 		<!-- 高级搜索 -->
 		<div class="search-form fr cf">
 			<div class="sleft">
-				<div class="drop-down">
-					<span id="sch-sort-txt" class="sort-txt" data="{$status}"><if condition="get_status_title($status) eq ''">所有<else/>{:get_status_title($status)}</if></span>
-					<i class="arrow arrow-down"></i>
-					<ul id="sub-sch-menu" class="nav-list hidden">
-						<li><a href="javascript:;" value="">所有</a></li>
-						<li><a href="javascript:;" value="1">正常</a></li>
-						<li><a href="javascript:;" value="0">禁用</a></li>
-						<li><a href="javascript:;" value="2">待审核</a></li>
-					</ul>
-				</div>
+				
 				<input type="text" name="title" class="search-input" value="{:I('title')}" placeholder="请输入标题文档">
 				<a class="sch-btn" href="javascript:;" id="search" url="{:U('article/index','pid='.I('pid',0).'&cate_id='.$cate_id,false)}"><i class="btn-search"></i></a>
 			</div>
@@ -63,8 +54,6 @@
 					<th>用户</th>
 					<th>回复用户</th>
 					<th>内容</th>
-				<!-- 	<th>作品标题</th>
-					<th>作品描述</th> -->
 					<th>评论时间</th>
 					<th>操作</th>
                 </tr>
@@ -79,8 +68,6 @@
 						<td>{$data.nickname}</td>
 						<td>{$data.to_uid}</td>
 						<td>{$data.content}</td>
-						<!-- <td>{$data.title}</td>
-						<td>{$data.description}</td> -->
 						<td>{$data.create_time}</td>
 						<td>
 							<a href="{:U('Comment/editAction?id='.$data['id'])}">编辑</a>

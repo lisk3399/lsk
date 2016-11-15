@@ -124,5 +124,19 @@ class ClassesController extends AdminController {
        $this->assign('list',$list);
        $this->display('classe');
     }
+    //班级搜索
+    public function search()
+    {
+        if (I('get.group_name','','htmlspecialchars')) 
+        {
+        $name = I('get.group_name','','htmlspecialchars');
+        $where['group_name'] =['like','%'.$name.'%'];
+      $list = M('_group  as  c')
+      ->join('__MEMBER__  as  m  on  c.uid = m.uid')
+      ->where($where)->select();  
+       $this->assign('list', $list);
+       $this->display('index');
+        }
+    }
 
 }

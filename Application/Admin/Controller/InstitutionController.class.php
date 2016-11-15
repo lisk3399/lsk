@@ -42,7 +42,7 @@ class InstitutionController extends AdminController {
             $this->assign('type', $types[$type]);  
             $this->display();
         }
-}
+    }
   
 /**
      * 显示左边菜单，进行权限控制
