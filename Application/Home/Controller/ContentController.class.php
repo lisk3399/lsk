@@ -344,6 +344,7 @@ class ContentController extends HomeController {
 	        $result = $cm->field('content_json')
 	        ->where($cm_map)->find();
 	        if(!empty($result['content_json'])) {
+	            //todo 需要把content_json中的图片等元素解析出来
 	            $row['cover_url'] = $result['cover_url'];
 	        }
 	        else {
@@ -445,32 +446,9 @@ class ContentController extends HomeController {
 	    if(count($detail) == 0) {
 	        $this->renderFailed('任务不存在');
 	    }
-	    
-	    $content_id = $detail['id'];
-	    $CM = M('Content_material');
-	    $result = $CM->field('type,value,cover_url')
-	    ->where(array('content_id'=>$content_id))
-	    ->select();
-	    
-        //是否已经参与
-        $detail['is_done_task'] = 0;
-        if(strtotime(date("Y-m-d", $detail['deadline']))+86400 <= NOW_TIME) {
-            $detail['is_done_task'] = 1;
-        }
-
-        $detail['create_time'] = date('Y-m-d H:i', $detail['create_time']);
-        $detail['deadline'] = date('Y-m-d', $detail['deadline']);
-//         $uid = is_login();
-//         if(!empty($uid)) {
-//             if($this->isDoneTask($uid, $detail['task_id'])) {
-//                 $detail['is_done_task'] = 1;
-//             }
-//         }
-	    foreach ($result as $key=>$content) {
-	        $detail['pic'][$key]['cover_url'] = $content['cover_url'];
-	        $detail['pic'][$key]['type'] = $content['type'];
-	        $detail['pic'][$key]['value'] = $content['value'];
-	    }
+	    //列表页面获取内容素材
+	    $ContentModel = new \Home\Model\ContentModel();
+	    $detail = $ContentModel->getDetailMaterial($detail);
 	    
 	    $this->renderSuccess('', $detail);
 	}

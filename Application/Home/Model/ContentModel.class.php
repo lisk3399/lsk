@@ -75,6 +75,39 @@ class ContentModel extends Model{
         return $list;
     }
     
+    //获取详情页素材
+    public function getDetailMaterial($detail) {
+        $map['content_id'] = $detail['id'];
+        $cm = M('Content_material');
+        $result = $cm->field('content_json')
+        ->where($map)->find();
+        
+        if(!empty($result['content_json'])) {
+            
+        }
+        else {
+            $result = $cm->field('type,value,cover_url')
+            ->where($map)
+            ->select();
+            
+            foreach ($result as $key=>$content) {
+                $detail['pic'][$key]['cover_url'] = $content['cover_url'];
+                $detail['pic'][$key]['type'] = $content['type'];
+                $detail['pic'][$key]['value'] = $content['value'];
+            }
+        }
+        //是否已经参与
+        $detail['is_done_task'] = 0;
+        if(strtotime(date("Y-m-d", $detail['deadline']))+86400 <= NOW_TIME) {
+            $detail['is_done_task'] = 1;
+        }
+        
+        $detail['create_time'] = date('Y-m-d H:i', $detail['create_time']);
+        $detail['deadline'] = date('Y-m-d', $detail['deadline']);
+        
+        return $detail;
+    }
+    
     //更新素材
     public function updateMaterial($content_id, $content_json) {
         $Content = M('Content_material');
