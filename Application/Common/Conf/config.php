@@ -82,6 +82,6 @@ return array(
         'secrectKey'=>'JqFwvXfT8TuLIb_UxyohIdnIS8oqzY-I9ifMqHyc',
         'bucket'=>'doushow',
         'domain'=>'vod.doushow.com',
-        'live_hub'=>'bipai-stream'
+        'live_hub'=>'bipai-streams'
     ),
 );
