@@ -16,4 +16,9 @@ class LiveController extends HomeController {
 	   echo \Qiniu\Pili\RTMPPublishURL($domain, $this->config['live_hub'], $streamKey, $expireAfterSeconds, $this->config['qiniu_ak'], $this->config['qiniu_sk']);
 	}
 	
+	
+	public function getStream() {
+	    $LiveModel = D('live');
+	    print_r($LiveModel->getStreamList());
+	}
 }

@@ -8,7 +8,7 @@ require 'ThinkPHP/Library/Vendor/Live/Pili_v2.php';
 /**
  * 直播模型
  */
-class ChannelModel extends Model{
+class LiveModel extends Model{
     
     protected  $config = array(
         'domain' => NULL,
