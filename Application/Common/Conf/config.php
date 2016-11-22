@@ -81,7 +81,9 @@ return array(
         'accessKey'=>'BX3FxNDH3aFGwGSb8Yue745EgiumlqGpqthQ8x1u',
         'secrectKey'=>'JqFwvXfT8TuLIb_UxyohIdnIS8oqzY-I9ifMqHyc',
         'bucket'=>'doushow',
-        'domain'=>'vod.doushow.com',
+        'live_publish_domian'=>'pili-publish.bipai.tv',
+        'live_rtmp_play_domain'=>'pili-live-rtmp.bipai.tv',
+        'live_snapshot_domain'=>'pili-live-snapshot.bipai.tv',
         'live_hub'=>'bipai-streams'
     ),
 );
