@@ -29,23 +29,41 @@ class LiveController extends HomeController {
             }
             
             $data['uid'] = $uid;
-            $data['stream_key'] = $stream_key;
+            $data['publishKey'] = $stream_key;
             if(empty($title)) {
                 $userApi = new UserApi();
                 $username = $userApi->getUsername($uid);
                 $data['title'] = $username.'的直播内容';
             }
-            $data['publish'] = $stream_info['publish'];
-            $data['play'] = $stream_info['play'];
+            $data['hosts']['publish']['rtmp'] = $stream_info['publish'];
+            $data['hosts']['play']['rtmp'] = $stream_info['play_rtmp'];
             $data['cover_url'] = $stream_info['cover_url'];
+            $data['hub'] = $stream_info['hub'];
+            $data['publishSecurity'] = 'static';
             $data['create_time'] = NOW_TIME;
             
             $liveModel = M('live');
-            if(!$liveModel->add($data)) {
+            $live_id = $liveModel->add($data);
+            if(!$live_id) {
                 $this->renderFailed('直播创建失败');
             }
+            $data['id'] = $live_id;
             $this->renderSuccess('创建成功', $data);
         }
     }
 	
+    //获取直播列表
+    public function getLiveList() {
+        
+    }
+    
+    
+    public function getSingleLive() {
+        
+    }
+    
+    //结束直播转存直播数据
+    public function endLive() {
+        
+    }
 }
