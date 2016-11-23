@@ -27,7 +27,8 @@ class Stream
         $ret=array();
         $ret["hub"]=$this->_hub;
         $ret["key"]=$this->_key;
-        $ret["disabledTill"] = $this->_transport->send(HttpRequest::GET, $this->_baseUrl)["disabledTill"];
+        $result = $this->_transport->send(HttpRequest::GET, $this->_baseUrl);
+        $ret["disabledTill"] = $result["disabledTill"];
         return $ret;
     }
 
