@@ -49,7 +49,7 @@ class LiveController extends HomeController {
             if(!$live_id) {
                 $this->renderFailed('直播创建失败');
             }
-            $data['id'] = $live_id;
+            $data['id'] = $stream_key;
             $data['publishKey'] = $stream_key;
             $data['hosts']['publish']['rtmp'] = $stream_info['publish_domain'];
             $data['hosts']['play']['rtmp'] = $stream_info['play_rtmp_domain'];
