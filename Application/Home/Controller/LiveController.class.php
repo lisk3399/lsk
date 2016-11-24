@@ -49,10 +49,25 @@ class LiveController extends HomeController {
             if(!$live_id) {
                 $this->renderFailed('直播创建失败');
             }
-            $data['id'] = $stream_key;
+            $data['id'] = $live_id;
             $data['publishKey'] = $stream_key;
+            $data['publishSecurity'] = '';
+            $data['disabledTill'] = 0;
+            $data['disabled'] = false;
+            $data['profiles'] = NUll;
             $data['hosts']['publish']['rtmp'] = $stream_info['publish_domain'];
             $data['hosts']['play']['rtmp'] = $stream_info['play_rtmp_domain'];
+            $data['hosts']['live']['hdl'] = 'pili-live-hdl.bipai.tv';
+            $data['hosts']['live']['hls'] = 'pili-live-hls.bipai.tv';
+            $data['hosts']['live']['http'] = 'pili-media.bipai.tv';
+            $data['hosts']['live']['rtmp'] = 'pili-live-rtmp.bipai.tv';
+            $data['hosts']['live']['snapshot'] = 'pili-live-snapshot.bipai.tv';
+            $data['hosts']['playback']['hsl'] = 'doubihai.com/index.php?m=home&c=live&a=callback';
+            $data['hosts']['playback']['http'] = 'doubihai.com/index.php?m=home&c=live&a=callback';
+            $data['hosts']['play']['http'] = 'pili-media.bipai.tv';
+            $data['hosts']['play']['rtmp'] = 'pili-live-rtmp.bipai.tv';
+            $data['createAt'] = NOW_TIME;
+            $data['updatedAt'] = NOW_TIME;
             
             $this->renderSuccess('创建成功', $data);
         }
