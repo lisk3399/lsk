@@ -37,11 +37,10 @@ class LiveController extends HomeController {
                 $userApi = new UserApi();
                 $username = $userApi->getUsername($uid);
                 $data['title'] = $username.'的直播内容';
+                $title = $data['title'];
             }
 
             $data['cover_url'] = $stream_info['cover_url'];
-            $data['hub'] = $stream_info['hub'];
-            $data['publishSecurity'] = 'static';
             $data['create_time'] = NOW_TIME;
             
             $liveModel = M('live');
@@ -49,14 +48,15 @@ class LiveController extends HomeController {
             if(!$live_id) {
                 $this->renderFailed('直播创建失败');
             }
-            $data['id'] = $live_id;
+            $data = array();
+            $data['id'] = $stream_key;
+            $data['hub'] = 'bipai-streams';
+            $data['title'] = $title;
+            $data['publishSecurity'] = 'static';
             $data['publishKey'] = $stream_key;
-            $data['publishSecurity'] = '';
             $data['disabledTill'] = 0;
             $data['disabled'] = false;
-            $data['profiles'] = NUll;
-            $data['hosts']['publish']['rtmp'] = $stream_info['publish_domain'];
-            $data['hosts']['play']['rtmp'] = $stream_info['play_rtmp_domain'];
+            $data['hosts']['publish']['rtmp'] = 'pili-publish.bipai.tv';
             $data['hosts']['live']['hdl'] = 'pili-live-hdl.bipai.tv';
             $data['hosts']['live']['hls'] = 'pili-live-hls.bipai.tv';
             $data['hosts']['live']['http'] = 'pili-media.bipai.tv';
