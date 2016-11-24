@@ -31,7 +31,7 @@ class LiveController extends HomeController {
             $data['stream_key'] = $stream_key;
             $data['publish'] = $stream_info['publish'];
             $data['play'] = $stream_info['play'];
-            $data['uid'] = $uid;
+            $data['uid'] = $stream_key;
             
             if(empty($title)) {
                 $userApi = new UserApi();
