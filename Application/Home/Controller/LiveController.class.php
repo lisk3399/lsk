@@ -49,7 +49,7 @@ class LiveController extends HomeController {
                 $this->renderFailed('直播创建失败');
             }
             $data = array();
-            $data['id'] = $stream_key;
+            $data['id'] = 'z1.bipai-streams.bipai-'.$live_id;
             $data['hub'] = 'bipai-streams';
             $data['title'] = $title;
             $data['publishSecurity'] = 'static';
