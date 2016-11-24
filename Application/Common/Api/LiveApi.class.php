@@ -39,21 +39,17 @@ class LiveApi {
             return FALSE;
         }
         
-//         $rtmp_publish_url = Qiniu\Pili\RTMPPublishURL($this->config['live_publish_domian'],
-//             $this->config['live_hub'], $stream_key, 3600, $this->config['qiniu_ak'], $this->config['qiniu_sk']);
+        $rtmp_publish_url = Qiniu\Pili\RTMPPublishURL($this->config['live_publish_domian'],
+            $this->config['live_hub'], $stream_key, 3600, $this->config['qiniu_ak'], $this->config['qiniu_sk']);
         
-//         $rtmp_play_url = Qiniu\Pili\RTMPPlayURL($this->config['live_rtmp_play_domain'], $this->config['live_hub'], $stream_key);
-//         $cover_url = Qiniu\Pili\SnapshotPlayURL($this->config['live_snapshot_domain'], $this->config['live_hub'], $stream_key);
+        $rtmp_play_url = Qiniu\Pili\RTMPPlayURL($this->config['live_rtmp_play_domain'], $this->config['live_hub'], $stream_key);
+        $cover_url = Qiniu\Pili\SnapshotPlayURL($this->config['live_snapshot_domain'], $this->config['live_hub'], $stream_key);
         
-//         $data['publish_domain'] = $this->config['live_publish_domian']; 
-//         $data['play_rtmp_domain'] = $this->config['live_rtmp_play_domain'];
-//         $data['publish'] = $rtmp_publish_url;
-//         $data['play'] = $rtmp_play_url;
-//         $data['cover_url'] = $cover_url;
-//         $data['hub'] = $this->config['live_hub'];
+        $data['publish'] = $rtmp_publish_url;
+        $data['play'] = $rtmp_play_url;
+        $data['cover_url'] = $cover_url;
         
-        //return $data;
-        return true;
+        return $data;
     }
     
     //获取单个流地址信息
