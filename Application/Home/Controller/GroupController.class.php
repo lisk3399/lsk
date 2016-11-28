@@ -59,9 +59,10 @@ class GroupController extends HomeController {
             $map['g.uid'] = array('NEQ', $uid);
             //指定机构下的班级
             $org_id = I('post.org_id', '', 'intval');
-            if(!empty($org_id)) {
-                $map['g.org_id'] = $org_id;
+            if(empty($org_id)) {
+                $this->renderFailed('机构id为空');
             }
+            $map['g.org_id'] = $org_id;
             
             $Mg = M('member_group')->alias('mg');
             $list = $Mg->field('g.id,g.group_name,g.cover_url,mg.group_id,m.nickname')
