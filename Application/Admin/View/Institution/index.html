@@ -18,7 +18,6 @@
 				<gt name="allow" value="0">
 					
 					<if condition="count($model) gt 1">
-				
 					</if>
 				<else/> 
 				</gt>
@@ -26,8 +25,6 @@
 			<input type="hidden" class="hide-data" name="cate_id" value="{$cate_id}"/>
 			<input type="hidden" class="hide-data" name="pid" value="{$pid}"/>
 			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Institution/setStatus",array("is_delete"=>1, "ids"=>$data["id"]))}">删 除</button>
-
-
 		</div>
 <!-- 高级搜索 -->
 		<div class="search-form fr cf">
@@ -35,25 +32,14 @@
 				<div class="drop-down">
 					<span id="sch-sort-txt" class="sort-txt" data="{$status}"><if condition="get_status_title($status) eq ''">所有<else/>{:get_status_title($status)}</if></span>
 					<i class="arrow arrow-down"></i>
-
-				</div>
-
-			
+				</div>			
 				<input type="text" name="nickname" class="search-input" value="{:I('nickname')}" placeholder="请输入搜索机构"/>
-
-				
-				<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"><i class="btn-search"></i></a>
-				
-			</div>
-			
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"><i class="btn-search"></i></a>				
+			</div>			
   	    </div>
-		
 	</div>
-
 	<!-- 数据表格 -->
-    <!-- <div class="data-table"> -->
     <div class="data-table table-striped">
-	
 		<table>
             <!-- 表头 -->
             <thead>
@@ -70,7 +56,6 @@
 					<th>操作</th>
                 </tr>
             </thead>
-           
 	
             <!-- 列表 -->
             <tbody>
@@ -79,20 +64,14 @@
                     <tr>
                         <td><input class="ids" type="checkbox" value="{$data.id}" name="id[]"></td>
 						<td>{$data.id}</td>
-						<td><a data-id="{$data.id}" href="{:U('Institution/editAction?id='.$data['id'])}">{$data.nickname}({$data.uid})</td>
+						<td><a data-id="{$data.id}" href="{:U('Institution/editAction?cate_id='.$data['id'].'&id='.$data['id'])}">{$data.nickname}({$data.uid})</td>
 						<td><a data-id="{$data.id}" href="{:U('Institution/classe?cate_id='.$data['id'].'&id='.$data['id'])}">{$data.name}</td>
-
-						<td><a data-id="{$data.id}" href="{:U('Institution/edit?cate_id='.$data['id'].'&id='.$data['id'])}">{$data.nickname}({$data.uid})</td>
-						<td><a data-id="{$data.id}" href="{:U('Institution/classe?cate_id='.$data['id'].'&id='.$data['id'])}">{$data.name}</td>
-						<td>{$data.name}</td>
 						<td><img class="thumbnails" src="{$data.cover_url}" width='50px' height='50px;' /></td>
 						<td>{$data.is_delete}</td>
 						<td><span>{$data.create_time|time_format}</span></td>
 						<td><a href="{:U('Institution/editAction?id='.$data['id'])}">编辑</a>
-						
 						<a href='{:U("Institution/setStatus",array("is_delete"=>1, "ids"=>$data["id"]))}'>删除</a>
 		                </td>
-
                     </tr>
                 </volist>
             </tbody>

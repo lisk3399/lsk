@@ -11,7 +11,6 @@ class OrgnizationModel extends Model
         /* 获取数据对象 */
 
         $data = $this->create($_POST);
-      
         if(empty($data)){
             return false;
         }
