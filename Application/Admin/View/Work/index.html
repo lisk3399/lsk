@@ -12,26 +12,7 @@
 	<!-- 按钮工具栏 -->
 	<div class="cf">
 		<div class="fl">
-			<div class="btn-group">
-				<gt name="allow" value="0">
-					<button class="btn document_add" <if condition="count($model) eq 1">url="{:U('article/add',array('cate_id'=>$cate_id,'pid'=>I('pid',0),'model_id'=>$model[0],'group_id'=>$group_id))}"</if>>新 增
-						<if condition="count($model) gt 1"><i class="btn-arrowdown"></i></if>
-					</button>
-					<if condition="count($model) gt 1">
-					<ul class="dropdown nav-list">
-						<volist name="model" id="vo">
-						<li><a href="{:U('article/add',array('cate_id'=>$cate_id,'model_id'=>$vo,'pid'=>I('pid',0),'group_id'=>$group_id))}">{$vo|get_document_model='title'}</a></li>
-						</volist>
-					</ul>
-					</if>
-				<else/>
-					<button class="btn disabled" >新 增
-						<if condition="count($model) gt 1"><i class="btn-arrowdown"></i></if>
-					</button>
-				</gt>
-			</div>
-			<input type="hidden" class="hide-data" name="cate_id" value="{$cate_id}"/>
-			<input type="hidden" class="hide-data" name="pid" value="{$pid}"/>
+			<a class="btn" href="{:U('addAction')}">新 增</a>
 			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setStatus",array("is_delete"=>1))}">删 除</button>
 			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setDisplay",array("is_display"=>1))}">设置首页显示</button>
 			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setDisplay",array("is_display"=>0))}">取消首页显示</button>
@@ -81,11 +62,10 @@
                     </th>
 					<th>编号</th>
 					<th>用户</th>
-					<th>素材名</th>
-					<th>类型</th>
-					<th>作品封面</th>
-					<th>作品</th>
-					<th>首页显示</th>
+					<th>标题</th>
+					<th>描述</th>
+					<th>点赞数</th>
+					<th>发布时间</th>
 					<th>操作</th>
                 </tr>
             </thead>
@@ -98,14 +78,15 @@
 						<td>{$data.id}</td>
 						<td>{$data.nickname}</td>
 						<td>{$data.title}</td>
-						<td><if condition="$data.type eq 'ORIGINAL'">原创<elseif condition="$data.type eq 'LIPSYNC'" />对口型<else />配音秀</if></td>
-						<td><img class="thumbnails" src="{$data.cover_url}" width='100px' height='100px;' /></td>
 						<td>
-						<video id="video_{$data.id}" src='' controls="controls" autoplay="autoplay" height="130px" width="auto" style="display:none"></video>
-						<a href='javascript:preview({$data.id}, "{$data.video_url}")'>预览</a>
-						</td>
-						<td><if condition="$data.is_display eq 1">是<else/>否</if></td>
-						<td><a href='{:U("Work/setStatus",array("ids"=>$data["id"], "is_delete"=>1, "uid"=>$data["uid"], "material_id"=>$data["material_id"]))}'>删除</a></td>
+						<div style="width:200px; white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+						{$data.description}</div> </td>
+						<td>{$data.likes} </td>
+						<td>{$data.create_time|time_format} </td>
+						
+						<td>
+						<a  data-id="{$data.id}" href="{:U('Work/edit?cate_id='.$data['cate_id.id'].'&id='.$data['id'])}">查看</a>
+						<a href='{:U("Work/setStatus",array("ids"=>$data["id"], "is_delete"=>1, "uid"=>$data["uid"], "material_id"=>$data["material_id"]))}'>删除</a></td>
                     </tr>
                 </volist>
             </tbody>

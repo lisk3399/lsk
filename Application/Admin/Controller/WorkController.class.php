@@ -1,12 +1,9 @@
 <?php
-/**
- * 后台作品管理(弃用)
- */
 namespace Admin\Controller;
-use Admin\Model\AuthGroupModel;
-use Think\Page;
-use Common\Api\WorkApi;
 
+use Think\Upload\Driver\Qiniu\QiniuStorage;
+use Think\Upload\Driver\Qiniu\Auth;
+use Think\Upload\Driver\Qiniu\Etag;
 class WorkController extends AdminController {
     
     public function index() {
@@ -108,16 +105,15 @@ class WorkController extends AdminController {
             $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
         }
         
-        $Work = M('work');
-        $select = $Work->alias('w')
+        $Work = M('content');
+        $select = $Work->alias('d')
         ->page($page, $listRows)
-        ->field('w.id,w.uid,w.material_id,w.type,w.video_url,w.cover_url,w.description,w.is_display,d.title,m.nickname')
-        ->join('__DOCUMENT__ d on w.material_id = d.id', 'left')
-        ->join('__MEMBER__ m on m.uid = w.uid', 'left')
-        ->where($map)
-        ->order('w.id desc');
-        
-        $list = $select->select();
+        ->field('d.id,d.title,d.description ,d.likes,d.create_time,c.uid,c.nickname,w.id,w.material_id,w.type,w.cover_url,w.is_display')
+        ->join('__MEMBER__ c on c.uid=d.uid')
+        ->join('__WORK__ w on w.id = d.uid', 'left')
+        ->where()
+        ->order('d.create_time desc');
+         $list = $select->select();
         $total = $Work->alias('w')->where($map)->count();
         
         $page = new \Think\Page($total, $listRows, $REQUEST);
@@ -131,5 +127,115 @@ class WorkController extends AdminController {
         $options['limit'] = $page->firstRow.','.$page->listRows;     
         
         return $list;
+    }
+
+    //查看
+    public function edit(){
+       $id = I('get.id');
+
+        $Classes = M('content');
+       $list = $Classes->alias('a')
+       ->field('a.id,a.uid,a.title,a.description,a.create_time,c.type,c.value,c.cover_url')
+       ->join('__CONTENT_MATERIAL__ c on a.id=c.content_id')
+       ->where($id.'=a.uid')
+       ->select();
+
+       $this->assign('list',$list);
+       $this->display('Work/edit');
+    }
+    // 上传图片视频
+    public function postDoupload()
+    {
+        $upload_img=M('content_material');
+        $res=D('content');  
+
+            $a=$res->update();
+           
+                    if($res->create())
+                    {
+                            $this->success('添加成功');
+                        }
+                    else
+                    {
+                            $this->error($res -> geterror());
+                        } 
+        $filelogo = $_FILES['logo'];
+        $namelogo = $_FILES['logo']['name'];
+       
+        $file = $_FILES['file'];
+        $namefile=$_FILES['file']['name'];
+        $type = strtolower(substr($namelogo,strrpos($namelogo,'.')+1));
+        $typefile = strtolower(substr($namefile,strrpos($namefile,'.')+1));
+
+        $allow_type = array('jpg','jpeg','gif','png'); //定义允许上传的类型
+        $allow_typefile=array('avi');
+
+        //判断文件类型是否被允许上传
+        if(in_array($type , $allow_type)&& !in_array($typefile, $allow_typefile)){
+           
+        }
+        else if(!in_array($type , $allow_type) && in_array($typefile,$allow_typefile)){
+            
+        }
+        else if(in_array($type,$allow_type) && in_array($typefile,$allow_typefile)){
+           
+        }
+        else{
+          $this->error('上传格式不对','', array());
+        }
+
+        $config = C('QINIU');
+        $configdomain=$config['domain'];    
+        $filename = explode('.', $file['name']);
+        $filenamelogo = explode('.', $filelogo['name']);
+
+        //重新生成文件名
+        $etag = new Etag();
+        $etagname = $etag->GetEtag($file['tmp_name']);
+        $etagnamelogo = $etag->GetEtag($filelogo['tmp_name']);
+        $ext = $filename[1];
+        $fileName = $etagname[0].'.'.$ext;
+        $extlogo = $filenamelogo[1];
+        $fileNamelogo = $etagnamelogo[0].'.'.$extlogo;
+
+        $file = array(
+            'name'=>'file',
+            'fileName'=>$fileName,
+            'fileBody'=>file_get_contents($file['tmp_name'])
+        ); 
+        $filelogo = array(
+            'name'=>'logo',
+            'fileName'=>$fileNamelogo,
+            'fileBody'=>file_get_contents($filelogo['tmp_name'])
+        );        
+       $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
+        $result[] = $upload->upload(array(), $file,$filelogo);
+
+        if($result){      
+            $array[]='http://'.$configdomain.'/'.$fileNamelogo;
+            $array[]='http://'.$configdomain.'/'.$fileName;
+            $arrayjson=json_encode($array);
+            $dmodel=D('content_material');
+
+            $data=$dmodel->add([
+                            'content_id'=>$GLOBALS['id'],
+                            'content_json'=>$arrayjson,                        
+        ]);
+        
+            $this->success('上传成功','', $result);
+        }else{
+            $this->error('上传失败','', array(
+                'error'=>$this->qiniu->error,
+                'errorStr'=>$this->qiniu->errorStr
+            ));
+        }
+        exit;
+    }
+    //添加动态 为NULL
+   public function addAction(){
+
+        $this->meta_title = '新增动态';
+        $this->assign('data',null);
+        $this->display('editaction');
     }
 }
