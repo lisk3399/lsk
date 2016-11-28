@@ -46,13 +46,8 @@ class LiveApi {
         return $data;
     }
     
-    //获取单个流地址信息
-    public function getStream($streamKey) {
-        
-    }
-    
-    //
-    public function getStreamList() {
-        
+    //直播内存转存
+    public function saveLive() {
+        //调用saveas接口
     }
 }

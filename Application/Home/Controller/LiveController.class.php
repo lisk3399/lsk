@@ -55,20 +55,57 @@ class LiveController extends HomeController {
 	
     //获取直播列表
     public function getLiveList() {
+        $page = I('page', '1', 'intval');
+        $rows = I('rows', '20', 'intval');
+         
+        //限制单次最大读取数量
+        if($rows > C('API_MAX_ROWS')) {
+            $rows = C('API_MAX_ROWS');
+        }
         
+        $liveModel = M('live');
+        $list = $liveModel->field('id,uid,title,play,cover_url,comments,likes,create_time')
+        ->limit($page, $rows)->select();
+        
+        if(count($list) == 0) {
+            $this->renderFailed('获取列表失败');
+        }
+        
+        $this->renderSuccess('直播列表', $list);
     }
     
-    
+    //获取单个直播信息
     public function getSingleLive() {
+        $live_id = I('live_id', '', 'intval');
+        if(empty($live_id)) {
+            $this->renderFailed('直播id为空');
+        }
         
+        $liveModel = M('live');
+        $info = $liveModel->field('id,uid,title,play,cover_url,comments,likes,create_time')
+        ->where(array('id'=>$live_id))->find();
+        
+        if(count($info) == 0) {
+            $this->renderFailed('获取信息失败');
+        }
+        
+        $this->renderSuccess('直播信息', $info);
     }
     
-    //结束直播转存直播数据
+    //结束直播
     public function endLive() {
-        
+        //转存直播
+        $this->saveLive();
     }
     
-    public function saveLive() {
+    //转存直播
+    private function saveLive() {
+        $liveApi = new LiveApi();
+        $liveApi->saveLive();
+    }
+    
+    //更新直播封面
+    public function updateCover() {
         
     }
 }
