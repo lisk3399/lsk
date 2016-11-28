@@ -32,13 +32,7 @@ class LiveApi {
     
     //创建流
     public function createStream($stream_key) {
-        try{
-            $this->hub->create($stream_key);
-        }
-        catch (\Exception $e) {
-            return FALSE;
-        }
-        
+
         $rtmp_publish_url = Qiniu\Pili\RTMPPublishURL($this->config['live_publish_domian'],
             $this->config['live_hub'], $stream_key, 3600, $this->config['qiniu_ak'], $this->config['qiniu_sk']);
         
