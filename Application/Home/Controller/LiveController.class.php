@@ -54,7 +54,7 @@ class LiveController extends HomeController {
     }
 	
     //获取直播列表
-    public function getLiveList() {
+    public function getList() {
         $page = I('page', '1', 'intval');
         $rows = I('rows', '20', 'intval');
          
@@ -75,7 +75,7 @@ class LiveController extends HomeController {
     }
     
     //获取单个直播信息
-    public function getSingleLive() {
+    public function getSingle() {
         $live_id = I('live_id', '', 'intval');
         if(empty($live_id)) {
             $this->renderFailed('直播id为空');
@@ -106,6 +106,25 @@ class LiveController extends HomeController {
     
     //更新直播封面
     public function updateCover() {
-        
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('无权限', -1);
+            }
+            
+            $live_id = I('live_id', '', 'intval');
+            if(empty($live_id)) {
+                $this->renderFailed('直播id为空');
+            }
+            $cover_url = I('cover_url', '', 'trim');
+            if(!empty($cover_url)) {
+                $data['cover_url'] = $cover_url;
+                $ret = M('live')->where(array('id'=>$live_id))->save($data);
+                if(!$ret) {
+                    $this->renderFailed('更新失败');
+                }
+            }
+            $this->renderSuccess('更新成功');
+        }
     }
 }

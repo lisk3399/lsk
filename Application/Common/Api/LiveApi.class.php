@@ -46,7 +46,7 @@ class LiveApi {
         return $data;
     }
     
-    //直播内存转存
+    //直播内容转存
     public function saveLive() {
         //调用saveas接口
     }
