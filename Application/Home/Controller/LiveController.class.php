@@ -119,7 +119,7 @@ class LiveController extends HomeController {
                     $data['update_time'] = NOW_TIME;
                     $data['play'] = C('QINIU.live_storage').'/'.$ret['fname'];
                     $liveModel->where(array('stream_key'=>$stream_key))->save($data);
-                    $this->renderSuccess('保存成功', array('fname'=>$ret['fname']));
+                    $this->renderSuccess('保存成功');
                 }
                 $this->renderFailed('保存失败');
             }
