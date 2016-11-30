@@ -84,6 +84,7 @@ return array(
         'live_publish_domian'=>'pili-publish.bipai.tv',
         'live_rtmp_play_domain'=>'pili-live-rtmp.bipai.tv',
         'live_snapshot_domain'=>'pili-live-snapshot.bipai.tv',
-        'live_hub'=>'bipai-streams'
+        'live_hub'=>'bipai-streams',
+        'live_storage'=>'live.bipai.tv'
     ),
 );

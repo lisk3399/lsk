@@ -47,7 +47,14 @@ class LiveApi {
     }
     
     //直播内容转存
-    public function saveLive() {
-        //调用saveas接口
+    public function saveLive($stream_key, $create_time, $end_time) {
+        try {
+            //保存直播数据
+            $stream = $this->hub->stream($stream_key);
+            $fname = $stream->save($create_time, $end_time);
+            return $fname;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

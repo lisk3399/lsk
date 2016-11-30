@@ -19,6 +19,7 @@ class LiveController extends HomeController {
                 $this->renderFailed('无权限', -1);
             }
             $title = I('title', '', 'trim');
+            $group_id = I('group_id', '', 'intval');
             $stream_key = 'bipai'.$uid.'-'.NOW_TIME;
             
             $liveApi = new LiveApi();
@@ -32,6 +33,9 @@ class LiveController extends HomeController {
             $data['publish'] = $stream_info['publish'];
             $data['play'] = $stream_info['play'];
             $data['uid'] = $uid;
+            if(!empty($group_id)) {
+                $data['group_id'] = $group_id;
+            }
             
             if(empty($title)) {
                 $userApi = new UserApi();
@@ -94,14 +98,39 @@ class LiveController extends HomeController {
     
     //结束直播
     public function endLive() {
-        //转存直播
-        $this->saveLive();
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('无权限', -1);
+            }
+        
+            $live_id = I('live_id', '', 'intval');
+            if(empty($live_id)) {
+                $this->renderFailed('直播id为空');
+            }
+            
+            $liveModel = M('live');
+            $live_info = $liveModel->field('stream_key')->where(array('id'=>$live_id))->find();
+            $stream_key = $live_info['stream_key'];
+            if(!empty($stream_key)) {
+                $ret = $this->saveLive($stream_key, 0, 0);
+                if($ret['fname']) {
+                    $data['status'] = 2;//点播
+                    $data['update_time'] = NOW_TIME;
+                    $data['play'] = C('QINIU.live_storage').'/'.$ret['fname'];
+                    $liveModel->where(array('stream_key'=>$stream_key))->save($data);
+                    $this->renderSuccess('保存成功', array('fname'=>$ret['fname']));
+                }
+                $this->renderFailed('保存失败');
+            }
+            
+        }
     }
     
     //转存直播
-    private function saveLive() {
+    private function saveLive($stream_key, $create_time, $end_time) {
         $liveApi = new LiveApi();
-        $liveApi->saveLive();
+        return $liveApi->saveLive($stream_key, $create_time, $end_time);
     }
     
     //更新直播封面
