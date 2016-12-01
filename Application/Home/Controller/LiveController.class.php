@@ -120,7 +120,16 @@ class LiveController extends HomeController {
             $live_info = $liveModel->field('stream_key')->where(array('id'=>$live_id))->find();
             $stream_key = $live_info['stream_key'];
             if(!empty($stream_key)) {
-                $ret = $this->saveLive($stream_key, 0, 0);
+                //失败最多尝试5次
+                $try = 0;
+                do {
+                    if ($try == 5) {
+                        break;
+                    }
+                    $ret = $this->saveLive($stream_key, 0, 0);
+                    $try ++;
+                } while(!$ret['fname']);
+
                 if($ret['fname']) {
                     $data['status'] = 2;//点播
                     $data['update_time'] = NOW_TIME;
