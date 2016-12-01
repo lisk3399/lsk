@@ -56,7 +56,7 @@ class LiveController extends HomeController {
             $this->renderSuccess('创建成功', $data);
         }
     }
-	
+    
     //获取直播列表
     public function getList() {
         $page = I('page', '1', 'intval');
