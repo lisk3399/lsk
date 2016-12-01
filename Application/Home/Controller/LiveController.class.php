@@ -53,6 +53,7 @@ class LiveController extends HomeController {
                 $this->renderFailed('直播创建失败');
             }
             
+            $data['id'] = $live_id;
             $this->renderSuccess('创建成功', $data);
         }
     }
