@@ -30,6 +30,7 @@ class QiniuController extends AdminController {
         $prefix = trim(I('post.prefix'));
         if($prefix)
             $map['prefix'] = $prefix;
+        $map['limit'] = 100;
         $list = $this->qiniu->getList($map);
         if(!$list)
             trace($this->qiniu->error);
@@ -147,6 +148,7 @@ tpl;
         $config = array();
         
         $result = $this->qiniu->upload($config, $file);
+        
         if($result){
             $this->success('上传成功','', $result);
         }else{

@@ -76,7 +76,7 @@ class CommentController extends AdminController {
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
         ->where($map)
         ->order('c.id desc');
-    
+   
         $list = $select->select();
         foreach ($list as &$row) {
             $row['content'] = rawurldecode($row['content']);
@@ -96,4 +96,30 @@ class CommentController extends AdminController {
     
         return $list;
     }
+    // 修改评论内容
+    public function editAction()
+    {
+        $id=I('get.id');
+       empty($id) && $this->error('参数不能为空');
+       $data=M('comment')->field(true)->find($id);
+      
+       $this->assign('data',$data);
+       $this->meta_title='修改评论内容';
+       $this->display('edit');
+    }
+    // 编剧评论
+    public function saveAction()
+    {
+        $res = D('comment')->update();
+        if(!$res)
+        {
+            $this->error(D('comment')->getError());
+
+        }
+        else{
+            $this->success($res['id']?'更新成功!' :'新增成功!' , U('Comment/index'));
+        }
+
+    }
+
 }

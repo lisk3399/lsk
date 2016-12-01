@@ -141,9 +141,7 @@ class InstitutionController extends AdminController {
         $id = I('get.id');
         $Classes = M('group');
        $list = $Classes
-      // ->alias('group')
        ->field('dbh_group.id,dbh_group.uid,dbh_group.org_id,dbh_group.group_name,dbh_orgnization.id,dbh_orgnization.name')
-      //->join('_orgnization as m on c.org_id = m.id','left')
        ->join('__ORGNIZATION__  ON  __GROUP__.org_id = __ORGNIZATION__.id')
        ->where($id.'=dbh_group.org_id')
        ->select();
@@ -197,22 +195,6 @@ class InstitutionController extends AdminController {
  
         return $list;
     }
-        // 查看机构下属的班级
-     public function classe(){
-           
-        $id = I('get.id');
-        $Classes = M('group');
-       $list = $Classes
-      // ->alias('group')
-       ->field('dbh_group.id,dbh_group.uid,dbh_group.org_id,dbh_group.group_name,dbh_orgnization.id,dbh_orgnization.name')
-      //->join('_orgnization as m on c.org_id = m.id','left')
-       ->join('__ORGNIZATION__  ON  __GROUP__.org_id = __ORGNIZATION__.id')
-       ->where($id.'=dbh_group.org_id')
-       ->select();
-      
-       $this->assign('list',$list);
-       $this->display('classe');
-    }
 
     // 修改机构
        public function editAction(){
@@ -222,6 +204,7 @@ class InstitutionController extends AdminController {
         $data = M('orgnization')->field(true)->find($id);
 
         $this->assign('data',$data);
+        
         $this->meta_title = '编辑机构';
         $this->display('edit');
     }
@@ -235,8 +218,6 @@ class InstitutionController extends AdminController {
         }else{
             $this->success($res['id']?'更新成功！':'新增成功！',U('Institution/index'));
         }
-    }
-            $this->success($res['id']?'更新成功！':'新增成功！',U('Institution/index'));
-        }
+  
     }
 }

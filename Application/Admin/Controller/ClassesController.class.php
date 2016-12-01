@@ -54,15 +54,16 @@ class ClassesController extends AdminController {
         }else{
             $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
         }
-    
-        $Classes = M('Classes');
+
+        $Classes = M('Group');
         $select = $Classes->alias('c')
         ->page($page, $listRows)
-        ->field('c.id,c.uid,c.province,c.city,c.district,c.school,c.class,m.nickname')
+        ->field('c.id,c.uid,c.group_name,m.nickname,a.name')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
-        ->where($map)
+         ->join('__ORGNIZATION__ a on c.uid = a.uid', 'left')
+        ->where(`$map`)
         ->order('c.id desc');
-    
+
         $list = $select->select();
         $total = $Classes->alias('c')->where($map)->count();
         
@@ -78,4 +79,64 @@ class ClassesController extends AdminController {
     
         return $list;
     }
+    // 编辑班级
+    public function editAction()
+    {
+        // 接受数据
+        $id=I('get.id');
+
+        empty($id) && $this->error('参数不能为空');
+        $data=M('Group')->field(true)->find($id);
+
+        $this->assign('data',$data);
+        $this->meta_title='编辑班级';
+
+        $this->display('edit');
+    }
+    //修改班级名称
+    public function saveAction(){
+        header("Content-Type:text/html; charset=utf-8");
+    
+        $Dao = M("Group");
+
+         $result = $Dao->where('id ='. $_POST['id'])
+                     ->setField('group_name',$_POST['group_name']);
+
+        if($result !== false){
+             $this->success($result['group_name']?'更新成功！':'新增成功！',U('Classes/index'));
+            
+        }else{
+             $this->error(D('Classes')->getError());
+        }
+    }
+    // 获取班级下成员
+    public function classe()
+    {
+        $id = I('get.cate_id');
+        $Classes = D('member_group');
+        $list = $Classes
+        ->field('dbh_group.id,dbh_group.uid,dbh_group.group_name,dbh_member.uid,dbh_member.classid,dbh_member.classid,dbh_member.nickname,dbh_member_group.group_id')
+
+       ->join('__GROUP__ ON  __MEMBER_GROUP__.group_id=__GROUP__.id')
+       ->join('__MEMBER__ ON __MEMBER__.uid=__MEMBER_GROUP__.uid')
+       ->where($id.'=dbh_member_group.group_id' )
+       ->select(); 
+       $this->assign('list',$list);
+       $this->display('classe');
+    }
+    //班级搜索
+    public function search()
+    {
+        if (I('get.group_name','','htmlspecialchars')) 
+        {
+        $name = I('get.group_name','','htmlspecialchars');
+        $where['group_name'] =['like','%'.$name.'%'];
+      $list = M('_group  as  c')
+      ->join('__MEMBER__  as  m  on  c.uid = m.uid')
+      ->where($where)->select();  
+       $this->assign('list', $list);
+       $this->display('index');
+        }
+    }
+
 }
