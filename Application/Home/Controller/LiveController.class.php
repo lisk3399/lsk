@@ -67,12 +67,19 @@ class LiveController extends HomeController {
             $rows = C('API_MAX_ROWS');
         }
         
+        $map = array();
+        $group_id = I('group_id', '1', 'intval');
+        if(!empty($group_id)) {
+            $map['group_id'] = $group_id;
+        }
+        
         $liveModel = M('live');
         $list = $liveModel->field('id,uid,title,play,cover_url,comments,likes,create_time')
+        ->where($map)
         ->limit($page, $rows)->select();
         
         if(count($list) == 0) {
-            $this->renderFailed('获取列表失败');
+            $this->renderFailed('没有更多了');
         }
         
         $this->renderSuccess('直播列表', $list);
@@ -90,7 +97,7 @@ class LiveController extends HomeController {
         ->where(array('id'=>$live_id))->find();
         
         if(count($info) == 0) {
-            $this->renderFailed('获取信息失败');
+            $this->renderFailed('没有更多了');
         }
         
         $this->renderSuccess('直播信息', $info);
