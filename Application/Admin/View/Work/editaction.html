@@ -19,14 +19,20 @@ $(document).ready(function(){
     <form name="form" role="form" method="post" action="{:U('postDoupload')}" enctype="multipart/form-data" >
 
             <div class="form-item">
-                <label class="item-label">用户<span class="check-tips">用户</span></label>
+                <label class="item-label"><span class="check-tips">用户</span></label>
                 <div class="controls">
                     <input type="text" class="text input-large" name="uid" value="{$info.uid|default=''}">
                 </div>
             </div>
+             <div class="form-item">
+                <label class="item-label"><span class="check-tips">班机ID</span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="group_id" value="{$info.group_id|default=''}">
+                </div>
+            </div>
             <!-- Comment: <textarea name="comment" rows="5" cols="40"></textarea> -->
              <div class="form-item">
-                 <label class="item-label">标题<span class="check-tips">标题</span></label>
+                 <label class="item-label"><span class="check-tips">标题</span></label>
             <div class="controls">
                 <input type="text" class="text input-large" name="title" value="{$info.title|default=''}">
             </div>
