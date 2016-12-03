@@ -66,47 +66,68 @@
 			$data = json_encode($data);
 			return self::SignWithData($sk, $ak, $data);
 		}
+		// 后面为logo  图片
+		public function upload($config, $file ,$filelogo){
 
-		public function upload($config, $file){
 			$uploadToken = $this->UploadToken($this->sk, $this->ak, $config);
-
 			$url = "{$this->QINIU_UP_HOST}";
 			$mimeBoundary = md5(microtime());
 			$header = array('Content-Type'=>'multipart/form-data;boundary='.$mimeBoundary);
 			$data = array();
-
+			$arraylogo[]='';
 			$fields = array(
 				'token'=>$uploadToken,
 				'key'=>$config['saveName']? $config['save_name'] : $file['fileName'],
 			);
-
+			$fieldslogo = array(
+				'token'=>$uploadToken,
+				'key'=>$config['saveName']? $config['save_name'] : $filelogo['fileName'] ,
+			);
 			if(is_array($config['custom_fields']) && $config['custom_fields'] !== array()){
-				$fields = array_merge($fields, $config['custom_fields']);
+				$fields  = array_merge($fields , $config['custom_fields']);
 			}
-
-			foreach ($fields as $name => $val) {
+			foreach ($fields  as $name => $val) {
 				array_push($data, '--' . $mimeBoundary);
 				array_push($data, "Content-Disposition: form-data; name=\"$name\"");
 				array_push($data, '');
 				array_push($data, $val);
 			}
-
+			foreach ($fieldslogo  as $name => $val) {
+				array_push($arraylogo, '--' . $mimeBoundary);
+				array_push($arraylogo, "Content-Disposition: form-data; name=\"$name\"");
+				array_push($arraylogo, '');
+				array_push($arraylogo, $val);
+			}
 			//文件
 			array_push($data, '--' . $mimeBoundary);
+			$arraylogo[]='--'.$mimeBoundary;
 			$name = $file['name'];
+			$namelogo = $filelogo['name'];
 			$fileName = $file['fileName'];
+			$fileNamelogo = $filelogo['fileName'];
 			$fileBody = $file['fileBody'];
+			$fileBodylogo = $filelogo['fileBody'];
 			$fileName = self::Qiniu_escapeQuotes($fileName);
+			$fileNamelogo = self::Qiniu_escapeQuotes($fileNamelogo);
+			
 			array_push($data, "Content-Disposition: form-data; name=\"$name\"; filename=\"$fileName\"");
 			array_push($data, 'Content-Type: application/octet-stream');
 			array_push($data, '');
 			array_push($data, $fileBody);
-
-			array_push($data, '--' . $mimeBoundary . '--');
+			array_push($data, '--' . $mimeBoundary . '--'); 
 			array_push($data, '');
 
+			$arraylogo[]="Content-Disposition: form-data; name=\"$name\"; filename=\"$fileName\"";
+			$arraylogo[]='Content-Type: application/octet-stream';
+			$arraylogo[]='';
+			$arraylogo[]=$fileBodylogo;
+			$arraylogo[]='--' . $mimeBoundary.'--';
+			$arraylogo[]='';
 			$body = implode("\r\n", $data);
-			$response = $this->request($url, 'POST', $header, $body);
+			$bodylogo = implode("\r\n", $arraylogo);
+  			$response = $this->request($url, 'POST', $header,$body);
+  			$response[1]= $this->request($url, 'POST', $header,$bodylogo);
+  			
 			return $response;
 		}
 
@@ -250,9 +271,9 @@
 	     * @param  resource $body    上传文件资源
 	     * @return boolean
 	     */
-	    private function request($path, $method, $headers = null, $body = null){
-	        $ch  = curl_init($path);
+	    private function request($path, $method, $headers = null, $body = null  ){
 
+	        $ch  =curl_init($path);
 	        $_headers = array('Expect:');
 	        if (!is_null($headers) && is_array($headers)){
 	            foreach($headers as $k => $v) {

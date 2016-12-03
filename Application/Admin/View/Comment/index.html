@@ -20,24 +20,9 @@
 		<!-- 高级搜索 -->
 		<div class="search-form fr cf">
 			<div class="sleft">
-				
-				<input type="text" name="title" class="search-input" value="{:I('title')}" placeholder="请输入标题文档">
-				<a class="sch-btn" href="javascript:;" id="search" url="{:U('article/index','pid='.I('pid',0).'&cate_id='.$cate_id,false)}"><i class="btn-search"></i></a>
+				<input type="text" name="content" class="search-input" value="{:I('content')}" placeholder="搜索评论内容">
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('search','pid='.I('pid',0).'&cate_id='.$cate_id,false)}"><i class="btn-search"></i></a>
 			</div>
-            <div class="btn-group-click adv-sch-pannel fl">
-                <button class="btn">高 级<i class="btn-arrowdown"></i></button>
-                <div class="dropdown cf">
-                	<div class="row">
-                		<label>更新时间：</label>
-                		<input type="text" id="time-start" name="time-start" class="text input-2x" value="" placeholder="起始时间" /> -
-                		<input type="text" id="time-end" name="time-end" class="text input-2x" value="" placeholder="结束时间" />
-                	</div>
-                	<div class="row">
-                		<label>创建者：</label>
-                		<input type="text" name="nickname" class="text input-2x" value="" placeholder="请输入用户名">
-                	</div>
-                </div>
-            </div>
 		</div>
 	</div>
 
