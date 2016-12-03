@@ -835,6 +835,7 @@ class ContentController extends HomeController {
             }
         }
         
+        //todo 用户未加入班级看不到班级动态
         $map['c.status'] = 1;
         $map['c.group_id'] = $group_id;
         $map['c.task_id'] = 0;
