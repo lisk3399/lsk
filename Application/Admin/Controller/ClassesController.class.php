@@ -138,5 +138,29 @@ class ClassesController extends AdminController {
        $this->display('index');
 
     }
+    // 添加班级成员
+       public function addAction(){
+        $GLOBALS['classid'] = I('get.id');
 
+        $this->meta_title = '新增成员';
+        $this->assign('data');
+        $this->display('editaction');
+    }
+    // 添加班级成员
+     public function postDoupload()
+     {
+        
+        $group_id=$_POST['group_id'];
+        $uid =$_POST['uid'];
+          $dmodel=D('member_group');
+
+            $data=$dmodel->add([
+
+                            'uid'=>$uid,
+                            'group_id'=>$group_id,  
+                            'status'=>1,                      
+        ]);
+        
+             $this->success('操作成功',U('Classes/index'));
+     }
 }
