@@ -6,7 +6,8 @@ class ContentModel extends Model{
 
         public $_validate = array(
          array('uid', '/^[\d]+$/', 'ID只能填正整数', self::VALUE_VALIDATE, 'regex', self::MODEL_BOTH),
-         array('uid', 'require', 'ID不能为空', self::MUST_VALIDATE, 'regex', self::MODEL_BOTH),
+         array('uid', 'require', '用户ID不能为空', self::MUST_VALIDATE, 'regex', self::MODEL_BOTH),
+         array('group_id', 'require', ' 班级ID不能为空', self::MUST_VALIDATE, 'regex', self::MODEL_BOTH),
          array('title', 'require', '标题不能为空', self::MUST_VALIDATE, 'regex', self::MODEL_BOTH),
          array('title', '1,80', '标题长度不能超过80个字符', self::MUST_VALIDATE, 'length', self::MODEL_BOTH),
          array('description', '1,400', '描述长度不能超过400个字符', self::VALUE_VALIDATE, 'length', self::MODEL_BOTH),

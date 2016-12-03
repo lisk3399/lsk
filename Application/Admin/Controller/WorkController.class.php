@@ -136,6 +136,7 @@ class WorkController extends AdminController {
     // 上传图片视频   
     public function postDoupload()
     {
+        
         $upload_img=M('content_material');
         $res=D('content');  
 
