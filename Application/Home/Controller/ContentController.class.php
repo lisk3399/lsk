@@ -347,6 +347,16 @@ class ContentController extends HomeController {
 	        $this->renderFailed('班级为空');
 	    }
 	    
+	    $uid = is_login();
+	    //官方用户未加入班级也可以看所有内容
+	    $official_uid = M('auth_group_access')->field('uid')->where(array('uid'=>$uid, 'group_id'=>3))->find();
+        if(!$official_uid['uid']) {
+            $GroupController = new GroupController();
+            if(!$GroupController->checkJoin($uid, $group_id)) {
+                $this->renderFailed('您未加入该班级，暂时无法看到班级内容');
+            }
+        }
+	    
 	    //获取发布任务列表
 	    $map['group_id'] = $group_id;
 	    $map['is_admin'] = 1;
@@ -815,7 +825,7 @@ class ContentController extends HomeController {
         $where['c.uid'] = array('IN', $uid_arr);
         //用户登录后展示用户所有在班级发布的动态
         if($uid) {
-            $group_rs = M('member_group')->field('group_id')->where(array('uid'=>$uid))->select();
+            $group_rs = M('member_group')->field('group_id')->where(array('uid'=>$uid, 'status'=>1))->select();
             //用户没有加入或创建任何班级不走这块
             if(!empty($group_rs[0]['group_id'])) {
                 foreach ($group_rs as $row) {
@@ -898,6 +908,16 @@ class ContentController extends HomeController {
         }
         if(!$this->isGroupidExists($group_id)) {
             $this->renderFailed('班级不存在');
+        }
+        
+    	$uid = is_login();
+	    //官方用户未加入班级也可以看所有内容
+	    $official_uid = M('auth_group_access')->field('uid')->where(array('uid'=>$uid, 'group_id'=>3))->find();
+        if(!$official_uid['uid']) {
+            $GroupController = new GroupController();
+            if(!$GroupController->checkJoin($uid, $group_id)) {
+                $this->renderFailed('您未加入该班级，暂时无法看到班级内容');
+            }
         }
         
         $map['c.status'] = 1;
