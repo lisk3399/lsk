@@ -350,6 +350,7 @@ class ContentController extends HomeController {
 	                if(strtoupper($row1['type']) == "PIC") {
 	                    $row['cover_url'] = $row1['cover_url'];
 	                    $row['pic_type'] = "PIC";
+	                    break;
 	                }
 	            }
 	        }
