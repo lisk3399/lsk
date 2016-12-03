@@ -98,6 +98,7 @@
 				array_push($arraylogo, '');
 				array_push($arraylogo, $val);
 			}
+
 			//文件
 			array_push($data, '--' . $mimeBoundary);
 			$arraylogo[]='--'.$mimeBoundary;
@@ -125,7 +126,9 @@
 			$arraylogo[]='';
 			$body = implode("\r\n", $data);
 			$bodylogo = implode("\r\n", $arraylogo);
+
   			$response = $this->request($url, 'POST', $header,$body);
+
   			$response[1]= $this->request($url, 'POST', $header,$bodylogo);
   			
 			return $response;
@@ -271,9 +274,11 @@
 	     * @param  resource $body    上传文件资源
 	     * @return boolean
 	     */
-	    private function request($path, $method, $headers = null, $body = null  ){
+	    private function request($path, $method, $headers = null, $body = null){
 
-	        $ch  =curl_init($path);
+			
+			$ch  = curl_init($path);
+
 	        $_headers = array('Expect:');
 	        if (!is_null($headers) && is_array($headers)){
 	            foreach($headers as $k => $v) {

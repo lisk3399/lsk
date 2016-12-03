@@ -5,7 +5,7 @@
 
 <block name="body">
     <div class="main-title">
-        <h2>{$info['id']?'编辑':'新增'}动态</h2>
+        <h2>{$info['id']?'编辑':'新增'}作品</h2>
     </div>
     <script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js">
 </script>
@@ -19,20 +19,20 @@ $(document).ready(function(){
     <form name="form" role="form" method="post" action="{:U('postDoupload')}" enctype="multipart/form-data" >
 
             <div class="form-item">
-                <label class="item-label">用户<span class="check-tips">用户</span></label>
+                <label class="item-label">用户<span class="check-tips">ID</span></label>
                 <div class="controls">
                     <input type="text" class="text input-large" name="uid" value="{$info.uid|default=''}">
                 </div>
             </div>
             <!-- Comment: <textarea name="comment" rows="5" cols="40"></textarea> -->
              <div class="form-item">
-                 <label class="item-label">标题<span class="check-tips">标题</span></label>
+                 <label class="item-label">标题<span class="check-tips"></span></label>
             <div class="controls">
                 <input type="text" class="text input-large" name="title" value="{$info.title|default=''}">
             </div>
             </div>
             <div class="form-item" id='aaa'>
-                <label for="auth-description" class="item-label">描述</label>
+                <label for="auth-description" class="item-label">作品描述</label>
             <ol class="controls">
                 <li><label class="textarea input-large"><textarea id="auth-description" type="text" name="description">{$v.description}</textarea></label></li>
             </ol>
@@ -54,9 +54,13 @@ $(document).ready(function(){
                      <input  type="file"  name='file'   />
                     <p class="help-block"   > </p>
         </div>
-                     <div class="form-item">
+         <div class="form-item">
                 <label for="auth-description" class="item-label">创建时间</label>
                 <input type="text" name="create_time" class="text time" value="{$info.create_time}" placeholder="请选择时间" />
+        </div>
+        <div class="form-item">
+                <label for="auth-description" class="item-label">截止时间</label>
+                <input type="text" name="deadline" class="text time" value="{$info.create_time}" placeholder="请选择时间" />
         </div>
                  <button type="submit" class="btn btn-default">上传</button>
                   <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>

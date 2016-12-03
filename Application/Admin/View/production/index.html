@@ -13,9 +13,9 @@
 	<div class="cf">
 		<div class="fl">
 			<a class="btn" href="{:U('addAction')}">新 增</a>
-			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setStatus",array("is_delete"=>1))}">删 除</button>
-			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setDisplay",array("is_display"=>1))}">设置首页显示</button>
-			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Work/setDisplay",array("is_display"=>0))}">取消首页显示</button>
+			<button class="btn ajax-post confirm" target-form="ids" url="{:U("production/setStatus",array("is_delete"=>1))}">删 除</button>
+			<button class="btn ajax-post confirm" target-form="ids" url="{:U("production/setDisplay",array("is_display"=>1))}">设置首页显示</button>
+			<button class="btn ajax-post confirm" target-form="ids" url="{:U("production/setDisplay",array("is_display"=>0))}">取消首页显示</button>
 		</div>
 
 		<!-- 高级搜索 -->
@@ -32,7 +32,7 @@
 					</ul>
 				</div>
 				<input type="text" name="title" class="search-input" value="{:I('title')}" placeholder="请输入标题文档">
-				<a class="sch-btn" href="javascript:;" id="search" url="{:U('article/index','pid='.I('pid',0).'&cate_id='.$cate_id,false)}"><i class="btn-search"></i></a>
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('production/index','pid='.I('pid',0).'&cate_id='.$cate_id,false)}"><i class="btn-search"></i></a>
 			</div>
             <div class="btn-group-click adv-sch-pannel fl">
                 <button class="btn">高 级<i class="btn-arrowdown"></i></button>
@@ -87,8 +87,8 @@
 						<td>{$data.create_time|time_format} </td>
 						
 						<td>
-						<a  data-id="{$data.id}" href="{:U('Work/edit?cate_id='.$data['cate_id.id'].'&id='.$data['id'])}">查看</a>
-						<a href='{:U("Work/setStatus",array("ids"=>$data["zid"],"status"=>-1))}'>删除</a></td>
+						<a  data-id="{$data.id}" href="{:U('production/edit?cate_id='.$data['cate_id.id'].'&id='.$data['id'])}">查看</a>
+						<a href='{:U("production/setStatus",array("ids"=>$data["zid"],"status"=>-1))}'>删除</a></td>
                     </tr>
                 </volist>
             </tbody>
