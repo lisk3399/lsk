@@ -84,11 +84,10 @@ class ContentModel extends Model{
         
         if(!empty($result['content_json'])) {
             $material_arr = json_decode($result['content_json'], true);
-            foreach ($material_arr as $row) {
-                if(strtoupper($row['type']) == "PIC") {
-                    $row['cover_url'] = $row['cover_url'];
-                    $row['pic_type'] = "PIC";
-                }
+            foreach ($material_arr as $key=>$row) {
+                $detail['pic'][$key]['cover_url'] = $row['cover_url'];
+                $detail['pic'][$key]['type'] = $row['type'];
+                $detail['pic'][$key]['value'] = $row['value'];
             }
         }
         else {

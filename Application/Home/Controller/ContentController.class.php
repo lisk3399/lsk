@@ -703,11 +703,16 @@ class ContentController extends HomeController {
             $this->renderFailed('内容不存在');
         }
         
-        $content_id = $detail['id'];
-        $CM = M('Content_material');
-        $result = $CM->field('type,value,cover_url')
-        ->where(array('content_id'=>$content_id))
-        ->select();
+        //列表页面获取内容素材
+        $ContentModel = new \Home\Model\ContentModel();
+        $detail = $ContentModel->getDetailMaterial($detail);
+        
+        $detail['avatar'] = !empty($detail['avatar'])?$detail['avatar']:C('USER_INFO_DEFAULT.avatar');
+        
+        $detail['is_mywork'] = 0;
+        if($uid == $detail['uid']) {
+            $detail['is_mywork'] = 1;
+        } 
         
         $Api = new UserApi;
         $detail['is_like'] = 0;
@@ -716,17 +721,6 @@ class ContentController extends HomeController {
             $is_like = $Api->isLike($uid, $detail['id']);
             $detail['is_like'] = (!empty($is_like))?1:0;
         }
-        foreach ($result as $key=>$content) {
-            $detail['pic'][$key]['cover_url'] = $content['cover_url'];
-            $detail['pic'][$key]['type'] = $content['type'];
-            $detail['pic'][$key]['value'] = $content['value'];
-        }
-        $detail['avatar'] = !empty($detail['avatar'])?$detail['avatar']:C('USER_INFO_DEFAULT.avatar');
-        
-        $detail['is_mywork'] = 0;
-        if($uid == $detail['uid']) {
-            $detail['is_mywork'] = 1;
-        } 
         
         $this->renderSuccess('详情', $detail);
     }
