@@ -109,6 +109,7 @@ class ContentModel extends Model{
             }
             $detail['deadline'] = date('Y-m-d', $detail['deadline']);
         }
+        
         $detail['create_time'] = date('Y-m-d H:i', $detail['create_time']);
         
         return $detail;
