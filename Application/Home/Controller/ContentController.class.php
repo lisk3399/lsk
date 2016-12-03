@@ -725,7 +725,7 @@ class ContentController extends HomeController {
         $this->renderSuccess('详情', $detail);
     }
     
-    //动态列表
+    //首页动态列表
     public function contentList() {
         $page = I('page', '1', 'intval');
         $rows = I('rows', '20', 'intval');
@@ -742,33 +742,40 @@ class ContentController extends HomeController {
         foreach ($uid_rs as $row) {
             $uid_arr[] = $row['uid'];
         }
+        
         $where['c.uid'] = array('IN', $uid_arr);
         //用户登录后展示用户所有在班级发布的动态
         if($uid) {
             $group_rs = M('member_group')->field('group_id')->where(array('uid'=>$uid, 'status'=>1))->select();
-            //用户没有加入或创建任何班级不走这块
+            //用户已经加入或创建过班级
+            $m = M('Content');
             if(count($group_rs) > 0) {
                 foreach ($group_rs as $row) {
                     $group_arr[] = $row['group_id'];
                 }
                 $where['c.group_id'] = array('IN', $group_arr);
                 $where['_logic'] = 'or';
+                $map['_complex'] = $where;
+                $map['c.status'] = 1;
+                $map['c.org_id']= 0;
+                $map['c.task_id'] = 0;
+                
+                $list = $m->alias('c')
+                ->page($page, $rows)
+                ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar,ifnull(t.name, "") as tag_name,g.group_name')
+                ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+                ->join('__TAGS__ t on t.id = c.tag_id', 'left')
+                ->join('__GROUP__ g on g.id = c.group_id', 'left')
+                ->where($map)
+                ->order('c.is_top desc,c.id desc')
+                ->select();
+            }
+            //未加入任何班级只能看见机构发布内容
+            else {
+                //获取班级所在机构id
+                $list = $m->alias('c')->where($where)->order('id desc')->select();
             }
         }
-        $map['_complex'] = $where;
-        $map['c.status'] = 1;
-        $map['c.org_id']= 0;
-        $map['c.task_id'] = 0;
-        $m = M('Content');
-        $list = $m->alias('c')
-        ->page($page, $rows)
-        ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar,ifnull(t.name, "") as tag_name,g.group_name')
-        ->join('__MEMBER__ m on m.uid = c.uid', 'left')
-        ->join('__TAGS__ t on t.id = c.tag_id', 'left')
-        ->join('__GROUP__ g on g.id = c.group_id', 'left')
-        ->where($map)
-        ->order('c.is_top desc,c.id desc')
-        ->select();
         
         if(count($list) == 0) {
             $this->renderFailed('没有更多了');
