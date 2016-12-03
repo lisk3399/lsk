@@ -773,6 +773,7 @@ class ContentController extends HomeController {
             //未加入任何班级只能看见机构发布内容
             else {
                 //获取班级所在机构id
+                $where['c.status'] = 1;
                 $list = $m->alias('c')->where($where)->order('id desc')->select();
             }
         }
