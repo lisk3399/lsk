@@ -4,7 +4,7 @@ namespace Admin\Controller;
 use Think\Upload\Driver\Qiniu\QiniuStorage;
 use Think\Upload\Driver\Qiniu\Auth;
 use Think\Upload\Driver\Qiniu\Etag;
-class WorkController extends AdminController {
+class ProductionController extends AdminController {
     
     public function index() {
         $type = I('type', '', 'trim');
@@ -33,8 +33,12 @@ class WorkController extends AdminController {
     
     //设置数据状态
     public function setStatus() {
+      
         $ids    =   I('request.ids', '', 'trim');
+
         $status =   I('request.status', '', 'intval');
+     
+       // var_dump($status);exit;
         if(empty($ids)){
             $this->error('请选择要操作的数据');
         }
@@ -42,8 +46,11 @@ class WorkController extends AdminController {
             $this->error('id为空');
         }
         $Institution = M('content');
+
         $map['id'] = array('IN', $ids);
+
         $data['status'] = $status;
+ // var_dump($data);exit;
         if($Institution->where($map)->save($data)) { 
 
             $this->success('操作成功');
@@ -52,6 +59,7 @@ class WorkController extends AdminController {
         }
         $this->error('操作失败');
     }
+ 
     
     //设置是否在首页显示
     public function setDisplay() {
@@ -105,6 +113,7 @@ class WorkController extends AdminController {
         ->where('d.status=1')
         ->order('d.id desc')
         ->select();
+
         $total = $Work->alias('w')->where($map)->count();
         
         $page = new \Think\Page($total, $listRows, $REQUEST);
@@ -116,6 +125,7 @@ class WorkController extends AdminController {
         $this->assign('_page', $p? $p: '');
         $this->assign('_total',$total);
         $options['limit'] = $page->firstRow.','.$page->listRows;     
+        // var_dump($list);exit;
         return $select;
     }
 
@@ -136,11 +146,27 @@ class WorkController extends AdminController {
     // 上传图片视频   
     public function postDoupload()
     {
-        $upload_img=M('content_material');
-        $res=D('content');  
 
-            $a=$res->update();
-           
+        $upload_img=M('content_material');
+
+   $message=strtotime ($_POST['create_time']);
+   $deadline=strtotime( $_POST['deadline']);
+   // var_dump($message);exit;
+
+      $dmodell=D('Task');
+
+            $data=$dmodell->add([
+                            'create_time'=>$message,
+                            'deadline'=>$deadline,     
+                            mysql_insert_id(),                   
+        ]);
+           $GLOBALS['sqlid']=['task_id'=>$data];
+  
+        $res=D('content');  
+        
+        
+            $a=$res->update1();
+
                     if($res->create())
                     {
                             $this->success('添加成功');
@@ -198,7 +224,9 @@ class WorkController extends AdminController {
             'fileName'=>$fileNamelogo,
             'fileBody'=>file_get_contents($filelogo['tmp_name'])
         );        
+
        $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
+
         $result[] = $upload->upload(array(), $file,$filelogo);
 
         if($result){      

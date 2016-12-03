@@ -128,10 +128,12 @@ class ClassesController extends AdminController {
     public function search()
     {
         $name = I('get.group_name','','htmlspecialchars');
-        $where['group_name'] =['like','%'.$name.'%'];
+   
+        $where['group_name'] =array('like','%'.$name.'%');
       $list = M('_group  as  c')
       ->join('__MEMBER__  as  m  on  c.uid = m.uid')
       ->where($where)->select();  
+
        $this->assign('list', $list);
        $this->display('index');
 

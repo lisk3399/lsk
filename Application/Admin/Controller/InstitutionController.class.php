@@ -18,7 +18,7 @@ class InstitutionController extends AdminController {
         if (I('get.nickname','','htmlspecialchars')) 
         {
         $name = I('get.nickname','','htmlspecialchars');
-        $where['name'] =['like','%'.$name.'%'];
+        $where['name'] =array('like','%'.$name.'%');
       $list = M('_orgnization  as  c')
       ->join('__MEMBER__  as  m  on  c.uid = m.uid')
       ->where($where)->select();
@@ -112,7 +112,7 @@ class InstitutionController extends AdminController {
         $ids    =   I('request.ids', '', 'trim');
 
         $is_delete =   I('request.is_delete', '', 'intval');
-        
+     
         
         if(empty($ids)){
             $this->error('请选择要操作的数据');
