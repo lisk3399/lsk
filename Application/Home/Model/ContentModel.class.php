@@ -103,12 +103,14 @@ class ContentModel extends Model{
         }
         //是否已经参与
         $detail['is_done_task'] = 0;
-        if(strtotime(date("Y-m-d", $detail['deadline']))+86400 <= NOW_TIME) {
-            $detail['is_done_task'] = 1;
+        if(!empty($detail['deadline'])) {
+            if(strtotime(date("Y-m-d", $detail['deadline']))+86400 <= NOW_TIME) {
+                $detail['is_done_task'] = 1;
+            }
+            $detail['deadline'] = date('Y-m-d', $detail['deadline']);
         }
         
         $detail['create_time'] = date('Y-m-d H:i', $detail['create_time']);
-        $detail['deadline'] = date('Y-m-d', $detail['deadline']);
         
         return $detail;
     }
