@@ -49,7 +49,7 @@ class ContentModel extends Model{
                         continue;
                     }
                     $row['pic'][$counter]['cover_url'] = $json_row['cover_url'];
-                    $row['pic'][$counter]['type'] = $json_row['type'];
+                    $row['pic'][$counter]['type'] = strtoupper($json_row['type']);
                     $row['pic'][$counter]['value'] = $json_row['value'];
                     $counter++;
                 }
@@ -109,7 +109,6 @@ class ContentModel extends Model{
             }
             $detail['deadline'] = date('Y-m-d', $detail['deadline']);
         }
-        
         $detail['create_time'] = date('Y-m-d H:i', $detail['create_time']);
         
         return $detail;
