@@ -747,7 +747,7 @@ class ContentController extends HomeController {
         if($uid) {
             $group_rs = M('member_group')->field('group_id')->where(array('uid'=>$uid, 'status'=>1))->select();
             //用户没有加入或创建任何班级不走这块
-            if(!empty($group_rs[0]['group_id'])) {
+            if(count($group_rs) > 0) {
                 foreach ($group_rs as $row) {
                     $group_arr[] = $row['group_id'];
                 }
