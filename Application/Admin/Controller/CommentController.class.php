@@ -49,7 +49,7 @@ class CommentController extends AdminController {
         $map['id'] = array('IN', $ids);
         $data['is_delete'] = $is_delete;
         if($Comments->where($map)->save($data)) {
-            $this->success('操作成功');exit;
+        $this->success('操作成功');exit;
         }
         $this->error('操作失败');
     }
@@ -70,7 +70,7 @@ class CommentController extends AdminController {
         $Comment = M('Comment');
         $select = $Comment->alias('c')
         ->page($page, $listRows)
-        ->field('c.id,c.to_uid,c.content,c.create_time,m.nickname,d.title,w.description')
+        ->field('c.id,c.uid,c.content,c.create_time,m.nickname,d.title,w.description')
         ->join('__WORK__ w on w.id = c.work_id', 'left')
         ->join('__DOCUMENT__ d on d.id = w.material_id', 'left')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
@@ -121,5 +121,24 @@ class CommentController extends AdminController {
         }
 
     }
+   //  //搜素评论内容
+   // public function search()
+   //  {
+
+   //      $name = I('get.content','','htmlspecialchars');
+   //      $where['content'] =['like','%'.$name.'%'];
+   //    $list = M('Comment  as  c')
+   //    ->join('__MEMBER__  as  m  on  c.uid = m.uid')
+   //    ->where($where)->select();  
+
+   //      foreach ($list as &$row) {
+
+   //          $row['content'] = rawurldecode($row['content']);
+
+   //      }
+
+   //     $this->assign('list', $list);
+   //     $this->display('index');
+   //  }
 
 }

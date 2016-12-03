@@ -1,0 +1,121 @@
+<extend name="Public/base"/>
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+    <div class="main-title">
+        <h2>{$info['id']?'编辑':'新增'}动态</h2>
+    </div>
+    <script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js">
+</script>
+<script>
+$(document).ready(function(){
+    $("#btn2").click(function(){
+        $("ol").append("<li><input class='textarea input-large' type=text name='description' value=''></li>");
+    });
+});
+</script>
+    <form name="form" role="form" method="post" action="{:U('postDoupload')}" enctype="multipart/form-data" >
+
+            <div class="form-item">
+                <label class="item-label">用户<span class="check-tips">用户</span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="uid" value="{$info.uid|default=''}">
+                </div>
+            </div>
+            <!-- Comment: <textarea name="comment" rows="5" cols="40"></textarea> -->
+             <div class="form-item">
+                 <label class="item-label">标题<span class="check-tips">标题</span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="title" value="{$info.title|default=''}">
+            </div>
+            </div>
+            <div class="form-item" id='aaa'>
+                <label for="auth-description" class="item-label">描述</label>
+            <ol class="controls">
+                <li><label class="textarea input-large"><textarea id="auth-description" type="text" name="description">{$v.description}</textarea></label></li>
+            </ol>
+            </div>
+            
+            <!-- <input id="btn2" type="button" value="加一个"> --> 
+            
+ 
+        <div class="form-group">
+             <input type="hidden" name="_token"  value="文件"  >
+                     <label for="auth-description">上传图片</label>
+                     <input type="file"  name='logo' />
+                    <p class="help-block" ></p>
+         </div>
+
+        <div class="form-group" >
+                 <input type="hidden" name="_token"  value="文件" >
+                     <label for="auth-description" >上传视频</label>
+                     <input  type="file"  name='file'   />
+                    <p class="help-block"   > </p>
+        </div>
+                     <div class="form-item">
+                <label for="auth-description" class="item-label">创建时间</label>
+                <input type="text" name="create_time" class="text time" value="{$info.create_time}" placeholder="请选择时间" />
+        </div>
+                 <button type="submit" class="btn btn-default">上传</button>
+                  <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+
+    </form>  
+</block>
+
+<block name="script">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+
+ 
+
+$('#submit').click(function(){
+    $('#form').submit();
+});
+
+$(function(){
+    
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+    <if condition="C('OPEN_DRAFTBOX') and (ACTION_NAME eq 'add' or $info['status'] eq 3)">
+    //保存草稿
+    var interval;
+    $('#autoSave').click(function(){
+        var target_form = $(this).attr('target-form');
+        var target = $(this).attr('url')
+        var form = $('.'+target_form);
+        var query = form.serialize();
+        var that = this;
+
+        $(that).addClass('disabled').attr('autocomplete','off').prop('disabled',true);
+        $.post(target,query).success(function(data){
+            if (data.status==1) {
+                updateAlert(data.info ,'alert-success');
+                $('input[name=id]').val(data.data.id);
+            }else{
+                updateAlert(data.info);
+            }
+            setTimeout(function(){
+                $('#top-alert').find('button').click();
+                $(that).removeClass('disabled').prop('disabled',false);
+            },1500);
+        })
+
+    autoSaveDraft();
+
+    </if>
+
+});
+</script>
+</block>
