@@ -207,10 +207,10 @@ class WorkController extends AdminController {
             $arrayjson=json_encode($array);
             $dmodel=D('content_material');
 
-            $data=$dmodel->add([
+            $data=$dmodel->add(array(
                             'content_id'=>$GLOBALS['id'],
                             'content_json'=>$arrayjson,                        
-        ]);
+        ));
         
             $this->success('上传成功','', $result);
         }else{
