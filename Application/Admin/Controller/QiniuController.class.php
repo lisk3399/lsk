@@ -148,6 +148,7 @@ tpl;
         $config = array();
         
         $result = $this->qiniu->upload($config, $file);
+        
         if($result){
             $this->success('上传成功','', $result);
         }else{
