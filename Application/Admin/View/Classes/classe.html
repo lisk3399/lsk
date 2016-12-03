@@ -20,7 +20,7 @@
 	            <?php foreach($list as $k => $v): ?>
 	                <tr>
 	                    <td><?=$v['uid']?></td>
-	                    <td><?=$v['group_name']?></td>
+	                    <td><?=$v['group_name']?><?=$v['id']?></td>
 	                    <td><?=$v['nickname']?></td>
 	                </tr>
 	            <?php endforeach; ?>
@@ -33,6 +33,8 @@
 		<div class="form-item cf">
 			<label class="item-label"></label>
 			<div class="controls edit_sort_btn">
+				
+				<a class="btn btn-return" href="{:U('Classes/addAction?id='.$v['id'])}">添加</a>
 				<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
 			</div>
 		</div>
