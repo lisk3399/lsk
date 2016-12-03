@@ -343,9 +343,15 @@ class ContentController extends HomeController {
 	        $cm_map['content_id'] = $row['id'];
 	        $result = $cm->field('content_json')
 	        ->where($cm_map)->find();
+	        
 	        if(!empty($result['content_json'])) {
-	            //todo 需要把content_json中的图片等元素解析出来
-	            $row['cover_url'] = $result['cover_url'];
+	            $material_arr = json_decode($result['content_json'], true);
+	            foreach ($material_arr as $row1) {
+	                if(strtoupper($row1['type']) == "PIC") {
+	                    $row['cover_url'] = $row1['cover_url'];
+	                    $row['pic_type'] = "PIC";
+	                }
+	            }
 	        }
 	        else {
 	            $cm_map['type'] = array('in', array('PIC','VIDEO','AUDIO'));
