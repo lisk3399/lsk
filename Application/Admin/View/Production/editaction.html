@@ -5,7 +5,7 @@
 
 <block name="body">
     <div class="main-title">
-        <h2>{$info['id']?'编辑':'新增'}作品</h2>
+        <h2>{$info['id']?'编辑':'新增'}作业</h2>
     </div>
     <script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js">
 </script>
@@ -19,6 +19,16 @@ $(document).ready(function(){
     <form name="form" role="form" method="post" action="{:U('postDoupload')}" enctype="multipart/form-data" >
 
             <div class="form-item">
+                 <label class="item-label">班级id(作业所属班级)<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="group_id" value="{$info.group_id|default=''}">
+            </div>
+            <div class="form-item">
+                 <label class="item-label">是否管理员发布(是1，否0)<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="is_admin" value="{$info.is_admin|default=''}">
+            </div>
+            <div class="form-item">
                 <label class="item-label">用户<span class="check-tips">ID</span></label>
                 <div class="controls">
                     <input type="text" class="text input-large" name="uid" value="{$info.uid|default=''}">
@@ -29,6 +39,11 @@ $(document).ready(function(){
                  <label class="item-label">标题<span class="check-tips"></span></label>
             <div class="controls">
                 <input type="text" class="text input-large" name="title" value="{$info.title|default=''}">
+            </div>
+            <div class="form-item">
+                 <label class="item-label">标签id(12-17，分别表示语文12,数学13,音乐14,舞蹈15,美术16,其他17)<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="tag_id" value="{$info.tag_id|default=''}">
             </div>
             </div>
             <div class="form-item" id='aaa'>

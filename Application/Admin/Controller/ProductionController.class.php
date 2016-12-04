@@ -146,31 +146,30 @@ class ProductionController extends AdminController {
     // 上传图片视频   
     public function postDoupload()
     {
-
         $upload_img=M('content_material');
 
-   $message=strtotime ($_POST['create_time']);
-   $deadline=strtotime( $_POST['deadline']);
-   // var_dump($message);exit;
-
-      $dmodell=D('Task');
-
-            $data=$dmodell->add(array(
-                            'create_time'=>$message,
-                            'deadline'=>$deadline,     
-                            mysql_insert_id(),                   
-        ));
-           $GLOBALS['sqlid']=array('task_id'=>$data);
-  
+        $create_time = strtotime ($_POST['create_time']);
+        $deadline=strtotime( $_POST['deadline']);
+        $tag_id = I('tag_id', '', 'intval'); //作业标签id
+        if(empty($tag_id)) {
+            $this->error('标签id不能为空');
+        }
+        $taskModel = M('task');
+        $data['create_time'] = $create_time; 
+        $data['deadline'] = $deadline;
+        $data['tag_id'] = $tag_id;
+        
+        $task_id = $taskModel->add($data);
+        $_POST['task_id'] = $task_id;
+        unset($_POST['tag_id']);
+        
         $res=D('content');  
-        
-        
             $a=$res->update1();
 
                     if($res->create())
                     {
                             $this->success('添加成功');
-                        }
+                    }
                     else
                     {
                             $this->error($res -> geterror());
