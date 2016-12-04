@@ -235,9 +235,9 @@ class ProductionController extends AdminController {
         
         if(count($result) > 0){
                 $img_domain = C('QINIU.img_domain');
-                $arr['type'] = 'PIC';
-                $arr['value'] = $img_domain.$result[0][1]['key'];
-                $arr['cover_url'] = $img_domain.$result[0][1]['key'];
+                $arr[]['type'] = 'PIC';
+                $arr[]['value'] = $img_domain.$result[0][1]['key'];
+                $arr[]['cover_url'] = $img_domain.$result[0][1]['key'];
 
                 $arrayjson=json_encode($arr);
                 $dmodel=D('content_material');
