@@ -92,8 +92,9 @@ class ProductionController extends AdminController {
         $Work = M('content');
         $select = $Work->alias('d')
         ->page($page, $listRows)
-        ->field('d.id as zid,d.title,d.description,d.likes,d.status,d.create_time,c.uid,c.nickname')
+        ->field('d.id as zid,d.title,d.description,d.likes,d.status,d.is_admin,d.create_time,c.uid,c.nickname,t.id as task_id')
         ->join('__MEMBER__ c on c.uid=d.uid', 'left')
+        ->join('__TASK__ t on t.id = d.task_id', 'left')
         //->join('__WORK__ w on w.id = d.uid')
         ->where($map)
         ->order('d.id desc')
