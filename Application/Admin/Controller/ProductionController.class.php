@@ -171,11 +171,11 @@ class ProductionController extends AdminController {
 
                     if($res->create())
                     {
-                        //$this->success('添加成功');
+                        $this->success('添加成功');
                     }
                     else
                     {
-                        //$this->error($res -> geterror());
+                        $this->error($res -> geterror());
                     } 
         $filelogo = $_FILES['logo'];
         $namelogo = $_FILES['logo']['name'];
