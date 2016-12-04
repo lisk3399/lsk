@@ -7,27 +7,11 @@ use Think\Upload\Driver\Qiniu\Etag;
 class ProductionController extends AdminController {
     
     public function index() {
-        $type = I('type', '', 'trim');
-       if(!empty($type)) {
-            $map['w.type'] = $type;
-            $map['is_delete'] = 0;
-            if(!in_array($type, array('DUBBING', 'LIPSYNC', 'ORIGINAL'))) {
-                $this->error('类型不正确');
-            }
-            $types = array(
-                'DUBBING' => '配音秀',
-                'LIPSYNC' => '对口型',
-                'ORIGINAL' => '原创'
-            );
-        } else {
-            $map['is_delete'] = 0;
-            $types[$type] = '全部';
-        }
+        $map['task_id'] = array('gt', 0);
         //获取作品列表
         $list = $this->getWorkList($map);
         
         $this->assign('list', $list);
-        $this->assign('type', $types[$type]);
         $this->display();
     }
     
@@ -104,17 +88,18 @@ class ProductionController extends AdminController {
             $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
         }
         
+        $map['d.status'] = 1;
         $Work = M('content');
         $select = $Work->alias('d')
         ->page($page, $listRows)
-        ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
-        ->join('__MEMBER__ c on c.uid=d.uid')
+        ->field('d.id as zid,d.title,d.description,d.likes,d.status,d.create_time,c.uid,c.nickname')
+        ->join('__MEMBER__ c on c.uid=d.uid', 'left')
         //->join('__WORK__ w on w.id = d.uid')
-        ->where('d.status=1')
+        ->where($map)
         ->order('d.id desc')
         ->select();
-
-        $total = $Work->alias('w')->where($map)->count();
+        
+        $total = $Work->alias('d')->where($map)->count();
         
         $page = new \Think\Page($total, $listRows, $REQUEST);
         if($total>$listRows){
