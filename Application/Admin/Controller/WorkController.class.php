@@ -145,17 +145,11 @@ class WorkController extends AdminController {
 
         $upload_img=M('content_material');
         $res=D('content');  
+        $a=$res->update();
+        if(!$res->create()) {
+           $this->error($res->geterror());
+        }
 
-            $a=$res->update();
-           
-                    if($res->create())
-                    {
-                            $this->success('添加成功');
-                        }
-                    else
-                    {
-                            $this->error($res -> geterror());
-                        } 
         $filelogo = $_FILES['logo'];
         $namelogo = $_FILES['logo']['name'];
        
@@ -165,7 +159,7 @@ class WorkController extends AdminController {
         $typefile = strtolower(substr($namefile,strrpos($namefile,'.')+1));
 
         $allow_type = array('jpg','jpeg','gif','png'); //定义允许上传的类型
-        $allow_typefile=array('avi');
+        $allow_typefile=array('avi','mp4');
 
         //判断文件类型是否被允许上传
         if(in_array($type , $allow_type)&& !in_array($typefile, $allow_typefile)){
@@ -207,27 +201,22 @@ class WorkController extends AdminController {
             'fileName'=>$fileNamelogo,
             'fileBody'=>file_get_contents($filelogo['tmp_name'])
         );        
-       $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
-       $result = $upload->upload(array(), $file,$filelogo);
+        $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
+        $result = $upload->upload(array(), $file,$filelogo);
 
-      
-        if($result){     
-
-            $array1=$configdomain.$fileNamelogo;
-            $array2= $configdomain.$fileName;
-            $arr[]=array('type'.'=>'.'txt','value'.'=>'."内容");  
-            $arr[]=array('type'.'=>'.'pic','value'.'=>'."$array1",'cover_url'.'=>'."用作列表封面显示");
-            $arr[]=array('type'.'=>'.'video','value'.'=>'."$array2",'cover_url'.'=>'."视频封面图");
-            $arr[]=array('type'.'=>'.'audio','value'.'=>'."音频",'cover_url'.'=>'."音频封面图");
-        
-            $arrayjson = ''; 
+        if(count($result) > 0){
+            $img_domain = C('QINIU.img_domain');
+            $arr[0]['type'] = 'VIDEO';
+            $arr[0]['value'] = $img_domain.$result[0]['key'];
+            $arr[0]['cover_url'] = $img_domain.$result[1]['key'];
             
+            $arrayjson=json_encode($arr);
             $dmodel=D('content_material');
             
             $data=$dmodel->add(array(
-                            'content_id'=>$GLOBALS['id'],
-                            'content_json'=>$arrayjson,                        
-        ));
+                'content_id'=>$GLOBALS['id'],
+                'content_json'=>$arrayjson
+            ));
         
             $this->success('上传成功','', $result);
         }else{
