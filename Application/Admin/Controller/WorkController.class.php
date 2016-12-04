@@ -108,14 +108,14 @@ class WorkController extends AdminController {
 
     //查看
     public function edit(){
-       $id = I('get.id');
-            $GLOBALS['cate_id']=I('cate_id');
+       $id = I('get.id', '', 'intval');
 
-        $Classes = M('content');
+       
+       $Classes = M('content');
        $list = $Classes->alias('a')
        ->field('a.id,a.uid,a.title,a.description,a.create_time,c.type,c.value,c.cover_url')
        ->join('__CONTENT_MATERIAL__ c on a.id=c.content_id')
-       ->where($id.'=a.uid')
+       ->where('a.id='.$id)
        ->select();
 
        $this->assign('list',$list);

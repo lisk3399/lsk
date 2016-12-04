@@ -87,7 +87,7 @@
 						<td>{$data.create_time|time_format} </td>
 						
 						<td>
-						<a  data-id="{$data.id}" href="{:U('production/edit?cate_id='.$data['cate_id.id'].'&id='.$data['id'])}">查看</a>
+						<a  data-id="{$data.id}" href="{:U('production/edit?id='.$data['zid'])}">查看</a>
 						<a href='{:U("production/setStatus",array("ids"=>$data["zid"],"status"=>-1))}'>删除</a></td>
                     </tr>
                 </volist>
