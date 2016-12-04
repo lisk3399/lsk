@@ -107,9 +107,9 @@ class ProductionController extends AdminController {
         $Work = M('content');
         $select = $Work->alias('d')
         ->page($page, $listRows)
-        ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname,w.id,w.material_id,w.type,w.cover_url,w.is_display')
+        ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
         ->join('__MEMBER__ c on c.uid=d.uid')
-        ->join('__WORK__ w on w.id = d.uid')
+        //->join('__WORK__ w on w.id = d.uid')
         ->where('d.status=1')
         ->order('d.id desc')
         ->select();
@@ -157,13 +157,17 @@ class ProductionController extends AdminController {
         if(empty($create_time) || empty($deadline)) {
             $this->error('时间不能为空');
         }
-        $taskModel = M('task');
-        $data['create_time'] = $create_time; 
-        $data['deadline'] = $deadline;
-        $data['tag_id'] = $tag_id;
         
-        $task_id = $taskModel->add($data);
-        $_POST['task_id'] = $task_id;
+        $is_admin = I('is_admin', '', 'intval');
+        if($is_admin) {
+            $taskModel = M('task');
+            $data['create_time'] = $create_time; 
+            $data['deadline'] = $deadline;
+            $data['tag_id'] = $tag_id;
+            
+            $task_id = $taskModel->add($data);
+            $_POST['task_id'] = $task_id;
+        }
         unset($_POST['tag_id']);
         
         $res=D('content');  

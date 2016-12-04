@@ -29,6 +29,11 @@ $(document).ready(function(){
                 <input type="text" class="text input-large" name="is_admin" value="{$info.is_admin|default=''}">
             </div>
             <div class="form-item">
+                 <label class="item-label">要完成的作业id(非管理员完成作业时需要)<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="task_id" value="{$info.task_id|default=''}">
+            </div>
+            <div class="form-item">
                 <label class="item-label">用户<span class="check-tips">ID</span></label>
                 <div class="controls">
                     <input type="text" class="text input-large" name="uid" value="{$info.uid|default=''}">
