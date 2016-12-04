@@ -146,21 +146,20 @@ class ClassesController extends AdminController {
         $this->assign('data');
         $this->display('editaction');
     }
+    
     // 添加班级成员
      public function postDoupload()
      {
-        
         $group_id=$_POST['group_id'];
         $uid =$_POST['uid'];
-          $dmodel=D('member_group');
+        $dmodel=D('member_group');
 
-            $data=$dmodel->add([
-
-                            'uid'=>$uid,
-                            'group_id'=>$group_id,  
-                            'status'=>1,                      
-        ]);
+        $data=$dmodel->add(array(
+            'uid'=>$uid,
+            'group_id'=>$group_id,  
+            'status'=>1,                      
+        ));
         
-             $this->success('操作成功',U('Classes/index'));
+        $this->success('操作成功',U('Classes/index'));
      }
 }

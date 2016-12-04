@@ -155,11 +155,11 @@ class ProductionController extends AdminController {
 
       $dmodell=D('Task');
 
-            $data=$dmodell->add([
+            $data=$dmodell->add(array(
                             'create_time'=>$message,
                             'deadline'=>$deadline,     
                             mysql_insert_id(),                   
-        ]);
+        ));
            $GLOBALS['sqlid']=['task_id'=>$data];
   
         $res=D('content');  
