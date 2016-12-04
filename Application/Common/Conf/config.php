@@ -77,6 +77,7 @@ return array(
     ),
     /* 七牛配置文件 */
     'QINIU' => array(
+        'img_domain'=>'http://vod.doushow.com/',
         'api'=>'http://api.qiniu.com/',
         'accessKey'=>'BX3FxNDH3aFGwGSb8Yue745EgiumlqGpqthQ8x1u',
         'secrectKey'=>'JqFwvXfT8TuLIb_UxyohIdnIS8oqzY-I9ifMqHyc',

@@ -154,6 +154,9 @@ class ProductionController extends AdminController {
         if(empty($tag_id)) {
             $this->error('标签id不能为空');
         }
+        if(empty($create_time) || empty($deadline)) {
+            $this->error('时间不能为空');
+        }
         $taskModel = M('task');
         $data['create_time'] = $create_time; 
         $data['deadline'] = $deadline;
@@ -168,12 +171,12 @@ class ProductionController extends AdminController {
 
                     if($res->create())
                     {
-                            $this->success('添加成功');
+                        $this->success('添加成功');
                     }
                     else
                     {
-                            $this->error($res -> geterror());
-                        } 
+                        $this->error($res -> geterror());
+                    } 
         $filelogo = $_FILES['logo'];
         $namelogo = $_FILES['logo']['name'];
        
@@ -213,6 +216,7 @@ class ProductionController extends AdminController {
         $extlogo = $filenamelogo[1];
         $fileNamelogo = $etagnamelogo[0].'.'.$extlogo;
 
+        
         $file = array(
             'name'=>'file',
             'fileName'=>$fileName,
@@ -224,21 +228,24 @@ class ProductionController extends AdminController {
             'fileBody'=>file_get_contents($filelogo['tmp_name'])
         );        
 
-       $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
+        $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
 
         $result[] = $upload->upload(array(), $file,$filelogo);
-
-        if($result){      
-            $array[]='http://'.$configdomain.'/'.$fileNamelogo;
-            $array[]='http://'.$configdomain.'/'.$fileName;
-            $arrayjson=json_encode($array);
-            $dmodel=D('content_material');
-
-            $data=$dmodel->add(array(
-                            'content_id'=>$GLOBALS['id'],
-                            'content_json'=>$arrayjson,                        
-        ));
+        //todo: 图片视频分别判断是否为空，不为空的走upload,upload方法不要一下操作图片和视频上传，保证上传方法功能单一性;upload被改的没法重用了
         
+        if(count($result) > 0){
+                $img_domain = C('QINIU.img_domain');
+                $arr['type'] = 'PIC';
+                $arr['value'] = $img_domain.$result[0][1]['key'];
+                $arr['cover_url'] = $img_domain.$result[0][1]['key'];
+
+                $arrayjson=json_encode($arr);
+                $dmodel=D('content_material');
+                
+                $data=$dmodel->add(array(
+                    'content_id'=>$GLOBALS['id'],
+                    'content_json'=>$arrayjson,
+                ));
             $this->success('上传成功','', $result);
         }else{
             $this->error('上传失败','', array(
