@@ -10,7 +10,13 @@
 	<?php foreach($list as $v):?>
 	<?php endforeach;?>
 	<form id="form" action="{:U('saveAction')}" method="post" class="form-horizontal">
-	
+			<div class="form-item cf">
+			<label class="item-label">ID<span class="check-tips"></span></label>
+			<div class="controls">
+			
+				<input type="text" class="text input-large" name="cate_id" value="{$GLOBALS['cate_id']}">
+			</div>
+		</div>
 		<div class="form-item cf">
 			<label class="item-label">标题<span class="check-tips"></span></label>
 			<div class="controls">
@@ -18,6 +24,7 @@
 				<input type="text" class="text input-large" name="title" value="{$v.title}">
 			</div>
 		</div>
+
 		<div class="form-item">
             <label for="auth-description" class="item-label">描述</label>
             <div class="controls">
@@ -41,7 +48,7 @@
 		</div>
 		<div class="form-item">
 			<input type="hidden" name="id" value="{$data.id}"/>
-			
+			<button class="btn btn-return"  target-form="form-horizontal">确 定</button>
 			<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
 		</div>
 	</form>
