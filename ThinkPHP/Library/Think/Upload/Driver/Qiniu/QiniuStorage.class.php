@@ -129,7 +129,7 @@
 
   			$response[] = $this->request($url, 'POST', $header,$body);
 
-  			$response[]= $this->request($url, 'POST', $header,$bodylogo);
+  			$response[] = $this->request($url, 'POST', $header,$bodylogo);
   			
 			return $response;
 		}

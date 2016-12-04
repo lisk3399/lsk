@@ -171,11 +171,11 @@ class ProductionController extends AdminController {
 
                     if($res->create())
                     {
-                        $this->success('添加成功');
+                        //$this->success('添加成功');
                     }
                     else
                     {
-                        $this->error($res -> geterror());
+                        //$this->error($res -> geterror());
                     } 
         $filelogo = $_FILES['logo'];
         $namelogo = $_FILES['logo']['name'];
@@ -186,7 +186,7 @@ class ProductionController extends AdminController {
         $typefile = strtolower(substr($namefile,strrpos($namefile,'.')+1));
 
         $allow_type = array('jpg','jpeg','gif','png'); //定义允许上传的类型
-        $allow_typefile=array('avi');
+        $allow_typefile=array('avi','mp4');
 
         //判断文件类型是否被允许上传
         if(in_array($type , $allow_type)&& !in_array($typefile, $allow_typefile)){
@@ -230,16 +230,16 @@ class ProductionController extends AdminController {
 
         $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
 
-        $result[] = $upload->upload(array(), $file,$filelogo);
+        $result = $upload->upload(array(), $file,$filelogo);
         //todo: 图片视频分别判断是否为空，不为空的走upload,upload方法不要一下操作图片和视频上传，保证上传方法功能单一性;upload被改的没法重用了
-        
         if(count($result) > 0){
                 $img_domain = C('QINIU.img_domain');
-                $arr[]['type'] = 'PIC';
-                $arr[]['value'] = $img_domain.$result[0][1]['key'];
-                $arr[]['cover_url'] = $img_domain.$result[0][1]['key'];
+                $arr[0]['type'] = 'VIDEO';
+                $arr[0]['value'] = $img_domain.$result[0]['key'];
+                $arr[0]['cover_url'] = $img_domain.$result[1]['key'];
 
                 $arrayjson=json_encode($arr);
+                
                 $dmodel=D('content_material');
                 
                 $data=$dmodel->add(array(
