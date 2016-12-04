@@ -1,9 +1,7 @@
 <extend name="Public/base"/>
 
 <!-- 子导航 -->
-<block name="sidebar">
-    <include file="sidemenu" />
-</block>
+
 
 <block name="body">
 	<div class="main-title">
@@ -87,7 +85,7 @@
 						<td>{$data.create_time|time_format} </td>
 						
 						<td>
-						<a  data-id="{$data.id}" href="{:U('Work/edit?cate_id='.$data['cate_id.id'].'&id='.$data['id'])}">查看</a>
+						<a  data-id="{$data.id}" href="{:U('Work/edit?cate_id='.$data['zid'].'&id='.$data['id'])}">查看</a>
 						<a href='{:U("Work/setStatus",array("ids"=>$data["zid"],"status"=>-1))}'>删除</a></td>
                     </tr>
                 </volist>
