@@ -122,6 +122,7 @@ class WorkController extends AdminController {
     //查看
     public function edit(){
        $id = I('get.id');
+            $GLOBALS['cate_id']=I('cate_id');
 
         $Classes = M('content');
        $list = $Classes->alias('a')
@@ -133,10 +134,28 @@ class WorkController extends AdminController {
        $this->assign('list',$list);
        $this->display('Work/edit');
     }
+    //修改动态创建时间
+   Public function saveAction()
+    {
+       
+         $create_time=strtotime($_POST['create_time']);
+
+         $Dao = M("content");
+
+         $result = $Dao->where('id ='. $_POST['cate_id'])
+                     ->setField('create_time',$create_time);
+
+        if($result !== false){
+             $this->success($result['create_time']?'更新成功！':'新增成功！',U('Work/index'));
+            
+        }else{
+             $this->error(D('Work')->getError());
+        }
+  }
     // 上传图片视频   
     public function postDoupload()
     {
-        
+
         $upload_img=M('content_material');
         $res=D('content');  
 
@@ -176,7 +195,9 @@ class WorkController extends AdminController {
         }
 
         $config = C('QINIU');
-        $configdomain=$config['domain'];    
+
+        $configdomain=$config['vod'];   
+ 
         $filename = explode('.', $file['name']);
         $filenamelogo = explode('.', $filelogo['name']);
 
@@ -202,10 +223,33 @@ class WorkController extends AdminController {
        $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
         $result[] = $upload->upload(array(), $file,$filelogo);
 
-        if($result){      
-            $array[]='http://'.$configdomain.'/'.$fileNamelogo;
-            $array[]='http://'.$configdomain.'/'.$fileName;
-            $arrayjson=json_encode($array);
+        if($result){     
+
+            $array1=$configdomain.$fileNamelogo;
+            $array2= $configdomain.$fileName;
+            $arr[]=array('type'.'=>'.'txt','value'.'=>'."内容");  
+            $arr[]=array('type'.'=>'.'pic','value'.'=>'."$array1",'cover_url'.'=>'."用作列表封面显示");
+            $arr[]=array('type'.'=>'.'video','value'.'=>'."$array2",'cover_url'.'=>'."视频封面图");
+            $arr[]=array('type'.'=>'.'audio','value'.'=>'."音频",'cover_url'.'=>'."音频封面图");
+
+
+            
+
+            // $arr[]=array('txt',"内容");  
+            // $arr[]=array('pic',"$array1","用作列表封面显示");
+            // $arr[]=array('video',"$array2","视频封面图");
+            // $arr[]=array('audio',"音频","音频封面图");
+           // var_dump($arr);exit;
+            foreach ($arr as $k => $v) {
+                $json = '[{"type":"txt","value":"这里是文字内容"},
+                        {"type":"pic","value":"$v[1]","cover_url":"用作列表封面显示"},
+                        {"type":"video","value":"$v[2]","cover_url":"视频封面图"},
+                        {"type":"audio","value":"七牛音频url","cover_url":"音频封面图"}]';
+            }
+
+           // $arrayjson=json_encode($json,true);
+            $arrayjson=json_encode($json,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
+        
             $dmodel=D('content_material');
 
             $data=$dmodel->add(array(
