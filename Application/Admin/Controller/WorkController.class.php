@@ -8,21 +8,8 @@ class WorkController extends AdminController {
     
     public function index() {
         $type = I('type', '', 'trim');
-       if(!empty($type)) {
-            $map['w.type'] = $type;
-            $map['is_delete'] = 0;
-            if(!in_array($type, array('DUBBING', 'LIPSYNC', 'ORIGINAL'))) {
-                $this->error('类型不正确');
-            }
-            $types = array(
-                'DUBBING' => '配音秀',
-                'LIPSYNC' => '对口型',
-                'ORIGINAL' => '原创'
-            );
-        } else {
-            $map['is_delete'] = 0;
-            $types[$type] = '全部';
-        }
+        $map['is_delete'] = 0;
+        $types[$type] = '全部';
         //获取作品列表
         $list = $this->getWorkList($map);
         
@@ -99,9 +86,9 @@ class WorkController extends AdminController {
         $Work = M('content');
         $select = $Work->alias('d')
         ->page($page, $listRows)
-        ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname,w.id,w.material_id,w.type,w.cover_url,w.is_display')
+        ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
         ->join('__MEMBER__ c on c.uid=d.uid')
-        ->join('__WORK__ w on w.id = d.uid')
+        //->join('__WORK__ w on w.id = d.uid')
         ->where('d.status=1')
         ->order('d.id desc')
         ->select();
@@ -221,8 +208,9 @@ class WorkController extends AdminController {
             'fileBody'=>file_get_contents($filelogo['tmp_name'])
         );        
        $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
-        $result[] = $upload->upload(array(), $file,$filelogo);
+       $result = $upload->upload(array(), $file,$filelogo);
 
+      
         if($result){     
 
             $array1=$configdomain.$fileNamelogo;
@@ -231,27 +219,11 @@ class WorkController extends AdminController {
             $arr[]=array('type'.'=>'.'pic','value'.'=>'."$array1",'cover_url'.'=>'."用作列表封面显示");
             $arr[]=array('type'.'=>'.'video','value'.'=>'."$array2",'cover_url'.'=>'."视频封面图");
             $arr[]=array('type'.'=>'.'audio','value'.'=>'."音频",'cover_url'.'=>'."音频封面图");
-
-
-            
-
-            // $arr[]=array('txt',"内容");  
-            // $arr[]=array('pic',"$array1","用作列表封面显示");
-            // $arr[]=array('video',"$array2","视频封面图");
-            // $arr[]=array('audio',"音频","音频封面图");
-           // var_dump($arr);exit;
-            foreach ($arr as $k => $v) {
-                $json = '[{"type":"txt","value":"这里是文字内容"},
-                        {"type":"pic","value":"$v[1]","cover_url":"用作列表封面显示"},
-                        {"type":"video","value":"$v[2]","cover_url":"视频封面图"},
-                        {"type":"audio","value":"七牛音频url","cover_url":"音频封面图"}]';
-            }
-
-           // $arrayjson=json_encode($json,true);
-            $arrayjson=json_encode($json,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
         
+            $arrayjson = ''; 
+            
             $dmodel=D('content_material');
-
+            
             $data=$dmodel->add(array(
                             'content_id'=>$GLOBALS['id'],
                             'content_json'=>$arrayjson,                        

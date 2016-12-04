@@ -767,7 +767,7 @@ class ContentController extends HomeController {
                 ->join('__TAGS__ t on t.id = c.tag_id', 'left')
                 ->join('__GROUP__ g on g.id = c.group_id', 'left')
                 ->where($map)
-                ->order('c.is_top desc,c.id desc')
+                ->order('c.is_top desc,c.create_time desc')
                 ->select();
             }
             //未加入任何班级只能看见机构发布内容
@@ -780,7 +780,7 @@ class ContentController extends HomeController {
                 ->join('__MEMBER__ m on m.uid = c.uid', 'left')
                 ->join('__TAGS__ t on t.id = c.tag_id', 'left')
                 ->where($where)
-                ->order('c.id desc')
+                ->order('c.create_time desc')
                 ->select();
             }
         }
@@ -845,7 +845,7 @@ class ContentController extends HomeController {
         ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
         ->where($map)
-        ->order('c.is_top desc,c.id desc')
+        ->order('c.is_top desc,c.create_time desc')
         ->select();
         
         if(count($list) == 0) {
@@ -886,7 +886,7 @@ class ContentController extends HomeController {
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
         ->join('__GROUP__ g on g.id = c.group_id')
         ->where($map)
-        ->order('c.is_top desc,c.id desc')
+        ->order('c.is_top desc,c.create_time desc')
         ->select();
     
         if(count($list) == 0) {
@@ -929,7 +929,7 @@ class ContentController extends HomeController {
             ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar')
             ->join('__MEMBER__ m on m.uid = c.uid', 'left')
             ->where($map)
-            ->order('c.id desc')
+            ->order('c.create_time desc')
             ->select();
         
             if(count($list) == 0) {
