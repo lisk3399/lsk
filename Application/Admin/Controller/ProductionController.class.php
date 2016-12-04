@@ -160,7 +160,7 @@ class ProductionController extends AdminController {
                             'deadline'=>$deadline,     
                             mysql_insert_id(),                   
         ));
-           $GLOBALS['sqlid']=['task_id'=>$data];
+           $GLOBALS['sqlid']=array('task_id'=>$data);
   
         $res=D('content');  
         
