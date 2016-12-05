@@ -90,7 +90,7 @@ class WorkController extends AdminController {
         ->join('__MEMBER__ c on c.uid=d.uid')
         //->join('__WORK__ w on w.id = d.uid')
         ->where('d.status=1')
-        ->order('d.create_time desc')
+        ->order('d.create_time  desc')
         ->select();
         $total = $Work->alias('w')->where($map)->count();
         
