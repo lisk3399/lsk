@@ -232,6 +232,7 @@ class LiveController extends HomeController {
             $data['publish'] = $stream_info['publish'];
             $data['nickname'] = $userinfo['nickname'];
             $data['avatar'] = $userinfo['avatar'];
+            $data['id'] = $content_id;
             
             $this->renderSuccess('创建成功', $data);
         }
