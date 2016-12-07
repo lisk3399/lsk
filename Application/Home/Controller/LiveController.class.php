@@ -187,20 +187,14 @@ class LiveController extends HomeController {
                 $this->renderFailed('班级id异常');
             }
             $stream_key = 'bipai'.$uid.'-'.NOW_TIME;
-            
             $liveApi = new LiveApi();
             $stream_info = $liveApi->createStream($stream_key);
-        
             if(empty($stream_info['publish'])) {
                 $this->renderFailed('直播创建失败');
             }
-        
-            $play_url = $stream_info['play']; //播放地址
-            $cover_url = $stream_info['cover_url'];
             
             $userApi = new UserApi();
             $userinfo = $userApi->info($uid);
-            
             if(empty($title)) {
                 $data['title'] = $userinfo['nickname'].'的直播';
             }
@@ -215,6 +209,8 @@ class LiveController extends HomeController {
                 $this->renderFailed('直播添加失败');
             }
             //添加附件
+            $play_url = $stream_info['play']; //播放地址
+            $cover_url = $stream_info['cover_url'];
             $cmModel = M('content_material');
             $arr[0]['type'] = 'VIDEO';
             $arr[0]['value'] = $play_url;
