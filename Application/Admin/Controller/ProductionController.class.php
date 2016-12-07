@@ -19,10 +19,7 @@ class ProductionController extends AdminController {
     public function setStatus() {
       
         $ids    =   I('request.ids', '', 'trim');
-
         $status =   I('request.status', '', 'intval');
-     
-       // var_dump($status);exit;
         if(empty($ids)){
             $this->error('请选择要操作的数据');
         }
@@ -30,11 +27,8 @@ class ProductionController extends AdminController {
             $this->error('id为空');
         }
         $Institution = M('content');
-
         $map['id'] = array('IN', $ids);
-
         $data['status'] = $status;
- // var_dump($data);exit;
         if($Institution->where($map)->save($data)) { 
 
             $this->success('操作成功');
@@ -99,9 +93,8 @@ class ProductionController extends AdminController {
         ->where($map)
         ->order('d.id desc')
         ->select();
-        
         $total = $Work->alias('d')->where($map)->count();
-        
+     
         $page = new \Think\Page($total, $listRows, $REQUEST);
         if($total>$listRows){
             $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
@@ -111,7 +104,6 @@ class ProductionController extends AdminController {
         $this->assign('_page', $p? $p: '');
         $this->assign('_total',$total);
         $options['limit'] = $page->firstRow.','.$page->listRows;     
-        // var_dump($list);exit;
         return $select;
     }
 
@@ -150,7 +142,6 @@ class ProductionController extends AdminController {
             $data['create_time'] = $create_time; 
             $data['deadline'] = $deadline;
             $data['tag_id'] = $tag_id;
-            
             $task_id = $taskModel->add($data);
             $_POST['task_id'] = $task_id;
         }
@@ -227,9 +218,7 @@ class ProductionController extends AdminController {
                 $arr[0]['type'] = 'VIDEO';
                 $arr[0]['value'] = $img_domain.$result[0]['key'];
                 $arr[0]['cover_url'] = $img_domain.$result[1]['key'];
-
                 $arrayjson=json_encode($arr);
-                
                 $dmodel=D('content_material');
                 
                 $data=$dmodel->add(array(

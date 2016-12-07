@@ -74,36 +74,73 @@ class WorkController extends AdminController {
      * 获取作品列表
      */
     private function getWorkList($map) {
-        $REQUEST = (array)I('request.');
-        $page = I('p', '', 'intval');
-        //分页配置
-        if( isset($REQUEST['r']) ){
-            $listRows = (int)$REQUEST['r'];
+      
+        $adminuid= $_SESSION['onethink_admin']['user_auth']['uid'];
+        $Admin=M('admin');
+        $data=$Admin->where('uid='.$adminuid)->find();
+         
+        if(!empty($data)){
+            
+            $type=$data['type'];
+            $lian= $data['related_id'];
+            //如果为ORG就是机构管理员
+            if($type==='ORG'){
+                
+                $Related=M('content');
+                $selectorg=$Related->alias('d')
+                ->field('d.id zid,d.org_id,d.title,d.description,d.likes,d.status,d.create_time,c.uid,c.nickname')
+                ->join('__MEMBER__ c on c.uid=d.uid')
+                ->where('d.status=1 and d.org_id='.$lian)
+                ->order('d.create_time desc')
+                ->select();
+                return $selectorg;
+            }
+             //如果为GROUP就是班级管理员  
+            if($type==='GROUP'){
+
+               $Related=M('content');
+               $selectorg=$Related->alias('d')
+               ->field('d.id zid,d.group_id,d.title,d.description,d.likes,d.status,d.create_time,c.uid,c.nickname')
+               ->join('__MEMBER__ c on c.uid=d.uid')
+               ->where('d.status=1 and d.group_id='.$lian)
+               ->order('d.create_time desc')
+               ->select();
+               return $selectorg;
+            }
+
         }else{
-            $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
+
+            $REQUEST = (array)I('request.');
+            $page = I('p', '', 'intval');
+        //分页配置
+            if( isset($REQUEST['r']) ){
+                $listRows = (int)$REQUEST['r'];
+            }else{
+                $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
+            }
+        
+            $Work = M('content');
+            $select = $Work->alias('d')
+            ->page($page, $listRows)
+            ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
+            ->join('__MEMBER__ c on c.uid=d.uid')
+            //->join('__WORK__ w on w.id = d.uid')
+            ->where('d.status=1')
+            ->order('d.create_time  desc')
+            ->select();
+            $total = $Work->alias('w')->where($map)->count();
+            
+            $page = new \Think\Page($total, $listRows, $REQUEST);
+            if($total>$listRows){
+                $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+            }
+            $p =$page->show();
+            
+            $this->assign('_page', $p? $p: '');
+            $this->assign('_total',$total);
+            $options['limit'] = $page->firstRow.','.$page->listRows;     
+            return $select;
         }
-        
-        $Work = M('content');
-        $select = $Work->alias('d')
-        ->page($page, $listRows)
-        ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
-        ->join('__MEMBER__ c on c.uid=d.uid')
-        //->join('__WORK__ w on w.id = d.uid')
-        ->where('d.status=1')
-        ->order('d.id desc')
-        ->select();
-        $total = $Work->alias('w')->where($map)->count();
-        
-        $page = new \Think\Page($total, $listRows, $REQUEST);
-        if($total>$listRows){
-            $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
-        }
-        $p =$page->show();
-        
-        $this->assign('_page', $p? $p: '');
-        $this->assign('_total',$total);
-        $options['limit'] = $page->firstRow.','.$page->listRows;     
-        return $select;
     }
 
     //查看
