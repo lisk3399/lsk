@@ -219,6 +219,7 @@ class LiveController extends HomeController {
             $cm_data['content_id'] = $content_id;
             $cm_data['content_json'] = $content_json;
             $cm_data['type'] = 'LIVE';
+            $cm_data['value'] = $stream_key;
             $cm_data['create_time'] = NOW_TIME;
             
             if(!$cmModel->add($cm_data)) {
@@ -267,6 +268,53 @@ class LiveController extends HomeController {
                 $this->renderFailed('更新失败');
             }
             $this->renderSuccess('更新成功');
+        }
+    }
+    
+    //结束班级直播
+    public function endGroupLive() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('无权限', -1);
+            }
+            
+            $id = I('id', '', 'intval');
+            if(empty($id)) {
+                $this->renderFailed('动态id错误');
+            }
+        
+            $cmModel = M('content_material');
+            $info = $cmModel->field('value,content_json')->where(array('content_id'=>$id))->find();
+            if(empty($info['content_json']) || empty($info['value'])) {
+                $this->renderFailed('无法更新');
+            }
+            $content_json = $info['content_json'];
+            $stream_key = $info['value'];
+            //失败最多尝试5次
+            $try = 0;
+            do {
+                if ($try == 5) {
+                    break;
+                }
+                $ret = $this->saveLive($stream_key, 0, 0);
+                $try ++;
+            } while(!$ret['fname']);
+            
+            if(!$ret['fname']) {
+                $this->renderFailed('保存失败');
+            }
+            
+            $play_url = C('QINIU.live_storage').'/'.$ret['fname'];
+            $arr = json_decode($content_json, TRUE);
+            $arr[0]['value'] = $play_url;
+            $content_json = json_encode($arr);
+            $ret = $cmModel->where(array('content_id'=>$id))->save(array('content_json'=>$content_json));
+            if(!$ret) {
+                $this->renderFailed('保存失败');
+            }
+            
+            $this->renderSuccess('保存成功');
         }
     }
 }
