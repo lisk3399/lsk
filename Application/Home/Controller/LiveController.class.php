@@ -173,4 +173,67 @@ class LiveController extends HomeController {
             $this->renderSuccess('更新成功');
         }
     }
+    
+    //创建班级直播
+    public function createGroupLive() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('无权限', -1);
+            }
+            $title = I('title', '', 'trim');
+            $group_id = I('group_id', '', 'intval');
+            if(empty($group_id)) {
+                $this->renderFailed('班级id异常');
+            }
+            $stream_key = 'bipai'.$uid.'-'.NOW_TIME;
+            
+            $liveApi = new LiveApi();
+            $stream_info = $liveApi->createStream($stream_key);
+        
+            if(empty($stream_info['publish'])) {
+                $this->renderFailed('直播创建失败');
+            }
+        
+            $play_url = $stream_info['play']; //播放地址
+            $cover_url = $stream_info['cover_url'];
+            
+            $userApi = new UserApi();
+            $userinfo = $userApi->info($uid);
+            
+            if(empty($title)) {
+                $data['title'] = $userinfo['nickname'].'的直播';
+            }
+
+            //添加内容
+            $contentModel = M('content');
+            $data['uid'] = $uid;
+            $data['group_id'] = $group_id;
+            $data['create_time'] = NOW_TIME;
+            $content_id = $contentModel->add($data);
+            if(!$content_id) {
+                $this->renderFailed('直播添加失败');
+            }
+            //添加附件
+            $cmModel = M('content_material');
+            $arr[0]['type'] = 'VIDEO';
+            $arr[0]['value'] = $play_url;
+            $arr[0]['cover_url'] = $cover_url;
+            $content_json = json_encode($arr);
+            $cm_data['content_id'] = $content_id;
+            $cm_data['content_json'] = $content_json;
+            $cm_data['type'] = 'LIVE';
+            $cm_data['create_time'] = NOW_TIME;
+            
+            if(!$cmModel->add($cm_data)) {
+                $this->renderFailed('创建失败');
+            }
+        
+            $data['publish'] = $stream_info['publish'];
+            $data['nickname'] = $userinfo['nickname'];
+            $data['avatar'] = $userinfo['avatar'];
+            
+            $this->renderSuccess('创建成功', $data);
+        }
+    }
 }
