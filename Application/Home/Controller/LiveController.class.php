@@ -237,4 +237,40 @@ class LiveController extends HomeController {
             $this->renderSuccess('创建成功', $data);
         }
     }
+    
+    //更新班级直播封面
+    public function updateGroupCover() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('无权限', -1);
+            }
+        
+            $id = I('id', '', 'intval');
+            if(empty($id)) {
+                $this->renderFailed('动态id错误');
+            }
+            $cover_url = I('cover_url', '', 'trim');
+            if(empty($cover_url)) {
+                $this->renderFailed('没有封面图');
+            }
+            $data['cover_url'] = $cover_url;
+            $cmModel = M('content_material');
+            
+            $info = $cmModel->field('content_json')->where(array('content_id'=>$id))->find();
+            if(empty($info['content_json'])) {
+                $this->renderFailed('无法更新');
+            }
+            
+            $arr = json_decode($info['content_json'], TRUE);
+            $arr[0]['cover_url'] = $cover_url;
+            $content_json = json_encode($arr);
+            
+            $map['content_json'] = $content_json;
+            if(!$cmModel->where(array('content_id'=>$id))->save($map)) {
+                $this->renderFailed('更新失败');
+            }
+            $this->renderSuccess('更新成功');
+        }
+    }
 }
