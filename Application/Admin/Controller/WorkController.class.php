@@ -109,40 +109,38 @@ class WorkController extends AdminController {
             }
 
         }else{
+
+            $REQUEST = (array)I('request.');
+            $page = I('p', '', 'intval');
+        //分页配置
+            if( isset($REQUEST['r']) ){
+                $listRows = (int)$REQUEST['r'];
+            }else{
+                $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
+            }
+        
+            $Work = M('content');
+            $select = $Work->alias('d')
+            ->page($page, $listRows)
+            ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
+            ->join('__MEMBER__ c on c.uid=d.uid')
+            //->join('__WORK__ w on w.id = d.uid')
+            ->where('d.status=1')
+            ->order('d.create_time  desc')
+            ->select();
+            $total = $Work->alias('w')->where($map)->count();
+            
+            $page = new \Think\Page($total, $listRows, $REQUEST);
+            if($total>$listRows){
+                $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+            }
+            $p =$page->show();
+            
+            $this->assign('_page', $p? $p: '');
+            $this->assign('_total',$total);
+            $options['limit'] = $page->firstRow.','.$page->listRows;     
             return $select;
         }
-
-
-        $REQUEST = (array)I('request.');
-        $page = I('p', '', 'intval');
-        //分页配置
-        if( isset($REQUEST['r']) ){
-            $listRows = (int)$REQUEST['r'];
-        }else{
-            $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
-        }
-        
-        $Work = M('content');
-        $select = $Work->alias('d')
-        ->page($page, $listRows)
-        ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
-        ->join('__MEMBER__ c on c.uid=d.uid')
-        //->join('__WORK__ w on w.id = d.uid')
-        ->where('d.status=1')
-        ->order('d.create_time  desc')
-        ->select();
-        $total = $Work->alias('w')->where($map)->count();
-        
-        $page = new \Think\Page($total, $listRows, $REQUEST);
-        if($total>$listRows){
-            $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
-        }
-        $p =$page->show();
-        
-        $this->assign('_page', $p? $p: '');
-        $this->assign('_total',$total);
-        $options['limit'] = $page->firstRow.','.$page->listRows;     
-        return $select;
     }
 
     //查看
