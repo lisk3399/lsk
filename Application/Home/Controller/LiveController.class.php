@@ -11,6 +11,9 @@ use Common\Api\LiveApi;
 use User\Api\UserApi;
 class LiveController extends HomeController { 
     
+    const LIVE_STATUS_ON = 1;//直播状态：正在直播
+    const LIVE_STATUS_OFF = 2;//直播状态：关闭(点播)
+    
     //创建直播
     public function createLive() {
         if(IS_POST) {
@@ -212,9 +215,10 @@ class LiveController extends HomeController {
             $play_url = $stream_info['play']; //播放地址
             $cover_url = $stream_info['cover_url'];
             $cmModel = M('content_material');
-            $arr[0]['type'] = 'VIDEO';
+            $arr[0]['type'] = 'LIVE';
             $arr[0]['value'] = $play_url;
             $arr[0]['cover_url'] = $cover_url;
+            $arr[0]['status'] = self::LIVE_STATUS_ON;
             $content_json = json_encode($arr);
             $cm_data['content_id'] = $content_id;
             $cm_data['content_json'] = $content_json;
@@ -308,6 +312,8 @@ class LiveController extends HomeController {
             $play_url = C('QINIU.live_storage').'/'.$ret['fname'];
             $arr = json_decode($content_json, TRUE);
             $arr[0]['value'] = $play_url;
+            $arr[0]['status'] = self::LIVE_STATUS_OFF;
+            
             $content_json = json_encode($arr);
             $ret = $cmModel->where(array('content_id'=>$id))->save(array('content_json'=>$content_json));
             if(!$ret) {
