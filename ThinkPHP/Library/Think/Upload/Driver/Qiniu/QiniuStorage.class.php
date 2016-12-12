@@ -6,6 +6,7 @@
 		public $QINIU_RSF_HOST = 'http://rsf.qbox.me';
 		public $QINIU_RS_HOST = 'http://rs.qbox.me';
 		public $QINIU_UP_HOST = 'http://up.qiniu.com';
+		public $QINIU_IMG_DOMAIN ='http://vod.doushow.com';
 		public $timeout = '';
 
 		public function __construct($config){
@@ -66,15 +67,15 @@
 			$data = json_encode($data);
 			return self::SignWithData($sk, $ak, $data);
 		}
-		// 后面为logo  图片
+		//后面为logo  图片
 		public function upload($config, $file ,$filelogo){
 
 			$uploadToken = $this->UploadToken($this->sk, $this->ak, $config);
-			$url = "{$this->QINIU_UP_HOST}";
+			 $url = "{$this->QINIU_UP_HOST}";
 			$mimeBoundary = md5(microtime());
 			$header = array('Content-Type'=>'multipart/form-data;boundary='.$mimeBoundary);
 			$data = array();
-			$arraylogo[]='';
+			$arraylogo=[];
 			$fields = array(
 				'token'=>$uploadToken,
 				'key'=>$config['saveName']? $config['save_name'] : $file['fileName'],
@@ -128,9 +129,7 @@
 			$bodylogo = implode("\r\n", $arraylogo);
 
   			$response[] = $this->request($url, 'POST', $header,$body);
-
   			$response[] = $this->request($url, 'POST', $header,$bodylogo);
-  			
 			return $response;
 		}
 
