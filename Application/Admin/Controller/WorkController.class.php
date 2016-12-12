@@ -199,6 +199,7 @@ class WorkController extends AdminController {
       
        //判断文件类型是否被允许上传
         if(in_array($typefile , $allow_typefile)){}
+        elseif($typefile===""){}
         else{
           $this->error('上传格式不对','', array());
         }
@@ -217,14 +218,15 @@ class WorkController extends AdminController {
             'fileBody'=>file_get_contents($file['tmp_name'])
         ); 
         $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
+        
         foreach ($filelogo['name'] as  $v) { 
         //获取文件后缀
             $filenamelogo=explode('.',$v); 
             $extlogo = $filenamelogo[1];  
-        //判断上传格式
             $allow_type = array('jpg','jpeg','gif','png');
-            if(in_array($extlogo,$allow_type)){
-            }else{$this->error('上传格式不对','', array());}
+            if(in_array($extlogo,$allow_type)){}
+                elseif(is_null($extlogo)){}
+            else{$this->error('上传格式不对','', array());}
          //唯一文件名
             $etagnamelogo=md5(uniqid($v));  
             $fileNamelogo=$etagnamelogo.'.'.$extlogo;
