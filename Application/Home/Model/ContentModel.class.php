@@ -50,6 +50,9 @@ class ContentModel extends Model{
                     }
                     $row['pic'][$counter]['cover_url'] = $json_row['cover_url'];
                     $row['pic'][$counter]['type'] = strtoupper($json_row['type']);
+                    if($row['pic'][$counter]['type'] == 'LIVE') {
+                        $row['pic'][$counter]['status'] = $json_row['status'];
+                    }
                     $row['pic'][$counter]['value'] = $json_row['value'];
                     $counter++;
                 }
@@ -87,6 +90,9 @@ class ContentModel extends Model{
             foreach ($material_arr as $key=>$row) {
                 $detail['pic'][$key]['cover_url'] = $row['cover_url'];
                 $detail['pic'][$key]['type'] = strtoupper($row['type']);
+                if($detail['pic'][$key]['type'] == 'LIVE') {
+                    $detail['pic'][$key]['status'] = $row['status'];
+                }
                 $detail['pic'][$key]['value'] = $row['value'];
             }
         }
