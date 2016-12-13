@@ -86,6 +86,6 @@ return array(
         'live_rtmp_play_domain'=>'pili-live-rtmp.bipai.tv',
         'live_snapshot_domain'=>'pili-live-snapshot.bipai.tv',
         'live_hub'=>'bipai-streams',
-        'live_storage'=>'live-storage.bipai.tv'
+        'live_storage'=>'http://live-storage.bipai.tv'
     ),
 );
