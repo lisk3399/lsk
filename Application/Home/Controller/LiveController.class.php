@@ -198,8 +198,9 @@ class LiveController extends HomeController {
             
             $userApi = new UserApi();
             $userinfo = $userApi->info($uid);
-            if(empty($title)) {
-                $data['title'] = $userinfo['nickname'].'的直播';
+            $data['title'] = '快来看看我的直播';
+            if(!empty($title)) {
+                $data['title'] = $title;
             }
 
             //添加内容
