@@ -178,8 +178,10 @@ class WorkController extends AdminController {
   }
     // 上传图片视频   
     public function postDoupload()
-    {
-
+    {   
+            //进度条
+        // $name = ini_get('session.upload_progress.name');
+        // $key = ini_get("session.upload_progress.prefix") . $_FILES[$name];
         $upload_img=M('content_material');
         $res=D('content');  
         $a=$res->update();

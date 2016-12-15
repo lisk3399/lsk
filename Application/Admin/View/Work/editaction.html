@@ -4,8 +4,36 @@
     <div class="main-title">
         <h2>{$info['id']?'编辑':'新增'}动态</h2>
     </div>
-    <script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js">
-</script>
+    <script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <style type="text/css">  
+.processcontainer{  
+   width:450px;  
+   border:1px solid #6C9C2C;  
+   height:25px;  
+ } 
+#processbar{  
+   background:#95CA0D;  
+   float:left; 
+   height:100%;  
+   text-align:center;  
+   line-height:150%; 
+ }  
+</style>  
+<script type="text/javascript">  
+ function setProcess(){  
+  var processbar = document.getElementById("processbar");  
+  processbar.style.width = parseInt(processbar.style.width) + 1 + "%";
+  processbar.innerHTML = processbar.style.width;  
+  if(processbar.style.width == "100%"){  
+     window.clearInterval(bartimer);  
+  }  
+ }  
+var bartimer = window.setInterval(function(){setProcess();},100);  
+window.onload = function(){  
+   bartimer;  
+}  
+</script> 
+
     <form name="form" role="form" method="post" action="{:U('postDoupload')}" enctype="multipart/form-data" >
             <div class="form-item">
                 <label class="item-label"><span class="check-tips">用户</span></label>
@@ -28,37 +56,34 @@
             </div>
             <div class="form-item" id='aaa'>
                 <label for="auth-description" class="item-label">描述</label>
-            <ol class="controls">
+                <ol class="controls">
                 <li><label class="textarea input-large"><textarea id="auth-description" type="text" name="description">{$v.description}</textarea></label></li>
-            </ol>
+                </ol>
             </div>
-            
-            <!-- <input id="btn2" type="button" value="加一个"> --> 
-            
- 
-        <div class="form-group">
-             <input type="hidden" name="_token"  value="文件"  >
+            <div class="form-group">
+                <input type="hidden" name="_token"  value="文件" >
                      <label for="auth-description">上传视频封面</label>
-
                      <input type="file"  name='logo[]' />
-                     <input id="btn-add" style="cursor:pointer;" type="button" value="添加一张">
+                     <input id="btn-add" style="cursor:pointer;" type="button" value="添加一张" >
                      <ul id="pic_input"  ></ul>
-                    
-         </div>
-
-        <div class="form-group" >
-                 <input type="hidden" name="_token"  value="文件" >
+            </div>
+            <div class="form-group" >
+                 <input type="hidden"   value="文件" >
                      <label for="auth-description" >上传视频</label>
                      <input  type="file"  name='file'   />
-                    <ul id="pic_input"   > </ul>
-        </div>
+                     <ul id="pic_input" > </ul>
+             </div>
+            <div  id="div1" style="display:none;"  class="processcontainer">  
+             <div id="processbar" style="width:0%;"></div>  
+            </div>
+
                      <div class="form-item">
                 <label for="auth-description" class="item-label">创建时间</label>
                 <input type="text" name="create_time" class="text time" value="{$info.create_time}" placeholder="请选择时间" />
-        </div>
-                 <button type="submit" class="btn btn-default">上传</button>
+            </div>
+                 <button type="submit" class="btn btn-default" onclick="btn1()" >上传</button>
                   <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
-    </form>  
+    </form>     
 </block>
 
 <block name="script">
@@ -67,16 +92,22 @@
 <link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
 <script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
 <script type="text/javascript">
+//点击 显示隐藏div标签
+function btn1(){
+    document.getElementById('div1').style.display='block';
+}
+$("#btn").click(function(){
+    var div = $("#div"); 
+    div.css("display") === "none" && div.show() || div.hide();
+});
 
 var pi = $("#pic_input");
 $("#btn-add").click(function(){
     pi.append("<li><input type='file' name='logo[]'>上传图片</li>");
 });
-// var pi = $("#pic_inputa");
-// $("#btn-addd").click(function(){
-//     pi.append("<li><input type='file' name='file[]'>上传视频</li>");
-// });
+
 $('#submit').click(function(){
     $('#form').submit();
 });
