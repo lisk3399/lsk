@@ -33,7 +33,7 @@ class ClassesController extends AdminController {
         if(empty($ids)){
             $this->error('id为空');
         }
-        $Classes = M('classes');
+        $Classes = M('Group');
         $map['id'] = array('IN', $ids);
         $data['is_delete'] = $is_delete;
         if($Classes->where($map)->save($data)) {
@@ -46,6 +46,7 @@ class ClassesController extends AdminController {
      * 获取班级列表
      */
     private function getClassList($map) {
+     
         $REQUEST = (array)I('request.');
         $page = I('p', '', 'intval');
         //分页配置
@@ -58,13 +59,14 @@ class ClassesController extends AdminController {
         $Classes = M('Group');
         $select = $Classes->alias('c')
         ->page($page, $listRows)
-        ->field('c.id,c.uid,c.group_name,m.nickname,a.name')
+        ->field('c.id,c.uid,c.group_name,c.is_delete,m.nickname,a.name')
         ->join('__MEMBER__ m on m.uid = c.uid', 'left')
          ->join('__ORGNIZATION__ a on c.uid = a.uid', 'left')
-        ->where(`$map`)
+        ->where('c.is_delete=0')
         ->order('c.id desc');
 
         $list = $select->select();
+    
         $total = $Classes->alias('c')->where($map)->count();
         
         $page = new \Think\Page($total, $listRows, $REQUEST);
