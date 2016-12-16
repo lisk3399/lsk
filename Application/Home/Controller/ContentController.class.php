@@ -745,10 +745,10 @@ class ContentController extends HomeController {
         
         $where['c.uid'] = array('IN', $uid_arr);
         //用户登录后展示用户所有在班级发布的动态
+        $m = M('Content');
         if($uid) {
             $group_rs = M('member_group')->field('group_id')->where(array('uid'=>$uid, 'status'=>1))->select();
             //用户已经加入或创建过班级
-            $m = M('Content');
             if(count($group_rs) > 0) {
                 foreach ($group_rs as $row) {
                     $group_arr[] = $row['group_id'];
