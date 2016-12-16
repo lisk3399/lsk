@@ -783,6 +783,17 @@ class ContentController extends HomeController {
                 ->order('c.create_time desc')
                 ->select();
             }
+        } 
+        else {
+            $where['c.status'] = 1;
+            $list = $m->alias('c')
+            ->page($page, $rows)
+            ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar,ifnull(t.name, "") as tag_name')
+            ->join('__MEMBER__ m on m.uid = c.uid', 'left')
+            ->join('__TAGS__ t on t.id = c.tag_id', 'left')
+            ->where($where)
+            ->order('c.create_time desc')
+            ->select();
         }
         
         if(count($list) == 0) {
