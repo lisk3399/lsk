@@ -324,4 +324,68 @@ class LiveController extends HomeController {
             $this->renderSuccess('保存成功');
         }
     }
+    
+    //查询流状态
+    public function getStreamStatus() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('无权限', -1);
+            }
+            
+            $id = I('id', '', 'intval');
+            if(empty($id)) {
+                $this->renderFailed('动态id错误');
+            }
+            
+            $cmModel = M('content_material');
+            $info = $cmModel->field('value,content_json')->where(array('content_id'=>$id))->find();
+            if(empty($info['value'])) {
+                $this->renderFailed('直播结束了');
+            }
+            
+            $stream_key = $info['value'];
+            $liveApi = new LiveApi();
+            if(!$liveApi->getStreamStatus($stream_key)) {
+                $this->doEndGroupLive($cmModel, $id, $info);
+                $this->renderFailed('直播结束');
+            }
+            $this->renderSuccess('正在直播');
+        }
+    }
+    
+    //结束直播
+    private function doEndGroupLive($cmModel, $id, $info) {
+        if(empty($info['content_json']) || empty($info['value'])) {
+            $this->renderFailed('无法更新');
+        }
+        $content_json = $info['content_json'];
+        $stream_key = $info['value'];
+        //失败最多尝试5次
+        $try = 0;
+        do {
+            if ($try == 5) {
+                break;
+            }
+            $ret = $this->saveLive($stream_key, 0, 0);
+            $try ++;
+        } while(!$ret['fname']);
+        
+        if(!$ret['fname']) {
+            $this->renderFailed('保存失败');
+        }
+        
+        $play_url = C('QINIU.live_storage').'/'.$ret['fname'];
+        $arr = json_decode($content_json, TRUE);
+        $arr[0]['value'] = $play_url;
+        $arr[0]['status'] = self::LIVE_STATUS_OFF;
+        
+        $content_json = json_encode($arr);
+        $ret = $cmModel->where(array('content_id'=>$id))->save(array('content_json'=>$content_json));
+        
+        if(!$ret) {
+            return FALSE;
+        }
+        return TRUE;
+    }
 }

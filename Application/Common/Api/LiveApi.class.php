@@ -57,4 +57,15 @@ class LiveApi {
             return false;
         }
     }
+    
+    //获取流状态
+    public function getStreamStatus($stream_key) {
+        $stream = $this->hub->stream($stream_key);
+        try{
+            $stream->liveStatus();
+            return TRUE;
+        } catch(\Exception $e) {
+              return FALSE;
+        }
+    }        
 }
