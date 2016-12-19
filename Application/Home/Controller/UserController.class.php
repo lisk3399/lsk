@@ -549,4 +549,31 @@ class UserController extends HomeController {
             }
         }
     }
+    
+    //为当前登录用户添加推送id(个推client_id)
+    public function addClientID() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('需要登录', -1);
+            }
+            
+            $push_id = I('client_id', '', 'trim');
+            if(empty($push_id)) {
+                $this->renderFailed('id错误');
+            }
+            
+            $ucModel = M('ucenter_member');
+            $map['id'] = $uid;
+            $userinfo = $ucModel->field('push_id')->where($map)->find();
+            if($userinfo['push_id']) {
+                $this->renderFailed('client_id已存在');
+            }
+            
+            $data['push_id'] = $push_id;
+            if($ucModel->where($map)->save($data)) {
+                $this->renderSuccess('同步成功');
+            }
+        }
+    }
 }

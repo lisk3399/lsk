@@ -325,9 +325,8 @@ class LiveController extends HomeController {
         }
     }
     
-    //回调函数
+    //回调函数，用于结束直播流将直播状态改为点播
     public function callback() {
-        
     }
     
     //查询流状态
