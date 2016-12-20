@@ -155,45 +155,68 @@ class InstitutionController extends AdminController {
      */
           
     public function getWorkList($map) {
-
-        $REQUEST = (array)I('request.');
-        $page = I('p', '', 'intval');
-        //分页配置
-        if( isset($REQUEST['r']) ){
-            $listRows = (int)$REQUEST['r'];       
-        }else{
-            $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
-        }
-    
-        $Classes = M('orgnization');
-       
-        $select = $Classes->alias('c')
-        ->page($page, $listRows)
-         ->field('c.id,c.uid,c.name,c.cover_url,c.is_delete, c.create_time,m.nickname')
-        ->join(' __MEMBER__ m on c.uid = m.uid ', 'left')
-        ->where($map)
-        ->order('c.uid desc');
-    
-       
-        $list = $select->select();
+        $adminuid= $_SESSION['onethink_admin']['user_auth']['uid'];
+        $Admin=M('admin');
+        $data=$Admin->where('uid='.$adminuid)->find();
         
-        $total = $Classes->alias('c')->where($map)->count();
+        if(!empty($data)){
+            
+            $type=$data['type'];
+            $lian= $data['related_id'];
+            //如果为ORG就是机构管理员
+            if($type==='ORG'){
+                
+                $Classes=M('orgnization');
+                 $select = $Classes->alias('c')
+                 ->page($page, $listRows)
+                 ->field('c.id,c.uid,c.name,c.cover_url,c.is_delete, c.create_time,m.nickname')
+                 ->join(' __MEMBER__ m on c.uid = m.uid ', 'left')
+                 ->where('c.is_delete=0 and c.id='.$lian)
+                 ->order('c.uid desc')
+                 ->select();
+                return $select;
+            }
+        }else{
+             $REQUEST = (array)I('request.');
+            $page = I('p', '', 'intval');
+        //分页配置
+                 if( isset($REQUEST['r']) ){
+                $listRows = (int)$REQUEST['r'];       
+            }else{
+                $listRows = C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
+            }
+        
+            $Classes = M('orgnization');
+           
+            $select = $Classes->alias('c')
+            ->page($page, $listRows)
+             ->field('c.id,c.uid,c.name,c.cover_url,c.is_delete, c.create_time,m.nickname')
+            ->join(' __MEMBER__ m on c.uid = m.uid ', 'left')
+            ->where($map)
+            ->order('c.uid desc');
+        
+           
+            $list = $select->select();
+            
+            $total = $Classes->alias('c')->where($map)->count();
 
-        $page = new \Think\Page($total, $listRows, $REQUEST);
+            $page = new \Think\Page($total, $listRows, $REQUEST);
 
 
-        if($total>$listRows){
-            $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+            if($total>$listRows){
+                $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+            }
+
+            $p =$page->show();
+
+            // 搜索分页
+            $this->assign('_page', $p? $p: '');
+            $this->assign('_total',$total);
+            $options['limit'] = $page->firstRow.','.$page->listRows;
+     
+            return $list;
         }
-
-        $p =$page->show();
-
-        // 搜索分页
-        $this->assign('_page', $p? $p: '');
-        $this->assign('_total',$total);
-        $options['limit'] = $page->firstRow.','.$page->listRows;
- 
-        return $list;
+       
     }
 
     // 修改机构
