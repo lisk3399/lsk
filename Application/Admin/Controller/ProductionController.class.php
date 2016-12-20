@@ -119,7 +119,7 @@ class ProductionController extends AdminController {
        ->select();
 
        $this->assign('list',$list);
-       $this->display('Work/edit');
+       $this->display('Production/edit');
     }
     // 上传图片视频   
     public function postDoupload()
