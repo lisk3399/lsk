@@ -1041,10 +1041,10 @@ function S($name,$value='',$options=null) {
         $cache      =   Think\Cache::getInstance($type,$name);
         return $cache;
     }elseif(empty($cache)) { // 自动初始化
-        $cache      =   Think\Cache::getInstance();
+           $cache      =   Think\Cache::getInstance();
     }
     if(''=== $value){ // 获取缓存
-        return $cache->get($name);
+          return $cache->get($name);
     }elseif(is_null($value)) { // 删除缓存
         return $cache->rm($name);
     }else { // 缓存数据
