@@ -334,6 +334,7 @@ class UserController extends HomeController {
             $mobile = I('post.mobile', '', 'trim');
             $password = I('post.password', '', 'trim');
             $verify = I('post.verify', '', 'trim');
+            $platform = I('post.platform', 'OTHER', 'trim');
             
             if(empty($mobile)) {
                 $this->renderFailed('请输入手机号');
@@ -346,7 +347,7 @@ class UserController extends HomeController {
                 $this->renderFailed('请输入验证码');
             }
             //后端短信验证
-            $ret = $this->sms_verify($mobile, $verify);
+            $ret = $this->sms_verify($mobile, $verify, $platform);
             if(!ret) {
                 $this->renderFailed('短信验证失败~');
             }
