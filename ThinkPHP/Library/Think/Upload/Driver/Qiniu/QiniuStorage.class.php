@@ -75,7 +75,7 @@
 			$mimeBoundary = md5(microtime());
 			$header = array('Content-Type'=>'multipart/form-data;boundary='.$mimeBoundary);
 			$data = array();
-			$arraylogo=[];
+			$arraylogo=array();
 			$fields = array(
 				'token'=>$uploadToken,
 				'key'=>$config['saveName']? $config['save_name'] : $file['fileName'],
