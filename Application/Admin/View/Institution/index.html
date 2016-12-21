@@ -71,6 +71,7 @@
 						<td><span>{$data.create_time|time_format}</span></td>
 						<td><a href="{:U('Institution/editAction?id='.$data['id'])}">编辑</a>
 						<a href='{:U("Institution/setStatus",array("is_delete"=>1, "ids"=>$data["id"]))}'>删除</a>
+						<a href="{:U('Institution/addition?id='.$data['id'])} ">ORG</a>
 		                </td>
                     </tr>
                 </volist>
