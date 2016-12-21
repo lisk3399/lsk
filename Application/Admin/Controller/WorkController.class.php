@@ -177,7 +177,7 @@ class WorkController extends AdminController {
         }
   }
     // 上传图片视频   
-    public function postDoupload()
+       public function postDoupload()
     {   
             //进度条
         // $name = ini_get('session.upload_progress.name');
@@ -188,81 +188,76 @@ class WorkController extends AdminController {
         if(!$res->create()) {
            $this->error($res->geterror());
         }
-
-        $filelogo = $_FILES['logo'];
-        $namelogo = $_FILES['logo']['name'];
-       
-        $file = $_FILES['file'];
-        $namefile=$_FILES['file']['name'];
-        $allow_typefile=array('avi','mp4');
-        $typefile = strtolower(substr($namefile,strrpos($namefile,'.')+1));
-
-       $allow_type = array('jpg','jpeg','gif','png'); //定义允许上传的类型
-      
-       //判断文件类型是否被允许上传
-        if(in_array($typefile , $allow_typefile)){}
-        elseif($typefile===""){}
-        else{
-          $this->error('上传格式不对','', array());
-        }
-
-        $config = C('QINIU');
-        $configdomain=$config['img_domain'];   
-        $filename = explode('.', $file['name']);
-        //重新生成文件名
-        $etag = new Etag();
-        $etagname = $etag->GetEtag($file['tmp_name']);
-        $ext = $filename[1];
-        $fileName = $etagname[0].'.'.$ext;
-        $file = array(
-            'name'=>'file',
-            'fileName'=>$fileName,
-            'fileBody'=>file_get_contents($file['tmp_name'])
-        ); 
-        $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
-        
-        foreach ($filelogo['name'] as  $v) { 
-        //获取文件后缀
-            $filenamelogo=explode('.',$v); 
-            $extlogo = $filenamelogo[1];  
-            $allow_type = array('jpg','jpeg','gif','png');
-            if(in_array($extlogo,$allow_type)){}
-                elseif(is_null($extlogo)){}
-            else{$this->error('上传格式不对','', array());}
-         //唯一文件名
-            $etagnamelogo=md5(uniqid($v));  
-            $fileNamelogo=$etagnamelogo.'.'.$extlogo;
-            $filelogo=array(
-                'name'=>'logo',
-                'fileName'=>$fileNamelogo,
-                'fileBody'=>file_get_contents($filelogo['tmp_name'])  
-                );
+        if(!empty($_FILES['logo']['tmp_name'][0]) || !empty($_FILES['file']['tmp_name'][0])){
+            $filelogo = $_FILES['logo'];
+            $namelogo = $_FILES['logo']['name'];
+           
+            $file = $_FILES['file'];
+            $namefile=$_FILES['file']['name'];
+            $allow_typefile=array('avi','mp4');
+            $typefile = strtolower(substr($namefile,strrpos($namefile,'.')+1));
+            $allow_type = array('jpg','jpeg','gif','png'); //定义允许上传的类型
+          
+           //判断文件类型是否被允许上传
+            if(in_array($typefile , $allow_typefile)){}
+            elseif($typefile===""){}
+            else{
+              $this->error('上传格式不对','', array());
+            }
+            $config = C('QINIU');
+            $configdomain=$config['img_domain'];   
+            $filename = explode('.', $file['name']);
+            //重新生成文件名
+            $etag = new Etag();
+            $etagname = $etag->GetEtag($file['tmp_name']);
+            $ext = $filename[1];
+            $fileName = $etagname[0].'.'.$ext;
+            $file = array(
+                'name'=>'file',
+                'fileName'=>$fileName,
+                'fileBody'=>file_get_contents($file['tmp_name'])
+            ); 
+            $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
             
-            $result[] = $upload->upload(array(),$file, $filelogo);
-        }
-
-        if(count($result) > 0){
-            //多维数组
-            foreach ($result as  $v) {
-               
-                foreach ($v as $v1) {
-                    
-              $img_domain = C('QINIU.img_domain');
-              $arr['type'] = 'VIDEO';
-              $arr['value'] = $img_domain.$v1['key'];
-              $arr['cover_url'] = $img_domain.$v1['key'];
-            
-              $arrayjson[]=json_encode($arr);
-
-                }
-              }//转换类型
-               $new2=implode(",",$arrayjson);
-               $dmodel=D('content_material');
-               $data=$dmodel->add(array(
-
-                'content_id'=>$GLOBALS['id'],
-                'content_json'=>$new2));
-            $this->success('上传成功','', $result);
+            foreach ($filelogo['name'] as  $v) { 
+            //获取文件后缀
+                $filenamelogo=explode('.',$v); 
+                $extlogo = $filenamelogo[1];  
+                $allow_type = array('jpg','jpeg','gif','png');
+                if(in_array($extlogo,$allow_type)){}
+                    elseif(is_null($extlogo)){}
+                else{$this->error('上传格式不对','', array());}
+             //唯一文件名
+                $etagnamelogo=md5(uniqid($v));  
+                $fileNamelogo=$etagnamelogo.'.'.$extlogo;
+                $filelogo=array(
+                    'name'=>'logo',
+                    'fileName'=>$fileNamelogo,
+                    'fileBody'=>file_get_contents($filelogo['tmp_name'])  
+                    );
+                
+                $result[] = $upload->upload(array(),$file, $filelogo);
+            }
+            if(count($result) > 0){
+                //多维数组
+                foreach ($result as  $v) {
+                   
+                    foreach ($v as $v1) {
+                        
+                  $img_domain = C('QINIU.img_domain');
+                  $arr['type'] = 'VIDEO';
+                  $arr['value'] = $img_domain.$v1['key'];
+                  $arr['cover_url'] = $img_domain.$v1['key'];
+                
+                  $arrayjson[]=json_encode($arr);
+                    }
+                  }//转换类型
+                   $new2=implode(",",$arrayjson);
+                   $dmodel=D('content_material');
+                   $data=$dmodel->add(array(
+                    'content_id'=>$GLOBALS['id'],
+                    'content_json'=>$new2));
+                $this->success('上传成功','', $result);
         }else{
             $this->error('上传失败','', array(
                 'error'=>$this->qiniu->error,
@@ -270,6 +265,9 @@ class WorkController extends AdminController {
             ));
         }
         exit;
+      }else{
+            $this->success('上传成功','');return;
+     }
     }
     //添加动态 为NULL
    public function addAction(){
