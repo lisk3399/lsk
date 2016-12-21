@@ -243,4 +243,25 @@ class InstitutionController extends AdminController {
         }
   
     }
+    //添加ORG
+    public function addition(){
+        $GLOBALS['Institution'] =I('get.id','','htmlspecialchars');
+        $this->meta_title = '添加管理';
+        $this->assign('data');
+        $this->display('editaction');
+    }
+    public function postDoupload(){
+        $related_id=I('post.related_id','','intval');
+        $uid=I('post.uid','','intval');
+        $time=time();
+        $dmodel=D('admin');
+        $data=$dmodel->add(array(
+            'uid'=>$uid,
+            'type'=>'ORG',
+            'related_id'=>$related_id,  
+            'create_time'=>$time, 
+        ));
+        
+        $this->success('操作成功',U('Institution/index'));
+    }
 }
