@@ -113,7 +113,7 @@ class WorkController extends AdminController {
             $Work = M('content');
             $select = $Work->alias('d')
             ->page($page, $listRows)
-            ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
+            ->field('d.id  zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
             ->join('__MEMBER__ c on c.uid=d.uid')
             ->where('d.status=1')
             ->order('d.create_time  desc')
@@ -128,7 +128,7 @@ class WorkController extends AdminController {
             
             $this->assign('_page', $p? $p: '');
             $this->assign('_total',$total);
-            $options['limit'] = $page->firstRow.','.$page->listRows;     
+            $options['limit'] = $page->firstRow.','.$page->listRows;   
             return $select;
         }
     }
