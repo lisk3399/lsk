@@ -88,4 +88,9 @@ return array(
         'live_hub'=>'bipai-streams',
         'live_storage'=>'http://live-storage.bipai.tv'
     ),
+    'GETUI' => array(
+        'APPID' => 'OS2C1zlfph5zrwrdjFr882',
+        'APPKEY' => 'XfkfLDPBxUAalEV5PGr8y9',
+        'MASTERSECRET' => 'HZpICc3tUpA5M6rzpHoCOA'
+    )
 );

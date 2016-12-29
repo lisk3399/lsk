@@ -1288,4 +1288,9 @@ class GroupController extends HomeController {
 	    $ret = M('group')->field('org_id')->where($map)->find();
 	    return $ret['org_id'];
 	}
+	
+	public function sendNotice() {
+	    $api = new UserApi();
+	    $api->sendNotice('7dcfbbea3e6dce08e4da15a977a4bdd4', '消息通知', '用户希望申请加入xx班，请点击消息查看');
+	}
 }	

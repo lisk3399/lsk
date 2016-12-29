@@ -567,7 +567,7 @@ class UserController extends HomeController {
             $ucModel = M('ucenter_member');
             $map['id'] = $uid;
             $userinfo = $ucModel->field('push_id')->where($map)->find();
-            if($userinfo['push_id']) {
+            if($userinfo['push_id'] == $push_id) {
                 $this->renderFailed('client_id已存在');
             }
             
