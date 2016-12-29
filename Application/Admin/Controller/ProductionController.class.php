@@ -219,9 +219,8 @@ class ProductionController extends AdminController {
                 $arr[0]['type'] = 'VIDEO';
                 $arr[0]['value'] = $img_domain.$result[0]['key'];
                 $arr[0]['cover_url'] = $img_domain.$result[1]['key'];
-                $arrayjson=json_encode($arr);
+                $arrayjson=json_encode($arr);   
                 $dmodel=D('content_material');
-                
                 $data=$dmodel->add(array(
                     'content_id'=>$GLOBALS['id'],
                     'content_json'=>$arrayjson,

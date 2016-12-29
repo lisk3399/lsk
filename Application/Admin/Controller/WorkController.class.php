@@ -239,10 +239,13 @@ class WorkController extends AdminController {
                     }
                   }//转换类型
                    $new2=implode(",",$arrayjson);
+                   $xin1="[";
+                   $xin2="]";
+                   $xin3=$xin1.$new2.$xin2;
                    $dmodel=D('content_material');
                    $data=$dmodel->add(array(
                     'content_id'=>$GLOBALS['id'],
-                    'content_json'=>$new2));
+                    'content_json'=>$xin3));
                 $this->success('上传成功','', $result);
         }else{
             $this->error('上传失败','', array(
