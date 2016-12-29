@@ -1,0 +1,40 @@
+<extend name="Public/base" />
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+    <div class="main-title cf">
+        <h2><if condition="ACTION_NAME eq 'addaction'">新增<else/>添加ORG(机构管理)</if></h2>
+    </div>
+    <!-- 表单 -->
+    <form id="form" action="{:U('postDoupload')}" method="POST" class="form-horizontal">
+    <div class="form-item cf"> 
+    
+            <label class="item-label">机构ID<span class="check-tips">（英文中文都行）</span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="related_id" value="{$GLOBALS['Institution']}">
+            </div>
+        </div>
+        <div class="form-item">
+                <label class="item-label"><span class="check-tips">用户ID</span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="uid" value="{$info.uid|default=''}">
+                </div>
+            </div>
+        
+        <div class="form-item">
+            
+            <button class="btn btn-return"  target-form="form-horizontal">确 定</button>
+            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+        </div>
+    </form>
+</block>
+
+<block name="script">
+<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    Think.setValue('type',{$type|default=1});
+    //导航高亮
+    highlight_subnav('{:U('Institution/action')}');
+</script>
+</block>
