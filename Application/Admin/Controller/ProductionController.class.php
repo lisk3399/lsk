@@ -142,6 +142,7 @@ class ProductionController extends AdminController {
             $data['create_time'] = $create_time; 
             $data['deadline'] = $deadline;
             $data['tag_id'] = $tag_id;
+            $data['is_admin']=$_POST['is_admin'];
             $task_id = $taskModel->add($data);
             $_POST['task_id'] = $task_id;
         }
@@ -218,9 +219,8 @@ class ProductionController extends AdminController {
                 $arr[0]['type'] = 'VIDEO';
                 $arr[0]['value'] = $img_domain.$result[0]['key'];
                 $arr[0]['cover_url'] = $img_domain.$result[1]['key'];
-                $arrayjson=json_encode($arr);
+                $arrayjson=json_encode($arr);   
                 $dmodel=D('content_material');
-                
                 $data=$dmodel->add(array(
                     'content_id'=>$GLOBALS['id'],
                     'content_json'=>$arrayjson,
@@ -241,4 +241,19 @@ class ProductionController extends AdminController {
         $this->assign('data',null);
         $this->display('editaction');
     }
+   Public function saveAction()
+    {
+        $data['title']=$_POST['title'];
+        $data['description']=$_POST['description'];
+        $data['cover_url']=$_POST['cover_url'];
+        $data['create_time'] =strtotime($_POST['create_time']);
+        $Dao = M("content");
+        $result = $Dao->where('id ='. $_POST['cate_id'])
+                      ->save($data);
+        if($result !== false){
+             $this->success($result['create_time']?'更新成功！':'新增成功！',U('Production/index'));
+        }else{
+             $this->error(D('Production')->getError());
+        }
+  }
 }
