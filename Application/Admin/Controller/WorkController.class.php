@@ -203,27 +203,41 @@ class WorkController extends AdminController {
                 'fileName'=>$fileName,
                 'fileBody'=>file_get_contents($file['tmp_name'])
             ); 
-            $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
-            
-            foreach ($filelogo['name'] as  $v) { 
-            //获取文件后缀
-                $filenamelogo=explode('.',$v); 
+            $filenamelogo=explode('.',$filelogo['name']); 
                 $extlogo = $filenamelogo[1];  
                 $allow_type = array('jpg','jpeg','gif','png');
                 if(in_array($extlogo,$allow_type)){}
                     elseif(is_null($extlogo)){}
                 else{$this->error('上传格式不对','', array());}
-             //唯一文件名
-                $etagnamelogo=md5(uniqid($v));  
+            $etagnamelogo=md5(uniqid($filelogo['name']));  
                 $fileNamelogo=$etagnamelogo.'.'.$extlogo;
                 $filelogo=array(
                     'name'=>'logo',
                     'fileName'=>$fileNamelogo,
                     'fileBody'=>file_get_contents($filelogo['tmp_name'])  
                     );
-                
+                $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
                 $result[] = $upload->upload(array(),$file, $filelogo);
-            }
+    
+            // foreach ($filelogo['name'] as  $v) { 
+            // //获取文件后缀
+            //     $filenamelogo=explode('.',$v); 
+            //     $extlogo = $filenamelogo[1];  
+            //     $allow_type = array('jpg','jpeg','gif','png');
+            //     if(in_array($extlogo,$allow_type)){}
+            //         elseif(is_null($extlogo)){}
+            //     else{$this->error('上传格式不对','', array());}
+            //  //唯一文件名
+            //     $etagnamelogo=md5(uniqid($v));  
+            //     $fileNamelogo=$etagnamelogo.'.'.$extlogo;
+            //     $filelogo=array(
+            //         'name'=>'logo',
+            //         'fileName'=>$fileNamelogo,
+            //         'fileBody'=>file_get_contents($filelogo['tmp_name'])  
+            //         );
+          
+            //     $result[] = $upload->upload(array(),$file, $filelogo);
+            // }
             if(count($result) > 0){
                 //多维数组
                 foreach ($result as  $v) {
@@ -238,6 +252,7 @@ class WorkController extends AdminController {
                   $arrayjson[]=json_encode($arr);
                     }
                   }//转换类型
+                  //var_dump($arrayjson);exit;
                    $new2=implode(",",$arrayjson);
                    $xin1="[";
                    $xin2="]";
