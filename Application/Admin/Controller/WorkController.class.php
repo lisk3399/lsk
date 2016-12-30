@@ -218,7 +218,7 @@ class WorkController extends AdminController {
                     );
                 $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
                 $result[] = $upload->upload(array(),$file, $filelogo);
-    
+   // var_dump($result);exit;
             // foreach ($filelogo['name'] as  $v) { 
             // //获取文件后缀
             //     $filenamelogo=explode('.',$v); 
@@ -243,16 +243,24 @@ class WorkController extends AdminController {
                 foreach ($result as  $v) {
                    
                     foreach ($v as $v1) {
+
+                        $img_domain = C('QINIU.img_domain');
+                        $allow_type = array('jpg','jpeg','gif','png');
+                        $filenamelogo=explode('.',$v1['key']);
+                        $li= $filenamelogo[1];
+                        if(in_array($li,$allow_type)){
+                            $arr['type'] = 'pic';
+                        }else{
+                            $arr['type'] = 'video';
+                        }
+                      
+                          $arr['value'] = $img_domain.$v1['key'];
+                          $arr['cover_url'] = $img_domain.$v1['key'];
                         
-                  $img_domain = C('QINIU.img_domain');
-                  $arr['type'] = 'VIDEO';
-                  $arr['value'] = $img_domain.$v1['key'];
-                  $arr['cover_url'] = $img_domain.$v1['key'];
-                
-                  $arrayjson[]=json_encode($arr);
+                          $arrayjson[]=json_encode($arr);
                     }
-                  }//转换类型
-                  //var_dump($arrayjson);exit;
+                }//转换类型
+                 
                    $new2=implode(",",$arrayjson);
                    $xin1="[";
                    $xin2="]";
