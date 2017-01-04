@@ -166,8 +166,8 @@ class WorkController extends AdminController {
        public function postDoupload()
     {   
             //进度条
-        // $name = ini_get('session.upload_progress.name');
-        // $key = ini_get("session.upload_progress.prefix") . $_FILES[$name];
+       // $name = ini_get('session.upload_progress.name');
+        //$key = ini_get("session.upload_progress.prefix") . $_FILES[$name];
         $upload_img=M('content_material');
         $res=D('content');  
         $a=$res->update();
@@ -218,59 +218,39 @@ class WorkController extends AdminController {
                     );
                 $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
                 $result[] = $upload->upload(array(),$file, $filelogo);
-   // var_dump($result);exit;
-            // foreach ($filelogo['name'] as  $v) { 
-            // //获取文件后缀
-            //     $filenamelogo=explode('.',$v); 
-            //     $extlogo = $filenamelogo[1];  
-            //     $allow_type = array('jpg','jpeg','gif','png');
-            //     if(in_array($extlogo,$allow_type)){}
-            //         elseif(is_null($extlogo)){}
-            //     else{$this->error('上传格式不对','', array());}
-            //  //唯一文件名
-            //     $etagnamelogo=md5(uniqid($v));  
-            //     $fileNamelogo=$etagnamelogo.'.'.$extlogo;
-            //     $filelogo=array(
-            //         'name'=>'logo',
-            //         'fileName'=>$fileNamelogo,
-            //         'fileBody'=>file_get_contents($filelogo['tmp_name'])  
-            //         );
-          
-            //     $result[] = $upload->upload(array(),$file, $filelogo);
-            // }
-            if(count($result) > 0){
-                //多维数组
+         
+            if(count($result)>0){
                 foreach ($result as  $v) {
-                   
-                    foreach ($v as $v1) {
-
-                        $img_domain = C('QINIU.img_domain');
+                        //获取数组里的值个数
+                        $shu=count($v);
+                    for($i=0;$i<=$shu;$i++){
+                        $img_domain=C('QINIU.img_domain');
                         $allow_type = array('jpg','jpeg','gif','png');
-                        $filenamelogo=explode('.',$v1['key']);
-                        $li= $filenamelogo[1];
-                        if(in_array($li,$allow_type)){
-                            $arr['type'] = 'pic';
-                        }else{
-                            $arr['type'] = 'video';
-                        }
-                      
-                          $arr['value'] = $img_domain.$v1['key'];
-                          $arr['cover_url'] = $img_domain.$v1['key'];
-                        
-                          $arrayjson[]=json_encode($arr);
+                        $filenamelogo=explode('.',$v[$i]['key']);
+                        $li=$filenamelogo[1];
+                        //判断文件的类型
+                            if(in_array($li,$allow_type)){
+                                $arr[$i]['type']='pic';
+                            }else{
+                                $arr[$i]['type']='video';
+                            }
+                        $arr[$i]['value']=$img_domain.$v[$i]['key'];
+                        $arr[$i]['cover_url']=$img_domain.$v[$i]['key'];
+                        $arrayjson[]=json_encode($arr);
                     }
-                }//转换类型
-                 
-                   $new2=implode(",",$arrayjson);
-                   $xin1="[";
-                   $xin2="]";
-                   $xin3=$xin1.$new2.$xin2;
+                        $newjson=$arrayjson[1];
+                       // unset($arrayjson); 销毁
+
+                }
                    $dmodel=D('content_material');
                    $data=$dmodel->add(array(
                     'content_id'=>$GLOBALS['id'],
-                    'content_json'=>$xin3));
+                    'content_json'=>$newjson));
+
                 $this->success('上传成功','', $result);
-        }else{
+                    
+                
+            }else{
             $this->error('上传失败','', array(
                 'error'=>$this->qiniu->error,
                 'errorStr'=>$this->qiniu->errorStr
