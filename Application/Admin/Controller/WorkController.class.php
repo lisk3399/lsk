@@ -165,11 +165,13 @@ class WorkController extends AdminController {
     // 上传图片视频   
        public function postDoupload()
     {   
+
             //进度条
       // $name = ini_get('session.upload_progress.name');
         //$key = ini_get("session.upload_progress.prefix") . $_FILES[$name];
         $upload_img=M('content_material');
         $res=D('content');  
+     
         $a=$res->update();
         if(!$res->create()) {
            $this->error($res->geterror());
@@ -225,8 +227,11 @@ class WorkController extends AdminController {
                     $arr[0]['value'] = $img_domain.$v[1]['key'];
                     $arr[0]['cover_url'] = $img_domain.$v[1]['key'].'?vframe/jpg/offset/4/w/300/h/200';
                    
-                    $arrayjson=json_encode($arr);  
-                } 
+                     
+                }
+                    $arr[1]['type']='txt';
+                    $arr[1]['value']=$_POST['description'];
+                     $arrayjson=json_encode($arr);
                 $dmodel=D('content_material');
                 $data=$dmodel->add(array(
                     'content_id'=>$GLOBALS['id'],
