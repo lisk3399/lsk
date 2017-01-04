@@ -329,7 +329,7 @@ class LiveController extends HomeController {
     public function callback() {
         //获取回调的body信息
         $callbackBody = file_get_contents('php://input');
-        \Think\Log::record($callbackBody);
+        \Think\Log::write($callbackBody);
         //$data = get_nginx_headers();
         //$dat=$data['X-Pili-Md5'];
         //file_put_contents("dat.txt","callbackBody=".$callbackBody."md5=".$dat);

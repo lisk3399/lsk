@@ -43,18 +43,20 @@ class ContentModel extends Model{
             if(!empty($result['content_json'])) {
                 $arr = json_decode($result['content_json'], TRUE);
                 $counter = 0;
-                foreach ($arr as $json_key=>$json_row) {
-                    if(empty($json_row['cover_url'])) {
-                        unset($json_row);
-                        continue;
+                if(is_array($arr)) {
+                    foreach ($arr as $json_key=>$json_row) {
+                        if(empty($json_row['cover_url'])) {
+                            unset($json_row);
+                            continue;
+                        }
+                        $row['pic'][$counter]['cover_url'] = $json_row['cover_url'];
+                        $row['pic'][$counter]['type'] = strtoupper($json_row['type']);
+                        if($row['pic'][$counter]['type'] == 'LIVE') {
+                            $row['pic'][$counter]['status'] = $json_row['status'];
+                        }
+                        $row['pic'][$counter]['value'] = $json_row['value'];
+                        $counter++;
                     }
-                    $row['pic'][$counter]['cover_url'] = $json_row['cover_url'];
-                    $row['pic'][$counter]['type'] = strtoupper($json_row['type']);
-                    if($row['pic'][$counter]['type'] == 'LIVE') {
-                        $row['pic'][$counter]['status'] = $json_row['status'];
-                    }
-                    $row['pic'][$counter]['value'] = $json_row['value'];
-                    $counter++;
                 }
             }
             else {
