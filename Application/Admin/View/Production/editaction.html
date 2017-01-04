@@ -45,6 +45,12 @@ $(document).ready(function(){
             <div class="controls">
                 <input type="text" class="text input-large" name="title" value="{$info.title|default=''}">
             </div>
+            <div class="form-item" style="display:none;">
+                <label class="item-label"><span class="check-tips">后台管理</span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" readonly="readonly" onfocus="" name="is_admin" value="1">
+                </div>
+            </div> 
             <div class="form-item">
                  <label class="item-label">标签id(12-17，分别表示语文12,数学13,音乐14,舞蹈15,美术16,其他17)<span class="check-tips"></span></label>
             <div class="controls">

@@ -15,7 +15,10 @@ class ContentModel extends Model{
     );
 
     public function update($data = null){
+      
         $data = $this->create($_POST);
+       
+        
         $this->create_time = strtotime($_POST['create_time']);
         if(empty($data)){
             return false;
@@ -23,7 +26,10 @@ class ContentModel extends Model{
         /* 添加或新增行为 */
         if(empty($data['id'])){ //新增数据
 
-            $id = $this->add(); //添加行为
+            $id = $this->add(
+
+            ); //添加行为
+        
             $GLOBALS['id']=$id;
             if(!$id){
                 $this->error = '新增行为出错！';

@@ -12,13 +12,12 @@ class WorkController extends AdminController {
         $types[$type] = '全部';
         //获取作品列表
         $list = $this->getWorkList($map);
-        
         $this->assign('list', $list);
         $this->assign('type', $types[$type]);
         $this->display();
     }
     
-    //设置数据状态
+//设置数据状态
     public function setStatus() {
         $ids    =   I('request.ids', '', 'trim');
         $status =   I('request.status', '', 'intval');
@@ -32,15 +31,13 @@ class WorkController extends AdminController {
         $map['id'] = array('IN', $ids);
         $data['status'] = $status;
         if($Institution->where($map)->save($data)) { 
-
             $this->success('操作成功');
             exit;
-            // $this->success('操作成功');  exit;
         }
         $this->error('操作失败');
     }
     
-    //设置是否在首页显示
+ //设置是否在首页显示
     public function setDisplay() {
         $ids    =   I('request.ids', '', 'trim');
         $is_display =   I('request.is_display', '', 'intval');
@@ -50,7 +47,6 @@ class WorkController extends AdminController {
         if(empty($ids)){
             $this->error('id为空');
         }
-    
         $Work = M('work');
         $map['id'] = array('IN', $ids);
         $data['is_display'] = $is_display;
@@ -65,14 +61,11 @@ class WorkController extends AdminController {
     public function recycle() {
         $map['is_delete'] = 1;
         $list = $this->getWorkList($map);
-        
         $this->assign('list', $list);
         $this->display();
     }
-    
-    /*
-     * 获取作品列表
-     */
+
+//获取作品列表
     private function getWorkList($map) {
       
         $adminuid= $_SESSION['onethink_admin']['user_auth']['uid'];
@@ -84,8 +77,7 @@ class WorkController extends AdminController {
             $type=$data['type'];
             $lian= $data['related_id'];
             //如果为ORG就是机构管理员
-            if($type==='ORG'){
-                
+            if($type==='ORG'){ 
                 $Related=M('content');
                 $selectorg=$Related->alias('d')
                 ->field('d.id zid,d.org_id,d.title,d.description,d.likes,d.status,d.create_time,c.uid,c.nickname')
@@ -97,7 +89,6 @@ class WorkController extends AdminController {
             }
              //如果为GROUP就是班级管理员  
             if($type==='GROUP'){
-
                $Related=M('content');
                $selectorg=$Related->alias('d')
                ->field('d.id zid,d.group_id,d.title,d.description,d.likes,d.status,d.create_time,c.uid,c.nickname')
@@ -122,9 +113,8 @@ class WorkController extends AdminController {
             $Work = M('content');
             $select = $Work->alias('d')
             ->page($page, $listRows)
-            ->field('d.id zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
+            ->field('d.id  zid,d.title,d.description ,d.likes,d.status,d.create_time,c.uid,c.nickname')
             ->join('__MEMBER__ c on c.uid=d.uid')
-            //->join('__WORK__ w on w.id = d.uid')
             ->where('d.status=1')
             ->order('d.create_time  desc')
             ->select();
@@ -138,7 +128,7 @@ class WorkController extends AdminController {
             
             $this->assign('_page', $p? $p: '');
             $this->assign('_total',$total);
-            $options['limit'] = $page->firstRow.','.$page->listRows;     
+            $options['limit'] = $page->firstRow.','.$page->listRows;   
             return $select;
         }
     }
@@ -146,8 +136,6 @@ class WorkController extends AdminController {
     //查看
     public function edit(){
        $id = I('get.id', '', 'intval');
-
-       
        $Classes = M('content');
        $list = $Classes->alias('a')
        ->field('a.id,a.uid,a.title,a.description,a.create_time,c.type,c.value,c.cover_url')
@@ -161,17 +149,15 @@ class WorkController extends AdminController {
     //修改动态创建时间
    Public function saveAction()
     {
-       
-         $create_time=strtotime($_POST['create_time']);
-
-         $Dao = M("content");
-
-         $result = $Dao->where('id ='. $_POST['cate_id'])
-                     ->setField('create_time',$create_time);
-
+        $data['title']=$_POST['title'];
+        $data['description']=$_POST['description'];
+        $data['cover_url']=$_POST['cover_url'];
+        $data['create_time'] =strtotime($_POST['create_time']);
+        $Dao = M("content");
+        $result = $Dao->where('id ='. $_POST['cate_id'])
+                      ->save($data);
         if($result !== false){
              $this->success($result['create_time']?'更新成功！':'新增成功！',U('Work/index'));
-            
         }else{
              $this->error(D('Work')->getError());
         }
@@ -180,8 +166,8 @@ class WorkController extends AdminController {
        public function postDoupload()
     {   
             //进度条
-        // $name = ini_get('session.upload_progress.name');
-        // $key = ini_get("session.upload_progress.prefix") . $_FILES[$name];
+       // $name = ini_get('session.upload_progress.name');
+        //$key = ini_get("session.upload_progress.prefix") . $_FILES[$name];
         $upload_img=M('content_material');
         $res=D('content');  
         $a=$res->update();
@@ -217,48 +203,54 @@ class WorkController extends AdminController {
                 'fileName'=>$fileName,
                 'fileBody'=>file_get_contents($file['tmp_name'])
             ); 
-            $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
-            
-            foreach ($filelogo['name'] as  $v) { 
-            //获取文件后缀
-                $filenamelogo=explode('.',$v); 
+            $filenamelogo=explode('.',$filelogo['name']); 
                 $extlogo = $filenamelogo[1];  
                 $allow_type = array('jpg','jpeg','gif','png');
                 if(in_array($extlogo,$allow_type)){}
                     elseif(is_null($extlogo)){}
                 else{$this->error('上传格式不对','', array());}
-             //唯一文件名
-                $etagnamelogo=md5(uniqid($v));  
+            $etagnamelogo=md5(uniqid($filelogo['name']));  
                 $fileNamelogo=$etagnamelogo.'.'.$extlogo;
                 $filelogo=array(
                     'name'=>'logo',
                     'fileName'=>$fileNamelogo,
                     'fileBody'=>file_get_contents($filelogo['tmp_name'])  
                     );
-                
+                $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
                 $result[] = $upload->upload(array(),$file, $filelogo);
-            }
-            if(count($result) > 0){
-                //多维数组
+         
+            if(count($result)>0){
                 foreach ($result as  $v) {
-                   
-                    foreach ($v as $v1) {
-                        
-                  $img_domain = C('QINIU.img_domain');
-                  $arr['type'] = 'VIDEO';
-                  $arr['value'] = $img_domain.$v1['key'];
-                  $arr['cover_url'] = $img_domain.$v1['key'];
-                
-                  $arrayjson[]=json_encode($arr);
+                        //获取数组里的值个数
+                        $shu=count($v);
+                    for($i=0;$i<=$shu;$i++){
+                        $img_domain=C('QINIU.img_domain');
+                        $allow_type = array('jpg','jpeg','gif','png');
+                        $filenamelogo=explode('.',$v[$i]['key']);
+                        $li=$filenamelogo[1];
+                        //判断文件的类型
+                            if(in_array($li,$allow_type)){
+                                $arr[$i]['type']='pic';
+                            }else{
+                                $arr[$i]['type']='video';
+                            }
+                        $arr[$i]['value']=$img_domain.$v[$i]['key'];
+                        $arr[$i]['cover_url']=$img_domain.$v[$i]['key'];
+                        $arrayjson[]=json_encode($arr);
                     }
-                  }//转换类型
-                   $new2=implode(",",$arrayjson);
+                        $newjson=$arrayjson[1];
+                       // unset($arrayjson); 销毁
+
+                }
                    $dmodel=D('content_material');
                    $data=$dmodel->add(array(
                     'content_id'=>$GLOBALS['id'],
-                    'content_json'=>$new2));
+                    'content_json'=>$newjson));
+
                 $this->success('上传成功','', $result);
-        }else{
+                    
+                
+            }else{
             $this->error('上传失败','', array(
                 'error'=>$this->qiniu->error,
                 'errorStr'=>$this->qiniu->errorStr
