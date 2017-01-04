@@ -223,8 +223,8 @@ class WorkController extends AdminController {
                     $img_domain = C('QINIU.img_domain');
                     $arr[0]['type'] = 'video';
                     $arr[0]['value'] = $img_domain.$v[1]['key'];
-                    $arr[0]['cover_url'] = $img_domain.$v[0]['key'];
-                    
+                    $arr[0]['cover_url'] = $img_domain.$v[1]['key'].'?vframe/jpg/offset/4/w/300/h/200';
+                   
                     $arrayjson=json_encode($arr);  
                 } 
                 $dmodel=D('content_material');
