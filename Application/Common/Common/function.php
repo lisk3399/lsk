@@ -1083,3 +1083,34 @@ function is_valid_json($string) {
     json_decode($string);
     return (json_last_error() == JSON_ERROR_NONE);
 }
+
+function get_nginx_headers($function_name='getallheaders'){
+    $all_headers=array();
+
+    if(function_exists($function_name)){
+
+        $all_headers=$function_name();
+    }
+    else{
+
+        foreach($_SERVER as $name => $value){
+
+            if(substr($name,0,5)=='HTTP_'){
+
+                $name=substr($name,5);
+                $name=str_replace('_',' ',$name);
+                $name=strtolower($name);
+                $name=ucwords($name);
+                $name=str_replace(' ', '-', $name);
+
+                $all_headers[$name] = $value;
+            }
+            elseif($function_name=='apache_request_headers'){
+
+                $all_headers[$name] = $value;
+            }
+        }
+    }
+
+    return $all_headers;
+}

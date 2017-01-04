@@ -329,17 +329,15 @@ class LiveController extends HomeController {
     public function callback() {
         //获取回调的body信息
         $callbackBody = file_get_contents('php://input');
-        
-        //回调的签名信息，可以验证该回调是否来自七牛
-        $data=apache_request_headers();
+        $data = get_nginx_headers();
         $dat=$data['X-Pili-Md5'];
-        file_put_contents("/mnt/xvdb1/virtualhost/log/dat.txt","callbackBody=".$callbackBody."md5=".$dat);
+        //file_put_contents("dat.txt","callbackBody=".$callbackBody."md5=".$dat);
         //本地签名
         $dataSign = str_replace(array('+', '/'), array('-', '_'), base64_encode(md5($callbackBody, true)));
         if ($dataSign == $dat) {
             $data = json_decode($callbackBody, TRUE);
             if($data['data']['status'] == 'disconnected') {
-                file_put_contents("/mnt/xvdb1/virtualhost/log/da.txt", $data['data']['status']);
+                //file_put_contents("da.txt", $data['data']['status']);
                 $cmModel = M('content_material');
                 $stream_key = $data['data']['id'];
                 $map['type'] = 'LIVE';
