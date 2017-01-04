@@ -329,25 +329,25 @@ class LiveController extends HomeController {
     public function callback() {
         //获取回调的body信息
         $callbackBody = file_get_contents('php://input');
-        //$data = get_nginx_headers();
-        //$dat=$data['X-Pili-Md5'];
+        $data = get_nginx_headers();
+        $dat=$data['X-Pili-Md5'];
         //file_put_contents("dat.txt","callbackBody=".$callbackBody."md5=".$dat);
         //本地签名
-        //$dataSign = str_replace(array('+', '/'), array('-', '_'), base64_encode(md5($callbackBody, true)));
-        //if ($dataSign == $dat) {
+        $dataSign = str_replace(array('+', '/'), array('-', '_'), base64_encode(md5($callbackBody, true)));
+        if ($dataSign == $dat) {
             $data = json_decode($callbackBody, TRUE);
             if($data['data']['status'] == 'disconnected') {
+                
                 //file_put_contents("/mnt/xvdb1/virtualhost/log/da.txt", $callbackBody);
                 $cmModel = M('content_material');
                 $stream_key = $data['data']['id'];
                 $map['type'] = 'LIVE';
                 $map['value'] = $stream_key;
-                $info = $cmModel->field('value')->where($map)->find();
+                $info = $cmModel->field('content_json')->where($map)->find();
                 if(empty($info['content_json'])) {
                     $this->renderFailed('无法更新');
                 }
                 $content_json = $info['content_json'];
-                $stream_key = $info['value'];
                 //失败最多尝试5次
                 $try = 0;
                 do {
@@ -372,8 +372,9 @@ class LiveController extends HomeController {
                 if(!$ret) {
                     $this->renderFailed('保存失败');
                 }
+                $this->renderSuccess('保存成功');
             }
-        //}
+        }
     }
     
     //查询流状态
