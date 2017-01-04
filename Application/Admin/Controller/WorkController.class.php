@@ -166,7 +166,7 @@ class WorkController extends AdminController {
        public function postDoupload()
     {   
             //进度条
-       // $name = ini_get('session.upload_progress.name');
+      // $name = ini_get('session.upload_progress.name');
         //$key = ini_get("session.upload_progress.prefix") . $_FILES[$name];
         $upload_img=M('content_material');
         $res=D('content');  
@@ -218,38 +218,22 @@ class WorkController extends AdminController {
                     );
                 $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
                 $result[] = $upload->upload(array(),$file, $filelogo);
-         
-            if(count($result)>0){
-                foreach ($result as  $v) {
-                        //获取数组里的值个数
-                        $shu=count($v);
-                    for($i=0;$i<=$shu;$i++){
-                        $img_domain=C('QINIU.img_domain');
-                        $allow_type = array('jpg','jpeg','gif','png');
-                        $filenamelogo=explode('.',$v[$i]['key']);
-                        $li=$filenamelogo[1];
-                        //判断文件的类型
-                            if(in_array($li,$allow_type)){
-                                $arr[$i]['type']='pic';
-                            }else{
-                                $arr[$i]['type']='video';
-                            }
-                        $arr[$i]['value']=$img_domain.$v[$i]['key'];
-                        $arr[$i]['cover_url']=$img_domain.$v[$i]['key'];
-                        $arrayjson[]=json_encode($arr);
-                    }
-                        $newjson=$arrayjson[1];
-                       // unset($arrayjson); 销毁
-
-                }
-                   $dmodel=D('content_material');
-                   $data=$dmodel->add(array(
-                    'content_id'=>$GLOBALS['id'],
-                    'content_json'=>$newjson));
-
-                $this->success('上传成功','', $result);
+          if(count($result) > 0){
+             foreach ($result as  $v) {
+                    $img_domain = C('QINIU.img_domain');
+                    $arr[0]['type'] = 'video';
+                    $arr[0]['value'] = $img_domain.$v[1]['key'];
+                    $arr[0]['cover_url'] = $img_domain.$v[0]['key'];
                     
-                
+                    $arrayjson=json_encode($arr);  
+                } 
+                $dmodel=D('content_material');
+                $data=$dmodel->add(array(
+                    'content_id'=>$GLOBALS['id'],
+                    'content_json'=>$arrayjson,
+                ));
+            $this->success('上传成功','', $result);
+
             }else{
             $this->error('上传失败','', array(
                 'error'=>$this->qiniu->error,
