@@ -231,6 +231,7 @@ class WorkController extends AdminController {
                 $data=$dmodel->add(array(
                     'content_id'=>$GLOBALS['id'],
                     'content_json'=>$arrayjson,
+                    'create_time'=>strtotime($_POST['create_time']),
                 ));
             $this->success('上传成功','', $result);
 
