@@ -337,7 +337,7 @@ class LiveController extends HomeController {
         if ($dataSign == $dat) {
             $data = json_decode($callbackBody, TRUE);
             if($data['data']['status'] == 'disconnected') {
-                //file_put_contents("da.txt", $data['data']['status']);
+                file_put_contents("/mnt/xvdb1/virtualhost/log/da.txt", $callbackBody);
                 $cmModel = M('content_material');
                 $stream_key = $data['data']['id'];
                 $map['type'] = 'LIVE';
