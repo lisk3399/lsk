@@ -327,6 +327,54 @@ class LiveController extends HomeController {
     
     //回调函数，用于结束直播流将直播状态改为点播
     public function callback() {
+        //获取回调的body信息
+        $callbackBody = file_get_contents('php://input');
+        
+        //回调的签名信息，可以验证该回调是否来自七牛
+        $data=apache_request_headers();
+        $dat=$data['X-Pili-Md5'];
+        
+        //本地签名
+        $dataSign = str_replace(array('+', '/'), array('-', '_'), base64_encode(md5($callbackBody, true)));
+        if ($dataSign == $dat) {
+            $data = json_decode($callbackBody, TRUE);
+            if($data['data']['status'] == 'disconnected') {
+                $cmModel = M('content_material');
+                $stream_key = $data['data']['id'];
+                $map['type'] = 'LIVE';
+                $map['value'] = $stream_key;
+                $info = $cmModel->field('value')->where($map)->find();
+                if(empty($info['content_json'])) {
+                    $this->renderFailed('无法更新');
+                }
+                $content_json = $info['content_json'];
+                $stream_key = $info['value'];
+                //失败最多尝试5次
+                $try = 0;
+                do {
+                    if ($try == 5) {
+                        break;
+                    }
+                    $ret = $this->saveLive($stream_key, 0, 0);
+                    $try ++;
+                } while(!$ret['fname']);
+                
+                if(!$ret['fname']) {
+                    $this->renderFailed('保存失败');
+                }
+                
+                $play_url = C('QINIU.live_storage').'/'.$ret['fname'];
+                $arr = json_decode($content_json, TRUE);
+                $arr[0]['value'] = $play_url;
+                $arr[0]['status'] = self::LIVE_STATUS_OFF;
+                
+                $content_json = json_encode($arr);
+                $ret = $cmModel->where($map)->save(array('content_json'=>$content_json));
+                if(!$ret) {
+                    $this->renderFailed('保存失败');
+                }
+            }
+        }
     }
     
     //查询流状态

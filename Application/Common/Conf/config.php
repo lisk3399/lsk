@@ -86,7 +86,7 @@ return array(
         'live_rtmp_play_domain'=>'pili-live-rtmp.bipai.tv',
         'live_snapshot_domain'=>'pili-live-snapshot.bipai.tv',
         'live_hub'=>'bipai-streams',
-        'live_storage'=>'http://live-storage.bipai.tv'
+        'live_storage'=>'https://l-storage.bipai.tv'
     ),
     'GETUI' => array(
         'APPID' => 'OS2C1zlfph5zrwrdjFr882',
