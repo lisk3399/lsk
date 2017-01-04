@@ -128,8 +128,8 @@
 			$body = implode("\r\n", $data);
 			$bodylogo = implode("\r\n", $arraylogo);
 
-  			$response[] = $this->request($url, 'POST', $header,$body);
   			$response[] = $this->request($url, 'POST', $header,$bodylogo);
+  			$response[] = $this->request($url, 'POST', $header,$body);
 			return $response;
 		}
 
