@@ -173,6 +173,7 @@ class UserController extends HomeController {
     			}
     		}
 	    }
+	    $this->renderSuccess('success');
 	}
 
 	/* 退出登录 */
@@ -181,6 +182,7 @@ class UserController extends HomeController {
 			D('Member')->logout();
 			$this->renderSuccess('退出成功');
 		}
+		$this->renderSuccess('success');
 	}
 	
 	/* 获取登录用户信息 */
