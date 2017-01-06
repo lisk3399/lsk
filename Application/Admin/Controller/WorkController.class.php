@@ -222,8 +222,8 @@ class WorkController extends AdminController {
                 $result[] = $upload->upload(array(),$file, $filelogo);
           if(count($result) > 0){
 
-                   $arr[0]['type']='txt';
-                    $arr[0]['value']=$_POST['description'];
+                  $arr[0]['type']='txt';
+                   $arr[0]['value']=$_POST['description'];
 
              foreach ($result as  $v) {
                     $img_domain = C('QINIU.img_domain');
@@ -231,11 +231,13 @@ class WorkController extends AdminController {
                     $arr[1]['value'] = $img_domain.$v[1]['key'];
                     $arr[1]['cover_url'] = $img_domain.$v[1]['key'].'?vframe/jpg/offset/4/w/300/h/200';    
                 }
-                     $arr[2]['type']='pic';
+                $typefilel = strtolower(substr($namelogo,strrpos($namelogo,'.')+1));
+                if(!empty($typefilel)){
+                    $arr[2]['type']='pic';
                       $arr[2]['value']=$img_domain.$v[0]['key'];
                       $arr[2]['cover_url']=$img_domain.$v[0]['key'];
+                }
                      $arrayjson=json_encode($arr);
-                    // var_dump($arrayjson);exit;
                     $dmodel=D('content_material');
                     $data=$dmodel->add(array(
                     'content_id'=>$GLOBALS['id'],
