@@ -33,14 +33,39 @@ window.onload = function(){
    bartimer;  
 }  
 </script> 
+ <div class="search-form fr cf">
+            <div class="sleft">
+
+                <input type="text" name="nickname" class="search-input" value="{:I('nickname')}" placeholder="请输入用户昵称或者ID">
+               
+                <a class="sch-btn" href="javascript:;" id="search" url="{:U('editaction')}"><i class="btn-search"></i></a>
+
+            </div>
+
+        </div>     
+
+        <notempty name="_list">
+        <volist name="_list" id="vo">
+        <tr>
+           
+            <td>{$vo.uid} </td>
+            <td>{$vo.nickname}</td><br>
+        </tr>
+        </volist>
+        <else/>
+        </notempty>
 
     <form name="form" role="form" method="post" action="{:U('postDoupload','is_admin=1')}" enctype="multipart/form-data" >
             <div class="form-item">
-                <label class="item-label"><span class="check-tips">用户</span></label>
+                <label class="item-label"><span class="check-tips">用户ID</span></label>
                 <div class="controls">
                     <input type="text" class="text input-large" name="uid" value="{$info.uid|default=''}">
                 </div>
             </div>
+       
+           
+
+       
              <div class="form-item">
                 <label class="item-label"><span class="check-tips">班级ID</span></label>
                 <div class="controls">
@@ -68,7 +93,13 @@ window.onload = function(){
             </div>             
                 
 
-            
+            <div class="form-group">
+                <input type="hidden"   value="文件" >
+                     <label for="auth-description">上传图片</label>
+                     <input type="file"  name='logo' />
+                   <!--   <input id="btn-add" style="cursor:pointer;" type="button" value="添加一张" > -->
+                     <ul id="pic_input"  ></ul>
+            </div>
   
             <div class="form-group" >
                  <input type="hidden"   value="文件" >
@@ -97,6 +128,42 @@ window.onload = function(){
 <script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
 
 <script type="text/javascript">
+    $("#searcha").click(function(){
+        var url = $(this).attr('url');
+        var status = $("#sch-sort-txt").attr("data");
+        var query  = $('.search-form').find('input').serialize();
+        query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+        query = query.replace(/^&/g,'');
+        if(status != ''){
+            query = 'status=' + status + "&" + query;
+        }
+        if( url.indexOf('?')>0 ){
+            url += '&' + query;
+        }else{
+            url += '?' + query;
+        }
+        window.location.href = url;
+    });
+    $("#search").click(function(){
+        var url = $(this).attr('url');
+        var query  = $('.search-form').find('input').serialize();
+        query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+        query = query.replace(/^&/g,'');
+        if( url.indexOf('?')>0 ){
+            url += '&' + query;
+        }else{
+            url += '?' + query;
+        }
+        window.location.href = url;
+    });
+    //回车搜索
+    $(".search-input").keyup(function(e){
+        if(e.keyCode === 13){
+            $("#search").click();
+            return false;
+        }
+    });
+
 //点击 显示隐藏div标签
 function btn1(){
     document.getElementById('div1').style.display='block';

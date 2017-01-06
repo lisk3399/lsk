@@ -221,19 +221,23 @@ class WorkController extends AdminController {
                 $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
                 $result[] = $upload->upload(array(),$file, $filelogo);
           if(count($result) > 0){
+
+                   $arr[0]['type']='txt';
+                    $arr[0]['value']=$_POST['description'];
+
              foreach ($result as  $v) {
                     $img_domain = C('QINIU.img_domain');
-                    $arr[0]['type'] = 'video';
-                    $arr[0]['value'] = $img_domain.$v[1]['key'];
-                    $arr[0]['cover_url'] = $img_domain.$v[1]['key'].'?vframe/jpg/offset/4/w/300/h/200';
-                   
-                     
+                    $arr[1]['type'] = 'video';
+                    $arr[1]['value'] = $img_domain.$v[1]['key'];
+                    $arr[1]['cover_url'] = $img_domain.$v[1]['key'].'?vframe/jpg/offset/4/w/300/h/200';    
                 }
-                    $arr[1]['type']='txt';
-                    $arr[1]['value']=$_POST['description'];
+                     $arr[2]['type']='pic';
+                      $arr[2]['value']=$img_domain.$v[0]['key'];
+                      $arr[2]['cover_url']=$img_domain.$v[0]['key'];
                      $arrayjson=json_encode($arr);
-                $dmodel=D('content_material');
-                $data=$dmodel->add(array(
+                    // var_dump($arrayjson);exit;
+                    $dmodel=D('content_material');
+                    $data=$dmodel->add(array(
                     'content_id'=>$GLOBALS['id'],
                     'content_json'=>$arrayjson,
                     'create_time'=>strtotime($_POST['create_time']),
@@ -258,4 +262,29 @@ class WorkController extends AdminController {
         $this->assign('data',null);
         $this->display('editaction');
     }
-}
+    public function editaction(){
+        if (isset($_GET["group_name"]) || array_key_exists("group_name", $_GET)){
+            if(empty($_GET)){
+                $this->display();
+                //班级
+            }
+        }else{
+            if(empty($_GET)){
+               $this->display();
+            }else{
+                 $nickname       = I('get.nickname','','htmlspecialchars');
+                 $map['status']  =   array('egt',0);
+                    if(is_numeric($nickname)){
+                        $map['uid|nickname']=   array(intval($nickname),array('like','%'.$nickname.'%'),'_multi'=>true);
+                    }else{
+                        $map['nickname']    =   array('like', '%'.(string)$nickname.'%');
+                    }
+
+                    $list   = $this->lists('Member', $map);
+                    $this->assign('_list',$list);
+                    $this->display();
+                    }
+        }
+        
+    }
+} 
