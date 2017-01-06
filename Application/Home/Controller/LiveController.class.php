@@ -329,7 +329,6 @@ class LiveController extends HomeController {
     public function callback() {
         //获取回调的body信息
         $callbackBody = file_get_contents('php://input');
-        \Think\Log::write($callbackBody);
         //$data = get_nginx_headers();
         //$dat=$data['X-Pili-Md5'];
         //file_put_contents("dat.txt","callbackBody=".$callbackBody."md5=".$dat);
@@ -341,7 +340,8 @@ class LiveController extends HomeController {
                 
                 //file_put_contents("/mnt/xvdb1/virtualhost/log/da.txt", $callbackBody);
                 $cmModel = M('content_material');
-                $stream_key = $data['data']['id'];
+                $live_id = explode('.', $data['data']['id']);
+                $stream_key = $live_id[2];
                 $map['type'] = 'LIVE';
                 $map['value'] = $stream_key;
                 $info = $cmModel->field('content_json')->where($map)->find();
