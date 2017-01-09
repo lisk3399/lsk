@@ -604,7 +604,6 @@ class UserController extends HomeController {
             if($signature) {
                 $data['sig'] = $signature;
             }
-            $this->renderSuccess('success', $data);
         }
         $this->renderSuccess('success', $data);
     }
