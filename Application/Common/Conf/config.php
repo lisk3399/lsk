@@ -95,6 +95,7 @@ return array(
     ),
     'TX_YUNTONGXIN' => array(
         'APPID' => '1400022822',
-        'ACCOUNTTYPE' => '9946'
+        'ACCOUNTTYPE' => '9946',
+        'PRIVATEKEY_PATH' => '/usr/local/tools/tx_keys/private_key'
     )
 );

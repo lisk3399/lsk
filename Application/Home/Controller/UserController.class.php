@@ -158,7 +158,16 @@ class UserController extends HomeController {
     				    $data['session_id'] = session_id();
     				    $data['create_time'] = NOW_TIME;
     				    
-    				    
+    				    //腾讯云通信签名
+    				    vendor('Tengxunyun/TLSSig');
+    				    $api = new \TLSSigAPI();
+    				    $sdkappid = C('TX_YUNTONGXIN.APPID');
+    				    $identifier = $uid;
+    				    $private_key_path = C('TX_YUNTONGXIN.PRIVATEKEY_PATH');
+    				    $signature = $api->signature($identifier, $sdkappid, $private_key_path);
+    				    if($signature) {
+    				        $data['sig'] = $signature;
+    				    }
     				    
     					$this->renderSuccess('登录成功', $data);
     				} else {
@@ -580,16 +589,20 @@ class UserController extends HomeController {
         }
     }
     
-    public function test() {
-        vendor('Tengxunyun/TLSSig');
-        
-        $uid = 38;
-        $api = new \TLSSigAPI();
-        $sdkappid = C('TX_YUNTONGXIN.APPID');
-        $identifier = $uid; 
-        $private_key_path = '/usr/local/tools/tx_keys/private_key'; 
-        $result['sig'] = $api->signature($identifier, $sdkappid, $private_key_path);
-        
-        $this->renderSuccess('success', $result);
+    //获取腾讯签名
+    public function getTxSignature() {
+        $uid = is_login();
+        if($uid) {
+            //腾讯云通信签名
+            vendor('Tengxunyun/TLSSig');
+            $api = new \TLSSigAPI();
+            $sdkappid = C('TX_YUNTONGXIN.APPID');
+            $identifier = $uid;
+            $private_key_path = C('TX_YUNTONGXIN.PRIVATEKEY_PATH');
+            $signature = $api->signature($identifier, $sdkappid, $private_key_path);
+            if($signature) {
+                $data['sig'] = $signature;
+            }
+        }
     }
 }
