@@ -92,5 +92,9 @@ return array(
         'APPID' => 'OS2C1zlfph5zrwrdjFr882',
         'APPKEY' => 'XfkfLDPBxUAalEV5PGr8y9',
         'MASTERSECRET' => 'HZpICc3tUpA5M6rzpHoCOA'
+    ),
+    'TX_YUNTONGXIN' => array(
+        'APPID' => '1400022822',
+        'ACCOUNTTYPE' => '9946'
     )
 );
