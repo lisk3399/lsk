@@ -215,6 +215,7 @@ class TLSSigAPI {
             . ' ' . escapeshellarg($private_key_path)
             . ' ' . escapeshellarg($sdkappid)
             . ' ' . escapeshellarg($identifier);
+        echo $command;die;
             $ret = exec($command, $out, $status);
             if ($status == -1) {
                 return null;
