@@ -592,6 +592,7 @@ class UserController extends HomeController {
     //获取腾讯签名
     public function getTxSignature() {
         $uid = is_login();
+        $data['sig'] = '';
         if($uid) {
             //腾讯云通信签名
             vendor('Tengxunyun/TLSSig');
@@ -603,6 +604,8 @@ class UserController extends HomeController {
             if($signature) {
                 $data['sig'] = $signature;
             }
+            $this->renderSuccess('success', $data);
         }
+        $this->renderSuccess('success', $data);
     }
 }
