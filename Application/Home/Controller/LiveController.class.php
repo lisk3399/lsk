@@ -240,6 +240,97 @@ class LiveController extends HomeController {
         }
     }
     
+    //创建直播流
+    public function createStream() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('无权限', -1);
+            }
+            $stream_key = 'bipai'.$uid.'-'.NOW_TIME;
+            $liveApi = new LiveApi();
+            $stream_info = $liveApi->createStream($stream_key);
+            if(empty($stream_info['publish'])) {
+                $this->renderFailed('直播创建失败');
+            }
+            
+            $stream_info['stream_key'] = $stream_key; 
+            $this->renderSuccess('创建成功', $stream_info);
+        }
+    }
+    
+    //创建班级直播动态
+    public function createGroupLiveContent() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('无权限', -1);
+            }
+            
+            $title = I('title', '', 'trim');
+            $group_id = I('group_id', '', 'intval');
+            if(empty($group_id)) {
+                $this->renderFailed('班级id异常');
+            }
+            $stream_key = I('stream_key', '', 'trim');
+            if(empty($stream_key)) {
+                $this->renderFailed('stream name error');
+            }
+            $play_url = I('play', '', 'trim');
+            if(empty($play_url)) {
+                $this->renderFailed('播放地址异常');
+            }
+            $cover_url = I('cover_url', '', 'trim');
+            if(empty($cover_url)) {
+                $this->renderFailed('封面地址异常');
+            }
+            $publish = I('publish', '', 'trim');
+            if(empty($publish)) {
+                $this->renderFailed('发布地址异常');
+            }
+            
+            $userApi = new UserApi();
+            $userinfo = $userApi->info($uid);
+            $data['title'] = '快来看看我的直播';
+            if(!empty($title)) {
+                $data['title'] = $title;
+            }
+            
+            //添加内容
+            $contentModel = M('content');
+            $data['uid'] = $uid;
+            $data['group_id'] = $group_id;
+            $data['create_time'] = NOW_TIME;
+            $content_id = $contentModel->add($data);
+            if(!$content_id) {
+                $this->renderFailed('直播添加失败');
+            }
+            //添加附件
+            $cmModel = M('content_material');
+            $arr[0]['type'] = 'LIVE';
+            $arr[0]['value'] = $play_url;
+            $arr[0]['cover_url'] = $cover_url;
+            $arr[0]['status'] = self::LIVE_STATUS_ON;
+            $content_json = json_encode($arr);
+            $cm_data['content_id'] = $content_id;
+            $cm_data['content_json'] = $content_json;
+            $cm_data['type'] = 'LIVE';
+            $cm_data['value'] = $stream_key;
+            $cm_data['create_time'] = NOW_TIME;
+            
+            if(!$cmModel->add($cm_data)) {
+                $this->renderFailed('创建失败');
+            }
+            
+            $data['publish'] = $publish;
+            $data['nickname'] = $userinfo['nickname'];
+            $data['avatar'] = $userinfo['avatar'];
+            $data['id'] = $content_id;
+            
+            $this->renderSuccess('创建成功', $data);
+        }
+    }
+    
     //更新班级直播封面
     public function updateGroupCover() {
         if(IS_POST) {
