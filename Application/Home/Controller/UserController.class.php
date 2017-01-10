@@ -593,7 +593,7 @@ class UserController extends HomeController {
     public function getTxSignature() {
         if(IS_POST) {
             $uid = is_login();
-            $data['sig'] = '';
+            $data = array();
             if($uid) {
                 //腾讯云通信签名
                 vendor('Tengxunyun/TLSSig');
