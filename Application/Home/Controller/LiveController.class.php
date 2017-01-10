@@ -247,14 +247,15 @@ class LiveController extends HomeController {
             if(!$uid) {
                 $this->renderFailed('无权限', -1);
             }
-            $stream_key = 'bipai'.$uid.'-'.NOW_TIME;
+            $key = $uid.'-'.NOW_TIME;
+            $stream_key = 'bipai'.$key;
             $liveApi = new LiveApi();
             $stream_info = $liveApi->createStream($stream_key);
             if(empty($stream_info['publish'])) {
                 $this->renderFailed('直播创建失败');
             }
             
-            $stream_info['stream_key'] = $stream_key; 
+            $stream_info['stream_key'] = $key; 
             $this->renderSuccess('创建成功', $stream_info);
         }
     }
@@ -276,6 +277,7 @@ class LiveController extends HomeController {
             if(empty($stream_key)) {
                 $this->renderFailed('stream name error');
             }
+            $stream_key = 'bipai'.$stream_key;
             $play_url = I('play', '', 'trim');
             if(empty($play_url)) {
                 $this->renderFailed('播放地址异常');
