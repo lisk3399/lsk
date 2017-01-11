@@ -503,4 +503,43 @@ class LiveController extends HomeController {
             $this->renderSuccess('正在直播');
         }
     }
+    
+    //为直播关联room_id
+    public function addRoomID() {
+        if(IS_POST) {
+            $uid = is_login();
+            if(!$uid) {
+                $this->renderFailed('无权限', -1);
+            }
+            $id = I('id', '', 'intval');
+            if(empty($id)) {
+                $this->renderFailed('直播id错误');
+            }
+            $room_id = I('room_id', '', 'trim');
+            if(empty($room_id)) {
+                $this->renderFailed('房间id错误');
+            }
+            
+            $map['content_id'] = $id;
+            $cmModel = M('content_material');
+            $info = $cmModel->field('content_json')->where($map)->find();
+            if(empty($info['content_json'])) {
+                $this->renderFailed('无法更新');
+            }
+            
+            $content_json = $info['content_json'];
+            $arr = json_decode($content_json, TRUE);
+            $arr[0]['room_id'] = $room_id;
+            
+            $content_json = json_encode($arr);
+            $data['content_json'] = $content_json;
+            
+            $ret = $cmModel->where(array('content_id'=>$id))->save($data);
+            
+            if(!$ret) {
+                $this->renderFailed('添加失败');
+            }
+            $this->renderSuccess('添加成功');
+        }
+    }
 }
