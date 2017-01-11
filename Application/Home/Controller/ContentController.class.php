@@ -759,9 +759,8 @@ class ContentController extends HomeController {
                 $map['c.status'] = 1;
                 $map['c.org_id']= 0;
                 $map['c.task_id'] = 0;
-                $li=array('171','172','173','174');
                $where1=array(
-               		'c.group_id'=>array('IN',$li),
+               		'c.group_id'=>array('IN',array('171','172','173','174')),
                		'c.org_id'=>0,
                		'c.is_admin'=>1
                	);
