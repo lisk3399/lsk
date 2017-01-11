@@ -190,9 +190,7 @@ class LiveController extends HomeController {
                 $this->renderFailed('班级id异常');
             }
             $room_id = I('room_id', '', 'trim');
-            if(empty($room_id)) {
-                $this->renderFailed('聊天室id异常');
-            }
+
             $stream_key = 'bipai'.$uid.'-'.NOW_TIME;
             $liveApi = new LiveApi();
             $stream_info = $liveApi->createStream($stream_key);
@@ -224,7 +222,10 @@ class LiveController extends HomeController {
             $arr[0]['value'] = $play_url;
             $arr[0]['cover_url'] = $cover_url;
             $arr[0]['status'] = self::LIVE_STATUS_ON;
-            $arr[0]['room_id'] = $room_id;
+            if(!empty($room_id)) {
+                $arr[0]['room_id'] = $room_id;//$this->renderFailed('聊天室id异常');
+            }
+            
             $content_json = json_encode($arr);
             $cm_data['content_id'] = $content_id;
             $cm_data['content_json'] = $content_json;
@@ -296,9 +297,6 @@ class LiveController extends HomeController {
                 $this->renderFailed('发布地址异常');
             }
             $room_id = I('room_id', '', 'trim');
-            if(empty($room_id)) {
-                $this->renderFailed('聊天室id异常');
-            }
             
             $userApi = new UserApi();
             $userinfo = $userApi->info($uid);
@@ -322,7 +320,9 @@ class LiveController extends HomeController {
             $arr[0]['value'] = $play_url;
             $arr[0]['cover_url'] = $cover_url;
             $arr[0]['status'] = self::LIVE_STATUS_ON;
-            $arr[0]['room_id'] = $room_id;
+            if(!empty($room_id)) {
+                $arr[0]['room_id'] = $room_id;
+            }
             $content_json = json_encode($arr);
             $cm_data['content_id'] = $content_id;
             $cm_data['content_json'] = $content_json;
