@@ -409,7 +409,9 @@ class LiveController extends HomeController {
             $arr[0]['status'] = self::LIVE_STATUS_OFF;
             
             $content_json = json_encode($arr);
-            $ret = $cmModel->where(array('content_id'=>$id))->save(array('content_json'=>$content_json));
+            $data['content_json'] = $content_json;
+            $data['update_time'] = NOW_TIME;
+            $ret = $cmModel->where(array('content_id'=>$id))->save($data);
             if(!$ret) {
                 $this->renderFailed('保存失败');
             }
@@ -463,7 +465,9 @@ class LiveController extends HomeController {
                 $arr[0]['status'] = self::LIVE_STATUS_OFF;
                 
                 $content_json = json_encode($arr);
-                $ret = $cmModel->where($map)->save(array('content_json'=>$content_json));
+                $data['content_json'] = $content_json;
+                $data['update_time'] = NOW_TIME;
+                $ret = $cmModel->where($map)->save($data);
                 if(!$ret) {
                     $this->renderFailed('保存失败');
                 }
