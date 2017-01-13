@@ -172,7 +172,7 @@ class UserController extends HomeController {
     					$this->renderSuccess('登录成功', $data);
     				} else {
     				    $this->renderFailed($this->showRegError($uid));
-    					$this->error($Member->getError());
+    					//$this->error($Member->getError());
     				}
     
     			} else { //登录失败

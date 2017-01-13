@@ -94,7 +94,7 @@ class MemberModel extends Model{
         }
         $auth = array(
             'uid'             => $user['uid'],
-            'nickname'        => get_nickname($user['uid']),
+            'nickname'        => $user['nickname'],
             'avatar'          => $avatar,
             'signature'          => $signature,
             'last_login_time' => $user['last_login_time'],
