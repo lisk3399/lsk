@@ -169,13 +169,6 @@ class WorkController extends AdminController {
             //进度条
       // $name = ini_get('session.upload_progress.name');
         //$key = ini_get("session.upload_progress.prefix") . $_FILES[$name];
-        $upload_img=M('content_material');
-        $res=D('content');  
-     
-        $a=$res->update();
-        if(!$res->create()) {
-           $this->error($res->geterror());
-        }
         if(!empty($_FILES['logo']['tmp_name'][0]) || !empty($_FILES['file']['tmp_name'][0])){
             $filelogo = $_FILES['logo'];
             $namelogo = $_FILES['logo']['name'];
@@ -221,7 +214,13 @@ class WorkController extends AdminController {
                 $upload = new \Think\Upload\Driver\Qiniu\QiniuStorage($config);
                 $result[] = $upload->upload(array(),$file, $filelogo);
           if(count($result) > 0){
-
+                    $upload_img=M('content_material');
+                    $res=D('content');  
+                 
+                    $a=$res->update();
+                    if(!$res->create()) {
+                       $this->error($res->geterror());
+                    }
                   $arr[0]['type']='txt';
                    $arr[0]['value']=$_POST['description'];
 

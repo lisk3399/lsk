@@ -759,14 +759,19 @@ class ContentController extends HomeController {
                 $map['c.status'] = 1;
                 $map['c.org_id']= 0;
                 $map['c.task_id'] = 0;
-                
+               $where1=array(
+               		'c.group_id'=>array('IN',array('171','172','173','174')),
+               		'c.org_id'=>0,
+               		'c.is_admin'=>1
+               	);
+                $map1=array($map,$where1,'_logic'=>'or');
                 $list = $m->alias('c')
                 ->page($page, $rows)
                 ->field('c.id,c.uid,c.title,c.description,c.comments,c.likes,c.create_time,m.nickname,m.avatar,ifnull(t.name, "") as tag_name,g.group_name')
                 ->join('__MEMBER__ m on m.uid = c.uid', 'left')
                 ->join('__TAGS__ t on t.id = c.tag_id', 'left')
                 ->join('__GROUP__ g on g.id = c.group_id', 'left')
-                ->where($map)
+                ->where($map1)
                 ->order('c.is_top desc,c.create_time desc')
                 ->select();
             }
