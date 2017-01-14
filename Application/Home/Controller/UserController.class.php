@@ -185,7 +185,10 @@ class UserController extends HomeController {
     			}
     		}
 	    }
-	    $this->renderSuccess('success');
+	    else {
+	        $data = $this->getOauthLoginInfo();
+            $this->renderSuccess('登录成功', $data);
+	    }
 	}
 
 	/* 退出登录 */
@@ -416,7 +419,8 @@ class UserController extends HomeController {
     public function weixinLogin() {
         if(IS_POST) {
             if(is_login()) {
-                $this->renderFailed('您已经登录');
+                $data = $this->getOauthLoginInfo();
+                $this->renderSuccess('登录成功', $data);
             }
             $res = $this->oauthLogin('WEIXIN');
             if($res['uid']) {
@@ -434,7 +438,8 @@ class UserController extends HomeController {
     public function weiboLogin() {
         if(IS_POST) {
             if(is_login()) {
-                $this->renderFailed('您已经登录');
+                $data = $this->getOauthLoginInfo();
+                $this->renderSuccess('登录成功', $data);
             }
             $res = $this->oauthLogin('WEIBO');
             if($res['uid']) {
@@ -452,7 +457,8 @@ class UserController extends HomeController {
     public function qqLogin() {
         if(IS_POST){
             if(is_login()) {
-                $this->renderFailed('您已经登录');
+                $data = $this->getOauthLoginInfo();
+                $this->renderSuccess('登录成功', $data);
             }
             $res = $this->oauthLogin('QQ');
             if($res['uid']) {

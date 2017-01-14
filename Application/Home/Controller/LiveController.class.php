@@ -9,6 +9,7 @@ namespace Home\Controller;
 
 use Common\Api\LiveApi;
 use User\Api\UserApi;
+use Think;
 class LiveController extends HomeController { 
     
     const LIVE_STATUS_ON = 1;//直播状态：正在直播
@@ -22,10 +23,12 @@ class LiveController extends HomeController {
                 $this->renderFailed('无权限', -1);
             }
             $title = I('title', '', 'trim');
-            $group_id = I('group_id', '', 'intval');
-            $stream_key = 'bipai'.$uid.'-'.NOW_TIME;
-            
+            $stream_key = 'taotong#'.$uid;
+            //todo stream_key加密
             $liveApi = new LiveApi();
+            if($liveApi->getStreamStatus($stream_key)){
+                $this->renderFailed('用户已经在直播了'); 
+            }
             $stream_info = $liveApi->createStream($stream_key);
             
             if(empty($stream_info['publish'])) {
@@ -36,9 +39,6 @@ class LiveController extends HomeController {
             $data['publish'] = $stream_info['publish'];
             $data['play'] = $stream_info['play'];
             $data['uid'] = $uid;
-            if(!empty($group_id)) {
-                $data['group_id'] = $group_id;
-            }
             
             if(empty($title)) {
                 $userApi = new UserApi();
@@ -72,14 +72,10 @@ class LiveController extends HomeController {
         }
         
         $map = array();
-        $group_id = I('group_id', '1', 'intval');
-        if(!empty($group_id)) {
-            $map['group_id'] = $group_id;
-        }
-        
         $liveModel = M('live');
-        $list = $liveModel->field('id,uid,title,play,cover_url,comments,likes,create_time')
+        $list = $liveModel->field('id,uid,title,play,cover_url,status,create_time')
         ->where($map)
+        ->order('id desc')
         ->limit($page, $rows)->select();
         
         if(count($list) == 0) {
@@ -551,5 +547,9 @@ class LiveController extends HomeController {
             }
             $this->renderSuccess('添加成功');
         }
+    }
+    
+    public function test() {
+
     }
 }
