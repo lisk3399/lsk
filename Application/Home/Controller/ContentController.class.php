@@ -762,7 +762,8 @@ class ContentController extends HomeController {
                $where1=array(
                		'c.group_id'=>array('IN',array('171','172','173','174')),
                		'c.org_id'=>0,
-               		'c.is_admin'=>1
+               		'c.is_admin'=>1,
+                    'c.status'=>1
                	);
                 $map1=array($map,$where1,'_logic'=>'or');
                 $list = $m->alias('c')

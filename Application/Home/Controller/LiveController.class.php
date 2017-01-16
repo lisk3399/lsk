@@ -93,7 +93,7 @@ class LiveController extends HomeController {
         }
         
         $liveModel = M('live');
-        $info = $liveModel->field('id,uid,title,play,cover_url,comments,likes,create_time')
+        $info = $liveModel->field('id,uid,title,play,cover_url,status,create_time')
         ->where(array('id'=>$live_id))->find();
         
         if(count($info) == 0) {
@@ -547,9 +547,5 @@ class LiveController extends HomeController {
             }
             $this->renderSuccess('添加成功');
         }
-    }
-    
-    public function test() {
-
     }
 }
