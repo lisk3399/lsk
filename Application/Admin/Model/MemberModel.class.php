@@ -41,7 +41,7 @@ class MemberModel extends Model {
         }
 
         //记录行为
-        action_log('user_login', 'member', $uid, $uid);
+       // action_log('user_login', 'member', $uid, $uid);
 
         /* 登录用户 */
         $this->autoLogin($user);

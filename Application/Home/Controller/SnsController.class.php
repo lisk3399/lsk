@@ -346,7 +346,7 @@ class SnsController extends HomeController {
 	        if(is_array($result) && count($result) > 0) {
 	            $Api = new UserApi;
 	            $result = $Api->setDefaultAvatar($result);
-	            
+	           
 	            $this->renderSuccess('查询结果', $result);
 	        }
 	        $this->renderFailed('暂无结果');

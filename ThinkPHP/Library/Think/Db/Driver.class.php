@@ -778,7 +778,7 @@ abstract class Driver {
                 $fields[]   =  $this->parseKey($key);
                 $values[]   =  $val[1];
             }elseif(is_scalar($val)) { // 过滤非标量数据
-                $fields[]   =   $this->parseKey($key);
+               $fields[]   =   $this->parseKey($key);
                 if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                     $values[]   =   $this->parseValue($val);
                 }else{
@@ -790,6 +790,7 @@ abstract class Driver {
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
+        
         return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 

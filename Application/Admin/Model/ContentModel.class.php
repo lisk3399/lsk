@@ -27,7 +27,7 @@ class ContentModel extends Model{
         if(empty($data['id'])){ //新增数据
 
             $id = $this->add(
-
+                
             ); //添加行为
         
             $GLOBALS['id']=$id;

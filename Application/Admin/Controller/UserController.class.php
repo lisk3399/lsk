@@ -175,7 +175,7 @@ class UserController extends AdminController {
      * 会员状态修改
      * @author 朱亚杰 <zhuyajie@topthink.net>
      */
-    public function changeStatus($method=null){
+    public function changeStatus($method=null){var_dump($_GET);exit();
         $id = array_unique((array)I('id',0));
         if( in_array(C('USER_ADMINISTRATOR'), $id)){
             $this->error("不允许对超级管理员执行该操作!");
