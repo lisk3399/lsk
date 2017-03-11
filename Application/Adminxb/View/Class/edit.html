@@ -1,0 +1,139 @@
+<extend name="Public/base"/>
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+    <div class="main-title">
+        <h2>编辑班级</h2>
+    </div>
+    <script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js">
+</script>
+<script>
+$(document).ready(function(){
+    $("#btn2").click(function(){
+        $("ol").append("<li><input class='textarea input-large' type=text name='description' value=''></li>");
+    });
+});
+</script>
+    <form name="form" role="form" method="post" action="{:U('compile')}" enctype="multipart/form-data" >
+            <div class="form-item" >   
+                 <label class="item-label" style="display:none;">班级ID<span class="check-tips"></span></label>
+                <div class="controls">
+                <input style="display:none;" type="text" class="text input-large" readonly="readonly" name="id" value="{$data.id|default=''}">
+            </div>
+            <div class="form-item">
+                 <label class="item-label">校区ID<span class="check-tips"></span></label>
+                <div class="controls">
+                <input type="text" class="text input-large" readonly="readonly" name="uid" value="{$data.uid|default=''}">
+            </div>
+            <div class="form-item">
+                 <label class="item-label">班级名称<span class="check-tips"></span></label>
+                <div class="controls">
+                <input type="text" class="text input-large" name="group_name" value="{$data.group_name|default=''}">
+            </div>
+            <div class="form-item">
+                <label>课程：</label>
+                    <select name="course">
+                      <option value="美术">美术</option>
+                      <option value="英语">英语</option>
+                    </select>
+            </div>
+            <div class="form-item">
+                <label class="item-label">收费模式<span class="check-tips"></span></label>
+                <input id="man" type="radio" checked="checked" value="按期" name="charge" />按期
+                <input id="woman" type="radio" value="时间" name="charge"/>时间
+            </div>
+             <div class="form-item">
+                <label class="item-label">学费标准<span class="check-tips"></span></label>
+               
+                    <input type="text" class="text input-large" name="schooling" value="{$data.schooling|default=''}">
+                </div>
+            </div>
+            <div class="form-item">
+                <label for="auth-description" class="item-label">开班时间</label>
+                <input type="text" name="create_time" class="text time" value="{$data.create_time|time_format}" placeholder="请选择时间" />
+            </div>
+             <div class="form-item">
+                <label for="auth-description" class="item-label">截止时间</label>
+                <input type="text" name="terminal_time" class="text time" value="{$data.terminal_time|time_format}" placeholder="请选择时间" />
+             </div>
+             <div class="form-item">
+                 <label class="item-label">教师名称<span class="check-tips"></span></label>
+                <input type="text" class="text input-large" name="teacher" value="{$data.teacher|default=''}">
+            </div>
+            <div class="form-item">
+                 <label class="item-label">助　教　<span class="check-tips"></span></label>
+                <input type="text" class="text input-large" name="teaching" value="{$data.teaching|default=''}">
+            </div>
+            <div class="form-item">
+                 <label class="item-label">额定人数<span class="check-tips"></span></label>
+                <input type="text" class="text input-large" name="number_passenger" value="{$data.number_passenger|default=''}">
+            </div>
+            <div class="form-item">
+                <label for="auth-description" class="item-label">备注</label>
+                <div class="controls">
+                <label class="textarea input-large"><textarea id="auth-description" type="text" name="description">{$data.description}</textarea></label>
+            </div>
+            </div>
+                 <button type="submit" class="btn btn-default">确定</button>
+                  <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+
+    </form>  
+</block>
+
+<block name="script">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+
+ 
+
+$('#submit').click(function(){
+    $('#form').submit();
+});
+
+$(function(){
+    
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+    <if condition="C('OPEN_DRAFTBOX') and (ACTION_NAME eq 'add' or $data['status'] eq 3)">
+    //保存草稿
+    var interval;
+    $('#autoSave').click(function(){
+        var target_form = $(this).attr('target-form');
+        var target = $(this).attr('url')
+        var form = $('.'+target_form);
+        var query = form.serialize();
+        var that = this;
+
+        $(that).addClass('disabled').attr('autocomplete','off').prop('disabled',true);
+        $.post(target,query).success(function(data){
+            if (data.status==1) {
+                updateAlert(data.data ,'alert-success');
+                $('input[name=id]').val(data.data.id);
+            }else{
+                updateAlert(data.data);
+            }
+            setTimeout(function(){
+                $('#top-alert').find('button').click();
+                $(that).removeClass('disabled').prop('disabled',false);
+            },1500);
+        })
+
+    autoSaveDraft();
+
+    </if>
+
+});
+</script>
+</block>

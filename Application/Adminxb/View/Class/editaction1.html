@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>abc</title>
+<script type="text/javascript">
+    window.onload = function ()
+    {
+        var hour = document.getElementById ("hour");
+        var min = document.getElementById ("minute");
+         
+        for ( var i = 0; i < 24; i++)
+        {
+            var opt = document.createElement("option");
+            opt.value = i;
+            opt.innerText = i;
+            hour.appendChild(opt);
+        }
+         
+        for ( var i = 0; i < 60; i++)
+        {
+            var opt = document.createElement("option");
+            opt.value = i;
+            opt.innerText = i;
+            min.appendChild(opt);
+        }
+    }
+</script>
+</head>
+<body>
+    <select id="0"></select>
+    <select id="hour">
+    </select>
+    <select id="minute"></select>
+    <select  id="sid" onchange="selectcity()">  
+            <option>---请选择---</option>  
+            <option>湖南</option>  
+            <option>湖北</option>  
+            <option>浙江</option>  
+            <option>广东</option>  
+    </select> 
+</body>
+</html>
