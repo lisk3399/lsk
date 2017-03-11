@@ -1,0 +1,176 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport"content="width=device-width, initial-scale=1"/>
+<title>比拍-<if condition="$info['title']">{$info.title}<else/>原创</if></title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+<link href="__STATIC__/mobile.css"  rel="stylesheet" type="text/css"/>
+<script>
+	var agent = "ios";
+	var is_ios = "1";
+	sUserAgent = navigator.userAgent.toLowerCase();   
+	bIsIpad = sUserAgent.match(/ipad/i) == "ipad";     
+	bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";    
+	bIsAndroid = sUserAgent.match(/android/i) == "android";
+    var weixin = sUserAgent.match(/MicroMessenger/i) == "micromessenger";
+    var qq =navigator.userAgent.match(/QQ\//i) == "QQ/";
+	function is_weixin(){
+	    var ua = navigator.userAgent.toLowerCase();
+	    if(ua.match(/MicroMessenger/i)=="micromessenger") {  
+	        return true;  
+	    } else {  
+	        return false;  
+	    }  
+	}
+	function download(){
+	    if(is_weixin()){
+	    	$("#tips").show();
+	    	document.body.scrollTop = 0;
+	    }else{
+	    	if(bIsAndroid){
+	    			//window.location.href = ""; //安卓下载
+	    			alert("比拍安卓版还在开发中，我们会尽快完善，非常感谢您的关注");
+	  		}else{
+	  			window.location.href = "https://itunes.apple.com/cn/app/bi-pai-ren-xiao-gui-da-yi/id1119521508?mt=8"; //苹果下载地址
+	  		}
+	    }
+	}
+    function lanchVideoInfo(vid,videoType) {
+        if (weixin||qq) {
+            document.getElementById('school_browser').style.display='block';
+            scrollTo(0,0);
+        }else{
+            videoType=videoType?videoType:0;
+            var url_prefix = 'jump';
+            if (bIsAndroid) {
+                url_prefix = 'public/start';
+            }
+            var url = 'xkx://' + url_prefix + '?type=4&dataStr=' + vid + '&videoType='+videoType;
+            document.location.href = url;
+            setTimeout(function(){
+                download();
+            },2000);
+        }
+    }
+    function costar(){
+        if (weixin||qq) {
+            document.getElementById('school_browser').style.display='block';
+            scrollTo(0,0);
+        }else{
+            var url_prefix = 'jump';
+            if (bIsAndroid) {
+                url_prefix = 'public/start';
+            }
+            var url = 'xkx://' + url_prefix;
+            window.location.href = url;
+            setTimeout(function(){
+                download();
+            },2000);
+        }
+    }
+	
+	if ("wView" in window) {
+		window.wView.allowsInlineMediaPlayback = "YES";
+		window.wView.mediaPlaybackRequiresUserAction = "NO";
+	}
+
+</script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?82f3be980c82ea899ad32bcb5ed3b109";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</head>
+<body>
+<img src="__PUBLIC__/Home/images/tip.png" width="100%" alt="" id="tips" style="display: none" onclick="this.style.display='none'">
+    <!-- 对嘴 -->
+    <div class="top3">
+        <div class="tx1"><img src="{$info.avatar}" alt="{$info.nickname}"></div>
+        <div class="name2">{$info.nickname}<br/><span>{$info.create_time}</span></div>
+        <div class="top3_zan"><i class="top3_like1" style="margin-right:5px;"></i><span>{$info.likes}</span></div>
+    </div>
+    <div class="gd">
+        <a href="javascript:download();" title="下载比拍">
+        	想看我更多作品？快来比拍吧！
+	</div>
+    <div class="sp">
+        <video id="video" style="min-width:320px;min-height:320px;" autoplay="autoplay" controls="controls" x-webkit-airplay="true" webkit-playsinline="true" src="{$info.video_url}" poster="{$info.cover_url}" width="100%">
+        </video>
+    </div>
+    <div class="xx">
+        <div class="zzm">
+        <a href="javascript:void(0)" title="{$info.title}">
+        	<if condition="$info['title']">{$info.title}<else/>原创</if>
+        </a>
+        </div>
+        <div class="yanyi"></div>
+    </div>
+<div style="clear:both"></div>
+<div class="tit"></div>
+<div style="clear:both"></div>
+<div class="gg">
+	<div class="xkxlogo">
+		<img src="__PUBLIC__/Home/images/dbh_icon.png" width="100%" title="比拍">
+	</div>
+	<div class="xkxwz">
+		<span>比拍</span><br>
+		想跟我比一比？下载比拍吧！
+	</div>
+	<div class="download">
+		<a href="javascript:download();" title="下载比拍IOS"><em class="i-down"></em>下载</a>
+	</div>
+
+</div>
+<div style="clear: both"></div>
+<script>
+    end_adv_video="";
+    if(end_adv_video){
+        i=1;
+        document.getElementById("video").addEventListener('ended',function(){
+            if(i==1){
+                $('#video').attr('src',end_adv_video);
+            }else{
+                $('#video').attr('src',"{$info.video_url}");
+            }
+            i++;
+        },false);
+    }else{
+        $('#video').attr('loop','loop');
+    }
+
+    function setArrow(triggerObj,targetObj){
+        if(!triggerObj||$.type(triggerObj)!='object'||!targetObj||$.type(targetObj)!='object'){return}
+            var os = triggerObj.offset();
+        var em = targetObj.find('em');
+        em.length&&
+        em.css({
+            left:os.left+triggerObj.width()/2-10
+        }).show();
+    }
+    setArrow($('.yh-box li:first'),$('#first-person'));
+    $('.yh-box').on('click','li',function(){
+        var tt = $(this),
+                i = tt.index(),
+                $target = i?$('#last-person'):$('#first-person');
+
+        setArrow(tt,$target);
+        $target.show().siblings('.intro-box').hide();
+    });
+</script>
+<div style="width:100%; text-align:center; padding: 20px 0;">
+	<a target="_blank"
+		href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010802005557"
+		style="display: inline-block; text-decoration: none; height: 20px; line-height: 20px;">
+	<p style="float: left; height: 20px; line-height: 20px; margin: 0px 0px 0px 5px; color: #939393;">浙ICP备16021739-1号 <br>浙公网安备33010802005557号</p>
+	</a>
+</div>
+</body>
+</html>

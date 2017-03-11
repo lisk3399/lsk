@@ -1,0 +1,192 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{$info.act_name}活动</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <meta content="telephone=no" name="format-detection">
+
+    <link rel="stylesheet" type="text/css" href="__STATIC__/web/activity.css">
+    <link href="__STATIC__/mobile.css"  rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="http://xkx.static.xiaoka.tv/js/activity/zepto.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <style>
+    .tipPop {
+        position: fixed !important;
+        left: 50% !important;
+        right: auto !important;
+        top: 50% !important;
+        margin-left: -7em !important;
+        margin-top: -2em !important;
+        padding: 1em 0 !important;
+        width: 14em !important;
+        color: #fff !important;
+        background: rgba(0, 0, 0, 0.8) !important;
+        border-radius: 2.5px !important;
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?82f3be980c82ea899ad32bcb5ed3b109";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</head>
+<img src="__PUBLIC__/Home/images/tip.png" width="100%" alt="" id="tips" style="display: none" onclick="this.style.display='none'">
+<body>
+<img src="{$info.cover_url}" class="header_img">
+
+<div class="act_info">  
+{$info.description}
+    <div class="act_add" onclick="javascript:download();">立即参与</div>
+</div>
+<ul class="list_tit cf">
+    <li>最赞</li>
+</ul>
+<div class="list_content">
+    <ul class="list_love cf">
+    	<volist name="list" id="data">
+	        <li onclick="javascript:download();">
+	            <img src="{$data.cover_url}" class="people_pic">
+	            <div class="peo_info">
+	                <img src="{$data.avatar}">
+	                <div>{$data.nickname}</div>
+	            </div>
+	            <img src="http://xkx.static.xiaoka.tv/img/activity/img_mode.png" class="shadow">
+	        </li>
+        </volist>
+        </ul>
+            
+<div class="gg">
+	<div class="xkxlogo">
+		<img src="/Public/Home/images/dbh_icon.png" width="100%" title="比拍">
+	</div>
+	<div class="xkxwz">
+		<span>比拍</span><br>
+		想跟我比一比？下载比拍吧！
+	</div>
+	<div class="download">
+		<a href="javascript:download();" title="下载比拍IOS"><em class="i-down"></em>下载</a>
+	</div>
+
+</div>
+</div>
+
+<script type="text/javascript">
+
+    window.onload = function () {
+        var body_w = $("body").width();
+        $(".list_tit li").css({width:(body_w-3)/2});
+        $(".list_content li").css({width:(body_w-3)/2,height:(body_w-3)/2});
+
+        var footer_content_h = $(".footer_content").height();
+        $(".list_content").css({"padding-bottom":footer_content_h});
+
+        for (var i = 0; i < $(".list_new li").length; i++) {
+            $(".list_new li").eq(i).attr("id", i + 1);
+            var id_index = $(".list_new li").eq(i).attr("id");
+            if (Number(id_index) % 2 == 0) {
+                $(".list_new li").eq(i).css({"margin-left":"3px"});
+            }
+        }
+
+        for (var i = 0; i < $(".list_love li").length; i++) {
+            $(".list_love li").eq(i).attr("id", i + 1);
+            var id_index = $(".list_love li").eq(i).attr("id");
+            if (Number(id_index) % 2 == 0) {
+                $(".list_love li").eq(i).css({"margin-left":"3px"});
+            }
+        }
+        $(".none").on("touchend", function () {
+            $(".footer_content").css({"display":"none"});
+            $(".list_content").css({"padding-bottom":0});
+        });
+
+        $(".list_tit li").on("touchend", function () {
+            var list_tit_index = $(this).index();
+            $(".list_tit li").eq(list_tit_index).css({"color":"#eaa81c","border-bottom":"2px solid #eaa81c"})
+                    .siblings().css({"color":"#fff","border":0});
+            $(".list_content ul").eq(list_tit_index).css({"display":"block"}).siblings().css({"display":"none"});
+        });
+
+        //获取列表下li个数
+        var list_love_num=$(".list_love li").length;
+        var list_new_num=$(".list_new li").length;
+        var li_html='<li><img src="http://xkx.static.xiaoka.tv/img/activity/bg-null.png" class="bg-null"></li>';
+        if(Number(list_love_num)<=0){
+            $(".list_love").empty();
+            $(".list_love").append(li_html);
+        }
+        if(Number(list_new_num)<=0){
+            $(".list_new").empty();
+            $(".list_new").append(li_html);
+        }
+    }
+</script>
+<figure class="tipPop" style="text-align: center;display: none;"></figure>
+<script type="text/javascript">
+	var agent = "ios";
+	var is_ios = "1";
+	sUserAgent = navigator.userAgent.toLowerCase();   
+	bIsIpad = sUserAgent.match(/ipad/i) == "ipad";     
+	bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";    
+	bIsAndroid = sUserAgent.match(/android/i) == "android";
+	var weixin = sUserAgent.match(/MicroMessenger/i) == "micromessenger";
+	var qq =navigator.userAgent.match(/QQ\//i) == "QQ/";
+	function is_weixin(){
+	    var ua = navigator.userAgent.toLowerCase();
+	    if(ua.match(/MicroMessenger/i)=="micromessenger") {  
+	        return true;  
+	    } else {  
+	        return false;  
+	    }  
+	}
+	function download(){
+		alert_msg('请下载比拍APP登录参与此活动', 5000);		
+	    if(is_weixin()){
+	    	$("#tips").show();
+	    	document.body.scrollTop = 0;
+	    }else{
+	    	if(bIsAndroid){
+	    			//window.location.href = ""; //安卓下载
+	    			alert("比拍安卓版还在开发中，我们会尽快完善，非常感谢您的关注");
+	  		}else{
+	  			window.location.href = "https://itunes.apple.com/cn/app/bi-pai-ren-xiao-gui-da-yi/id1119521508?mt=8"; //苹果下载地址
+	  		}
+	    }
+	}
+    var login_message = '请在APP里登录才能报名此活动';
+    function launch(type, str, videoType) {
+        videoType = videoType ? videoType : 0;
+        if (weixin || qq) {
+            document.getElementsByTagName('body')[0].scrollTop = 0;
+            document.getElementById('school_browser').style.display = 'block';
+            alert_msg(login_message, 2000);
+        } else {
+            if (is_pc) {
+                alert_msg(login_message, 2000);
+            } else {
+                var url_prefix = 'jump';
+                if (bIsAndroid) {
+                    url_prefix = 'public/start';
+                }
+                var url = 'xkx://' + url_prefix + '?type=' + type + '&dataStr=' + str + '&videoType=' + videoType;
+                document.location.href = url;
+                setTimeout(function () {
+                    download();
+                }, 2000);
+            }
+        }
+    }
+    function alert_msg(msg, time) {
+        $('.tipPop').css('display', 'block');
+        $('.tipPop').text(msg);
+        setTimeout(function () {
+            $('.tipPop').hide();
+        }, time);
+    }
+</script>
+</body>
+</html>

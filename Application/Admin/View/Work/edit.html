@@ -1,0 +1,63 @@
+<extend name="Public/base" />
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+	<div class="main-title cf">
+		<h2><if condition="ACTION_NAME eq 'addaction'">新增<else/>查看</if>动态</h2>
+	</div>
+	<!-- 表单 -->
+	<?php foreach($list as $v):?>
+	<?php endforeach;?>
+	<form id="form" action="{:U('saveAction')}" method="post" class="form-horizontal">
+		<div class="form-item cf">
+			<label class="item-label">ID<span class="check-tips"></span></label>
+			<div class="controls">
+			
+				<input type="text" class="text input-large" readonly="readonly" class="teclass="text input-large" readonly="readonly"xt input-large" name="cate_id" value="{$v.id}">
+			</div>
+		</div>
+		<div class="form-item cf">
+			<label class="item-label">标题<span class="check-tips"></span></label>
+			<div class="controls">
+			
+				<input type="text" class="text input-large" name="title" value="{$v.title}">
+			</div>
+
+		<div class="form-item">
+            <label for="auth-description" class="item-label">描述</label>
+            <div class="controls">
+                <label class="textarea input-large"><textarea id="auth-description" type="text" name="description">{$v.description}</textarea></label>
+            </div>
+        </div>
+      
+		 <div class="form-item cf">
+			<label class="item-label">视频<span class="check-tips"></span></label>
+			<div class="controls">
+			
+				<input type="text" class="text input-large" name="cover_url" value="{$v.cover_url}">
+			</div>
+		</div>
+        <div class="form-item cf">
+			<label class="item-label">创建时间<span class="check-tips"></span></label>
+			<div class="controls">
+			
+				<input type="text" class="text input-large" name="create_time" value="{$v.create_time|time_format}">
+			</div>
+		</div>
+		<div class="form-item">
+			<input type="hidden" />
+			<button class="btn btn-return"  target-form="form-horizontal">确 定</button>
+			<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+		</div>
+	</form>
+</block>
+
+<block name="script">
+<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+	Think.setValue('type',{$type|default=1});
+    //导航高亮
+    highlight_subnav('{:U('Institution/action')}');
+</script>
+</block>

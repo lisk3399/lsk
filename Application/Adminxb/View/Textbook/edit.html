@@ -1,0 +1,51 @@
+<extend name="Public/base"/>
+
+<block name="body">
+    <div class="main-title">
+        <h2>添加教材</h2>
+    </div>
+    <form action="{:U('editaction')}" method="post" class="form-horizontal">
+
+        <div class="form-item">
+            <label class="item-label">对应课程<span class="check-tips"></span></label>
+            <div class="controls">
+                <select name="uid">
+                    <volist name="config" id="configs">
+                        <option value="{$configs.id}">{$configs.id}{$configs.title}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">排序<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="sort" value="{$config[0].sort|default=''}">
+            </div>
+        </div>        
+        <div class="form-item">
+            <label class="item-label">教材名称<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="name" value="{$config[0].name|default=''}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">价格<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="cost" value="{$config[0].cost|default=''}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">可通过积分兑换<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="integral" value="{$config[0].integral|default=''}">
+            </div>
+        </div>
+
+        <div class="form-item">
+          
+            <button id="submit" type="submit" target-form="form-horizontal">保存</button>
+            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+        </div>
+    </form>
+</block>
+

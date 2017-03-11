@@ -1,0 +1,59 @@
+<extend name="Public/base" />
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+    <div class="main-title cf">
+        <h2><if condition="ACTION_NAME eq 'addaction'">新增<else/>添加校区</if></h2>
+    </div>
+    <!-- 表单 -->
+    <form id="form" action="{:U('postDoupload')}" method="post" class="form-horizontal">
+    <div class="form-item cf"> 
+    
+            <label class="item-label">校区名<span class="check-tips">（英文中文都行）</span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="name" value="{$GLOBALS['classid']}">
+            </div>
+        </div>
+        <div class="form-item">
+                <label>类型：</label>
+                    <select name="cut">
+                      <option value="直属">直属</option>
+                      <option value="合作">合作</option>
+                    </select>
+        </div>
+        <div class="form-item">
+                <label class="item-label">电话1<span class="check-tips"></span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="moblie" value="{$info.uid|default=''}">
+                </div>
+        </div>
+        <div class="form-item">
+                <label class="item-label">电话2<span class="check-tips"></span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="moblie1" value="{$info.uid|default=''}">
+                </div>
+        </div>
+        <div class="form-item cf"> 
+    
+            <label class="item-label">地址<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="address" value="{$GLOBALS['classid']}">
+            </div>
+        </div>
+        <div class="form-item">
+            
+            <button class="btn btn-return"  target-form="form-horizontal">确 定</button>
+            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+        </div>
+    </form>
+</block>
+
+<block name="script">
+<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    Think.setValue('type',{$type|default=1});
+    //导航高亮
+    highlight_subnav('{:U('Institution/action')}');
+</script>
+</block>

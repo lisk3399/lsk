@@ -1,0 +1,270 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport"content="width=device-width, initial-scale=1"/>
+<script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+<title>{$info.nicknam}邀请你加入{$group_name}</title>
+<style type="text/css">
+	html {
+	width: 100%;
+	height: 100%;
+       	font-family: 'STHeitiSC','Helvetica';
+	overflow: hidden;
+	}
+	body{
+	margin:0;
+	width: 100%;
+	height: 100%;
+	background-color:#262630;
+	}
+	.div_tips{
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0,0,0,0.8);
+		position: fixed;
+		top: 0;
+		left: 0;
+		text-align: center;
+		display: none;
+	}
+	.div_tips_content
+	{
+		width:15.75rem;
+		margin-top: 50%;
+		margin-left: auto;
+		margin-right: auto;
+		background-color: white;
+		border-radius: 0.5rem 0.5rem;
+	}
+	.div_tips_content_font_1
+	{
+		font-size:0.9rem;
+		height:0.9rem;
+		text-align:center;
+		color:#333333;
+	}
+
+	#div_name{
+	width:100%;
+	height:1rem;
+	text-align:center;
+	font-size:1rem;
+	color:#ffffff;
+	font-weight:bold;
+	}
+	#div_faceuid{
+	width:100%;
+	height:0.55rem;
+	text-align:center;
+	font-size:0.55rem;
+	color:#ffffff;
+	font-family:"Helvetica","STHeitiSC-Light";
+	}
+	#div_add_friend{
+	width:100%;
+	height:0.75rem;
+	text-align:center;
+	font-size:0.75rem;
+	color:#ffffff;
+	font-family:"Helvetica","STHeitiSC-Light";
+	}
+	#div_still_not{
+	width:100%;
+	height:0.75rem;
+	text-align:center;
+	font-size:0.75rem;
+	color:#ffffff;
+	font-family:"Helvetica","STHeitiSC-Light";
+	}
+	
+.act_add {
+    width: 60%;
+    background-color: #383847;
+    color: #ffb800;
+    font-size: 1.2rem;
+    text-align: center;
+    height: 2.1rem;
+    line-height: 2.1rem;
+    margin: 1.6rem auto 0 auto;
+    border-radius: 4.1rem;
+    border-bottom-left-radius: 4.1rem;
+    border-bottom-right-radius: 4.1rem;
+    border-top-right-radius: 4.1rem;
+    border-top-left-radius: 4.1rem;
+}
+</style>
+<script type="text/javascript">
+function GetUrlParms()    
+{
+	var args=new Object();   
+	var query=location.search.substring(1);
+	var pairs=query.split("&");
+	for(var i=0;i<pairs.length;i++)   
+	{
+		var pos=pairs[i].indexOf('=');
+		if(pos==-1)
+			continue;
+		var argname=pairs[i].substring(0,pos);
+		var value=pairs[i].substring(pos+1);
+		args[argname]=unescape(value);
+	}
+	return args;
+}
+function getUrlParam(name) { 
+	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); 
+	var r = window.location.search.substr(1).match(reg); 
+	if (r != null) return unescape(r[2]); return null; 
+} 
+var args = new Object();
+args = GetUrlParms();
+if(args["faceid"]==null || args["name"]==null)
+{
+	//location.href="404.html";
+}
+
+var w, h;
+var download_url = "";
+$(document).ready(function(){
+		var w_ip6 = 750;
+		//$("#div_faceuid").html("Faceu号：" + escape(args["faceid"]==null?"OOPS":args["faceid"]));
+		$("#div_name").html('{$info.nickname}');
+		$("#label_add_friend").html("");
+		w = $(window).width();
+		h = $(window).height();
+		$("html").css("font-size", 40*w/750);
+
+
+		$("#div_after_click_content_download,#img_faceu").click(function(){
+                //window.location.href = download_url;
+                download();
+		});
+
+		$("#div_tips").css("width", "100%");
+		$("#div_tips").css("height", "100%");
+		$("#div_tips").click(function(){
+				$(this).hide();
+				});
+		$("#div_black").click(function(){
+				$(this).hide();
+				});
+
+});
+</script>
+</head>
+
+<body>
+<img src="__PUBLIC__/Home/images/tip.png" width="100%" alt="" id="tips" style="display: none" onclick="this.style.display='none'">
+<div style="width:100%;height:10rem;text-align:center;">
+	<img src="{$info.avatar}" style="width:5rem;height:5rem;padding-top:60px;">
+</div>
+<div id="div_name"></div>
+<div style="width:100%;height:0.35rem;"></div>
+<div id="div_faceuid"></div>
+<div style="width:100%;height:1.15rem"></div>
+<div id="div_add_friend">邀请你加入[{$info.group_name}]</div>
+<div style="width:100%;height:1.15rem;"></div>
+<div class="act_add" onclick="javascript:download();">立即加入</div>
+<div style="width:100%;height:1.05rem;"></div>
+<div style="width:100%;height:1px;background-color:#ffffff;opacity:0.5"></div>
+<div style="width:100%;height:1.05rem;"></div>
+<div style="margin-left: auto; margin-right: auto; width=100%;"></div>
+<div style="width:100%;text-align:center;">
+	<img src="__PUBLIC__/Home/images/dbh_icon.png" style="" id="img_faceu"/>
+</div>
+<div id="div_still_not">还没有比拍？点击下载</div>
+<div id="div_tips" class="div_tips">
+	<img id="tips-img" style="width:100%;height:4.5rem;"></img>
+</div>
+<div id="div_black" class="div_tips">
+	<div id="div_after_click_content" class="div_tips_content"> 
+		<div style="width:100%;height:1.15rem;"></div>
+		<div class="div_tips_content_font_1">系统已经打开你的比拍,若没反应</div>
+		<div style="width:100%;height:0.65rem;"></div>
+		<div class="div_tips_content_font_1">请先下载,再加好友</div>
+		<div style="width:100%;height:1.15rem;"></div>
+		<div style="width:100%;height:1px;background-color:#333333;opacity:0.3;"></div>
+		<div style="width:100%;height:2.5rem;">
+			<div style="width:50%;height:2.5rem;float:left;">
+				<div style="width:100%;height:2.5rem;text-align:center;font-weight:bold;color:#333333;line-height:2.5rem;">取消</div>		
+				<div style="width:1px;height:2.5rem;background-color:#333333;opacity:0.3;position:relative;left:100%;top:-2.5rem;"></div>
+			</div>
+			<div style="width:50%;height:2.5rem;float:right;text-align:center;font-weight:bold;color:#11ca9d;line-height:2.5rem;" id="div_after_click_content_download">
+				下载
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	var agent = "ios";
+	var is_ios = "1";
+	sUserAgent = navigator.userAgent.toLowerCase();   
+	bIsIpad = sUserAgent.match(/ipad/i) == "ipad";     
+	bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";    
+	bIsAndroid = sUserAgent.match(/android/i) == "android";
+    var weixin = sUserAgent.match(/MicroMessenger/i) == "micromessenger";
+    var qq =navigator.userAgent.match(/QQ\//i) == "QQ/";
+	function is_weixin(){
+	    var ua = navigator.userAgent.toLowerCase();
+	    if(ua.match(/MicroMessenger/i)=="micromessenger") {  
+	        return true;  
+	    } else {  
+	        return false;  
+	    }  
+	}
+	function download(){
+	    if(is_weixin()){
+	    	$("#tips").show();
+	    	document.body.scrollTop = 0;
+	    }else{
+	    	if(bIsAndroid){
+	    			//window.location.href = ""; //安卓下载
+	    			alert("比拍安卓版还在开发中，我们会尽快完善，非常感谢您的关注");
+	  		}else{
+	  			window.location.href = "https://itunes.apple.com/cn/app/bi-pai-ren-xiao-gui-da-yi/id1119521508?mt=8"; //苹果下载地址
+	  		}
+	    }
+	}
+    function lanchVideoInfo(vid,videoType) {
+        if (weixin||qq) {
+            document.getElementById('school_browser').style.display='block';
+            scrollTo(0,0);
+        }else{
+            videoType=videoType?videoType:0;
+            var url_prefix = 'jump';
+            if (bIsAndroid) {
+                url_prefix = 'public/start';
+            }
+            var url = 'xkx://' + url_prefix + '?type=4&dataStr=' + vid + '&videoType='+videoType;
+            document.location.href = url;
+            setTimeout(function(){
+                download();
+            },2000);
+        }
+    }
+    function costar(){
+        if (weixin||qq) {
+            document.getElementById('school_browser').style.display='block';
+            scrollTo(0,0);
+        }else{
+            var url_prefix = 'jump';
+            if (bIsAndroid) {
+                url_prefix = 'public/start';
+            }
+            var url = 'xkx://' + url_prefix;
+            window.location.href = url;
+            setTimeout(function(){
+                download();
+            },2000);
+        }
+    }
+	
+	if ("wView" in window) {
+		window.wView.allowsInlineMediaPlayback = "YES";
+		window.wView.mediaPlaybackRequiresUserAction = "NO";
+	}
+
+</script>
+</body>
+</html>
+

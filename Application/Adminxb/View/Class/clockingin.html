@@ -1,0 +1,91 @@
+<extend name="Public/base" />
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+    <div class="main-title cf">
+        <h2><if condition="ACTION_NAME eq 'addaction'"><else/>考勤记录</if></h2>
+    </div>
+    <a class="btn" href="{:U('addAction')}">新 建</a>
+    <!-- 表单 -->
+    <!-- 数据表格 -->
+    <form name="form" role="form" method="post" action="{:U('clockinginadd')}" enctype="multipart/form-data" >
+<div class="data-table">
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="row-selected row-selected">
+                        <input class="check-all" type="checkbox">
+                    </th>
+                    <th>编号</th>
+                    <th>名字</th>
+                    <th>状态</th>
+                    <th>记录专注</th>
+                    <th>活跃参与</th>
+                    <th>教师留言</th>
+                    <th>操作</th>
+                   
+                </tr>
+            </thead>
+            <!-- 表头 -->
+             <tbody>
+                <volist name="list" id="data">
+                    <tr>
+                        <td><input class="ids" type="checkbox" value="{$data['id']}" name="{$data.id}[]"></td>
+                        <td>{$data.id}</td>
+                        <td>
+                            <input type="" name="name[]" value="{$data.name}">
+                        </td>
+                       
+                        <td>
+                            <label class="item-label">正常<span class="check-tips"></span></label>
+                            <input id="woman[]" type="radio"  value="未记录" name="is_state{$data.id}[][]" />未记录
+                            <input id="woman[]" type="radio" checked="checked" value="上课" name="is_state{$data.id}[][]"/>上课
+                            <input id="woman[]" type="radio"  value="请假" name="is_state{$data.id}[][]"/>请假
+                            <input id="woman[]" type="radio"  value="旷课" name="is_state{$data.id}[][]"/>旷课
+                            <input id="woman[]" type="radio"  value="补课" name="is_state{$data.id}[][]"/>补课
+
+                        </td>
+                        <td>
+                            <label>记录专注：</label>
+                            <select name="discipline[]">
+                             <option value="5">5分</option>
+                             <option value="4">4分</option>
+                             <option value="3">3分</option>
+                             <option value="2">2分</option>
+                             <option value="1">1分</option>
+                             </select>
+                        </td>
+                        <td>
+                            <label>活跃参与：</label>
+                            <select name="active[]">
+                             <option value="5">5分</option>
+                             <option value="4">4分</option>
+                             <option value="3">3分</option>
+                             <option value="2">2分</option>
+                             <option value="1">1分</option>
+                             </select>
+                        </td>
+                        <td>
+                             <label class="item-label">教师留言<span class="check-tips"></span></label>
+                            
+                            <input type="text" class="text input-large" name="group_name[]" placeholder="最后**字" value="{$info.is_admin|default=''}">
+                        </td>
+                    </tr>
+                </volist>
+            </tbody>
+             
+        </table>
+    </div><button type="submit" class="btn btn-default">确定</button>
+    </form>  
+</block>
+
+<block name="script">
+<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    Think.setValue('type',{$type|default=1});
+    //导航高亮
+    highlight_subnav('{:U('Institution/action')}');
+</script>
+</block>

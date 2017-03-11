@@ -1,0 +1,66 @@
+<extend name="Public/base"/>
+
+<!-- 子导航 -->
+
+
+<block name="body">
+	<div class="main-title">
+	当前分类：{$type}
+	</div>
+	<!-- 按钮工具栏 -->
+	<div class="cf">
+		<div class="fl">
+			<a class="btn" href="{:U('addAction')}">添加教材</a>
+			<a class="btn" href="{:U('addincidentals')}">添加杂费</a>
+		</div>
+	</div>
+
+	<!-- 数据表格 -->
+    <div class="data-table">
+		<table>
+            <!-- 表头 -->
+            <thead>
+                <tr>
+                    <th class="row-selected row-selected">
+                        <input class="check-all" type="checkbox">
+                    </th>
+					<th>编号</th>
+					<th>对应课程</th>
+					<th>排序</th>
+					<th>教材名称</th>
+					<th>杂费名称</th>
+					<th>价格</th>
+					<th>积分兑换</th>
+					<th>操作</th>
+                </tr>
+            </thead>
+
+            <!-- 列表 -->
+            <tbody>
+                <volist name="list" id="data">
+                    <tr>
+                        <td><input class="ids" type="checkbox" value="{$data['id']}" name="ids[]"></td>
+						<td>{$data.id}</td>
+						<td>{$data.title}</td>
+						<td>{$data.sort}</td>
+						<td>
+						<div style="width:200px; white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+						{$data.name}</div> </td>
+						<td>{$data.incidentals_name} </td>
+						<td>{$data.cost} </td>
+						<td>{$data.integral} </td>
+						<td>
+						<a href="{:U('Textbook/edit?id='.$data['id'])}">查看</a>
+						<a href='{:U("Textbook/recycle",array("is_delete"=>1,"id"=>$data["id"]))}'>删除</a></td>
+                    </tr>
+                </volist>
+            </tbody>
+        </table>
+	</div>
+	<!-- 分页 -->
+    <div class="page">
+        {$_page}
+    </div>
+</div>
+
+</block>

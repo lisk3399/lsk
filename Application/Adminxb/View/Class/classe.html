@@ -1,0 +1,74 @@
+<extend name="Public/base" />
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+	<div class="main-title cf">
+		<h2><if condition="ACTION_NAME eq 'addaction'">新增<else/>班级</if>成员</h2>
+	</div>
+		<div class="cf">
+		<div class="fl">
+			<a class="btn" href="{:U('editAction?uid='.$GLOBALS['uid'])}">新 建</a>
+			
+			
+			
+		</div>
+
+	</div>
+	<!-- 表单 -->
+ 
+	<div class="data-table">
+		<table>
+            <!-- 表头 -->
+            <thead>
+                <tr>
+                    <th class="row-selected row-selected">
+                        <input class="check-all" type="checkbox">
+                    </th>
+					<th>ID</th>
+					<th>uid</th>
+					<th>名字</th>
+					<th>性别</th>
+					<th>年龄</th>
+					<th>手机号</th>
+					<th>校宝家关注</th>
+					<th>实际学费</th>
+					<th>教材</th>
+					<th>杂费</th>
+					<th>状态</th>
+					<th>办理</th>
+                </tr>
+            </thead>
+
+            <!-- 列表 -->
+            <tbody>
+
+              
+                	<foreach name="list" item="vo" >
+                    <tr>
+                        <td><input class="ids" type="checkbox" value="{$data['id']}" name="ids[]"></td>
+						<td>{$vo.id}</td>
+						<td>{$vo.uid}</td>
+						<td>{$vo.name}</td>
+						<td>{$vo.gender}</td>
+						<td>{$vo.age} </td>
+						<td>{$vo.rphone} </td>
+						<td>{$vo.}</td>
+						<td>{$vo.tuition}</td>
+						<td>{$vo.textbook}</td>
+						<td>{$vo.incidentals}</td>
+						<td>{$vo.state}</td>
+						<td><a href="{:U('cost?id='.$vo['id'])}">续费 
+						<a href='{:U("class/Delete",array("id"=>$vo["id"],"is_select"=>1))}'>删除</td>
+						<td>
+                    </tr>
+                    </foreach>
+                
+            </tbody>
+        </table>
+	</div>
+</block>
+<block name="script">
+<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+
+</block>

@@ -1,0 +1,62 @@
+<extend name="Public/base" />
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>回收站({:count($list)})</h2>
+	</div>
+
+    <div class="tools auth-botton">
+        <!-- <button url="{:U('work/clear')}" class="btn ajax-get">清 空</button> -->
+        <button url="{:U("Classes/setStatus",array("is_delete"=>0))}" class="btn ajax-post" target-form="ids">还 原</button>
+    </div>
+
+	<!-- 数据列表 -->
+	<div class="data-table table-striped">
+			<table class="">
+    <thead>
+        <tr>
+		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+					<th>编号</th>
+					<th>用户</th>
+					<th>省市区</th>
+					<th>学校</th>
+					<th>班级</th>
+					<th>操作</th>
+		</tr>
+    </thead>
+    <tbody>
+		<volist name="list" id="data">
+		    <tr>
+                <td><input class="ids" type="checkbox" value="{$data['id']}" name="ids[]"></td>
+				<td>{$data.id}</td>
+				<td>{$data.nickname}({$data.uid})</td>
+				<td>{$data.province}{$data.city}{$data.disctrict}</td>
+				<td>{$data.school}</td>
+				<td>{$data.class}</td>
+				<td><a href="{:U("Classes/setStatus",array("is_delete"=>0, "ids"=>$data["id"]))}" class="ajax-get">还原</td>
+		    </tr>
+		</volist>
+	</tbody>
+    </table> 
+        
+	</div>
+    <div class="page">
+        {$_page}
+    </div>
+    <script>
+function preview(id, url) {
+	if($('#video_'+id).attr('src') == '') {
+		$('#video_'+id).attr('src', url);
+	} else {
+		$('#video_'+id).attr('src', '');
+	}
+	$('#video_'+id).toggle(500);
+}
+</script>
+</block>

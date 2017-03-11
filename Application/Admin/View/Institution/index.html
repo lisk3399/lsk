@@ -1,0 +1,122 @@
+<extend name="Public/base" /> 
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />    
+</block>
+
+<block name="body">
+	<div class="main-title">
+	当前分类：机构管理
+
+	</div>
+
+	<!-- 按钮工具栏 -->
+	<div class="cf">
+		<div class="fl">
+			<div class="btn-group">
+				<gt name="allow" value="0">
+					
+					<if condition="count($model) gt 1">
+					</if>
+				<else/> 
+				</gt>
+			</div>
+			<input type="hidden" class="hide-data" name="cate_id" value="{$cate_id}"/>
+			<input type="hidden" class="hide-data" name="pid" value="{$pid}"/>
+			<button class="btn ajax-post confirm" target-form="ids" url="{:U("Institution/setStatus",array("is_delete"=>1, "ids"=>$data["id"]))}">删 除</button>
+		</div>
+<!-- 高级搜索 -->
+		<div class="search-form fr cf">
+			<div class="sleft">
+				<div class="drop-down">
+					<span id="sch-sort-txt" class="sort-txt" data="{$status}"><if condition="get_status_title($status) eq ''">所有<else/>{:get_status_title($status)}</if></span>
+					<i class="arrow arrow-down"></i>
+				</div>			
+				<input type="text" name="nickname" class="search-input" value="{:I('nickname')}" placeholder="请输入搜索机构"/>
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"><i class="btn-search"></i></a>				
+			</div>			
+  	    </div>
+	</div>
+	<!-- 数据表格 -->
+    <div class="data-table table-striped">
+		<table>
+            <!-- 表头 -->
+            <thead>
+                <tr>
+                    <th class="row-selected row-selected">
+                        <input class="check-all" type="checkbox"/>
+                    </th>
+					<th>编号</th>
+					<th>创建者</th>
+					<th>机构名称</th>
+					<th>机构封面图</th>
+					<th>是否删除</th>
+					<th>创建时间</th>
+					<th width="18%">操作</th>
+                </tr>
+            </thead>
+	
+            <!-- 列表 -->
+            <tbody>
+            <notempty name="_list">
+                <volist name="list" id="data">
+                    <tr>
+                        <td><input class="ids" type="checkbox" value="{$data.id}" name="id[]"></td>
+						<td>{$data.id}</td>
+						<td><a data-id="{$data.id}" href="{:U('Institution/editAction?cate_id='.$data['id'].'&id='.$data['id'])}">{$data.nickname}({$data.uid})</td>
+						<td><a data-id="{$data.id}" href="{:U('Institution/classe?cate_id='.$data['id'].'&id='.$data['id'])}">{$data.name}</td>
+						<td><img class="thumbnails" src="{$data.cover_url}" width='50px' height='50px;' /></td>
+						<td>{$data.is_delete}</td>
+						<td><span>{$data.create_time|time_format}</span></td>
+						<td><a href="{:U('Institution/editAction?id='.$data['id'])}">编辑</a>
+						<a href='{:U("Institution/setStatus",array("is_delete"=>1, "ids"=>$data["id"]))}'>删除</a>
+						<a href="{:U('Institution/addition?id='.$data['id'])} ">ORG</a>
+		                </td>
+                    </tr>
+                </volist>
+            </tbody>
+
+
+        </table>
+	</div>
+
+	<!-- 分页 -->
+    <div class="page">
+        {$_page}
+    </div>
+</div>
+</block>
+
+
+
+				
+
+<block name="script">
+	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
+
+	<script type="text/javascript">
+	//搜索功能
+	$("#search").click(function(){
+		var url = $(this).attr('url');
+        var query  = $('.search-form').find('input').serialize();
+        query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+        query = query.replace(/^&/g,'');
+        if( url.indexOf('?')>0 ){
+            url += '&' + query;
+        }else{
+            url += '?' + query;
+        }
+		window.location.href = url;
+	});
+	//回车搜索
+	$(".search-input").keyup(function(e){
+		if(e.keyCode === 13){
+			$("#search").click();
+			return false;
+		}
+	});
+    //导航高亮
+    highlight_subnav('{:U('Institution/index')}');
+	</script>
+</block>
